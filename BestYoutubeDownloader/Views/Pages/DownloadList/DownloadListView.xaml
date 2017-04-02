@@ -1,0 +1,88 @@
+﻿<UserControl x:Class="BestYoutubeDownloader.Views.Pages.DownloadList.DownloadListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BestYoutubeDownloader.Views.Pages.DownloadList"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:converter="clr-namespace:BestYoutubeDownloader.Converter"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             PreviewKeyDown="DownloadListView_OnPreviewKeyDown"
+             PreviewDrop="DownloadListView_OnPreviewDrop">
+    <UserControl.Resources>
+        <dxmvvm:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <dxmvvm:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"
+                                             Inverse="True"/>
+        <converter:IsNullOrEmptyToVisibilityConverter x:Key="IsNullOrEmptyToVisibilityConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <ListBox Grid.Row="0"
+                 ItemsSource="{Binding Items}"
+                 SelectedItem="{Binding SelectedItem}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Command="{Binding OpenUrlCommand}"
+                                              Header="Open in Browser"/>
+                                </ContextMenu>
+                            </Grid.ContextMenu>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                   Text="{Binding Url}"
+                                   VerticalAlignment="Stretch"/>
+                            <Image Grid.Column="1"
+                                   Source="pack://application:,,,/Resources/Icons/Checkmark-64.png"
+                                   Visibility="{Binding WasSuccesful, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   HorizontalAlignment="Right"
+                                   Width="16"
+                                   Height="16"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        <Grid Grid.Row="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Bottom"
+              Margin="0,5,0,5">
+            <TextBox Text="{Binding AddItemText, UpdateSourceTrigger=PropertyChanged}"
+                     HorizontalAlignment="Stretch"
+                     TextWrapping="NoWrap"/>
+            <Button Command="{Binding AddItemCommand}"
+                    Content="Add Item"
+                    HorizontalAlignment="Right"/>
+        </Grid>
+        <Button Grid.Row="2"
+                Command="{Binding DownloadAllItemsCommand}"
+                    HorizontalAlignment="Stretch"
+              Margin="0,5,0,5">
+            <Button.ContentTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/Resources/Icons/Download-48.png"
+                               Width="16"
+                               Height="16"/>
+                        <TextBlock Margin="10,0,10,0">
+                            <Run Text="Download"/>
+                        </TextBlock>
+                        <Image Source="pack://application:,,,/Resources/Icons/Download-48.png"
+                               Width="16"
+                               Height="16"/>
+                    </StackPanel>
+                </DataTemplate>
+            </Button.ContentTemplate>
+        </Button>
+    </Grid>
+</UserControl>
