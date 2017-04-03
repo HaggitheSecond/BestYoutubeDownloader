@@ -66,15 +66,13 @@ namespace BestYoutubeDownloader
 
         private IDictionary<string, object> GetInitialWindowSettings()
         {
-            var mainwindowSettings = new Dictionary<string, object>
+           return new Dictionary<string, object>
             {
                 { nameof(Window.Width), 700},
                 { nameof(Window.Height), 500},
                 { nameof(WindowStartupLocation), WindowStartupLocation.CenterScreen },
                 { nameof(Window.SizeToContent), SizeToContent.Manual }
             };
-
-            return mainwindowSettings;
         }
 
         #endregion
