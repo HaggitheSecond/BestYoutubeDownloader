@@ -7,6 +7,7 @@ using BestYoutubeDownloader.Services.YoutubeDL;
 using BestYoutubeDownloader.Views.Pages;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
 using BestYoutubeDownloader.Views.Pages.Info;
+using BestYoutubeDownloader.Views.Pages.RawConsole;
 using BestYoutubeDownloader.Views.Pages.Seperator;
 using BestYoutubeDownloader.Views.Pages.Settings;
 using Caliburn.Micro;
@@ -17,6 +18,7 @@ namespace BestYoutubeDownloader.Views
     public class MainViewModel : Conductor<IPage>.Collection.OneActive
     {
         private DownloadListViewModel _downloadListViewModel;
+        private RawConsoleViewModel _rawConsoleViewModel;
         private SettingsViewModel _settingsViewModel;
         private InfoViewModel _infoViewModel;
 
@@ -24,6 +26,13 @@ namespace BestYoutubeDownloader.Views
         {
             get { return this._downloadListViewModel; }
             set { this.SetProperty(ref this._downloadListViewModel, value); }
+        }
+
+
+        public RawConsoleViewModel RawConsoleViewModel
+        {
+            get { return this._rawConsoleViewModel; }
+            set { this.SetProperty(ref this._rawConsoleViewModel, value); }
         }
 
         public SettingsViewModel SettingsViewModel
@@ -45,6 +54,9 @@ namespace BestYoutubeDownloader.Views
             this.DownloadListViewModel = IoC.Get<DownloadListViewModel>();
             this.Items.Add(this.DownloadListViewModel);
 
+            this.RawConsoleViewModel = IoC.Get<RawConsoleViewModel>();
+            this.Items.Add(this.RawConsoleViewModel);
+            
             this.SettingsViewModel = IoC.Get<SettingsViewModel>();
             this.Items.Add(this.SettingsViewModel);
 

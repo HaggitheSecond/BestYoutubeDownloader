@@ -17,6 +17,8 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         private DownloadSettings _settings;
 
+        private Action<string> _rawConsoleAction;
+
         public YoutubeDownloaderService()
         {
             this._exeLocation = Directory.GetCurrentDirectory() + @"\youtube-dl.exe";
@@ -29,11 +31,20 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         {
             if (url.IsViableYoutubeUrl() == false)
                 return false;
+
+            output = this.WrapOutput(output);
+
             try
             {
+                var command = @"youtube-dl -o " + this._settings.OutputLocation + @"\%(title)s.%(ext)s " + url;
+
+                this._rawConsoleAction?.Invoke(command);
+
                 await CommandPromptHelper.ExecuteCommand(this._exeDirectoryLocation,
-                    @"youtube-dl -o "+ this._settings.OutputLocation + @"\%(title)s.%(ext)s  --yes-playlist --extract-audio --audio-format mp3 " + url,
+                    command,
                     output);
+
+                // --yes-playlist --extract-audio --audio-format mp3 
             }
             catch (Exception e)
             {
@@ -43,7 +54,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return true;
         }
 
-        public async Task<string> GetThumbNail(string url)
+        public async Task<string> GetMetaData(string url)
         {
             //if (url.IsViableYoutubeUrl() == false)
             //    return false;
@@ -67,7 +78,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         {
             return File.Exists(this._exeLocation);
         }
-        
+
         private async Task<bool> ValidateFfmepg()
         {
             var hasResult = false;
@@ -94,6 +105,21 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         public void ReloadSettings()
         {
             this._settings = IoC.Get<ISettingsService>().GetDownloadSettings();
+        }
+
+        private Action<string> WrapOutput(Action<string> output)
+        {
+            return s =>
+            {
+                this._rawConsoleAction?.Invoke(s);
+
+                output(s);
+            };
+        }
+
+        public void RegisterOutputAction(Action<string> output)
+        {
+            this._rawConsoleAction = output;
         }
     }
 }

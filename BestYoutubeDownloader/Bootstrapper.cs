@@ -11,6 +11,7 @@ using BestYoutubeDownloader.Services.YoutubeDL;
 using BestYoutubeDownloader.Views;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
 using BestYoutubeDownloader.Views.Pages.Info;
+using BestYoutubeDownloader.Views.Pages.RawConsole;
 using BestYoutubeDownloader.Views.Pages.Seperator;
 using BestYoutubeDownloader.Views.Pages.Settings;
 using Caliburn.Micro;
@@ -50,7 +51,8 @@ namespace BestYoutubeDownloader
                 .PerRequest<DownloadListViewModel>()
                 .PerRequest<SettingsViewModel>()
                 .PerRequest<SeperatorViewModel>()
-                .PerRequest<InfoViewModel>();
+                .PerRequest<InfoViewModel>()
+                .PerRequest<RawConsoleViewModel>();
         }
 
         #endregion

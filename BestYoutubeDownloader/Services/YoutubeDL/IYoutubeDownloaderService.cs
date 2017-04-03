@@ -7,10 +7,12 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
     {
         Task<bool> DownloadVideo(Action<string> output, string url);
 
-        Task<string> GetThumbNail(string url);
+        Task<string> GetMetaData(string url);
         
         Task<string> Validate();
 
         void ReloadSettings();
+
+        void RegisterOutputAction(Action<string> output);
     }
 }

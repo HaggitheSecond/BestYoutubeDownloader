@@ -108,6 +108,10 @@
     <Compile Include="Views\Pages\Info\InfoViewModel.cs" />
     <Compile Include="Views\Pages\IPage.cs" />
     <Compile Include="Views\Pages\ISeperator.cs" />
+    <Compile Include="Views\Pages\RawConsole\RawConsoleView.xaml.cs">
+      <DependentUpon>RawConsoleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\RawConsole\RawConsoleViewModel.cs" />
     <Compile Include="Views\Pages\Seperator\SeperatorViewModel.cs" />
     <Compile Include="Views\Pages\Settings\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
@@ -154,6 +158,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Pages\Info\InfoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\RawConsole\RawConsoleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
