@@ -6,6 +6,7 @@ using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using Caliburn.Micro;
+using DevExpress.Mvvm.Native;
 
 namespace BestYoutubeDownloader.Views.Pages.DownloadList
 {
@@ -81,11 +82,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.ItemsToDownload = this.Items.Count(f => f.Status == DownloadItemStatus.None);
             this.DownloadedItems = 0;
 
+           this.Items.Where(f => f.Status == DownloadItemStatus.None).ForEach(f => f.Status = DownloadItemStatus.Waiting);
+
             foreach (var currentItem in this.Items)
             {
-                if (currentItem.Status != DownloadItemStatus.None)
-                    continue;
-
                 currentItem.Status = DownloadItemStatus.Downloading;
 
                 var result = await this._youtubeDownloaderService.DownloadVideo(this._output, currentItem.Url);

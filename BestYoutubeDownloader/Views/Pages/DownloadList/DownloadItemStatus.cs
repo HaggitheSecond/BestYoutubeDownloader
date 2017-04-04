@@ -3,6 +3,7 @@
     public enum DownloadItemStatus
     {
         None,
+        Waiting,
         Downloading,
         Canceled,
         Error,

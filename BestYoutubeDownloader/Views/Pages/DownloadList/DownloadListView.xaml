@@ -19,6 +19,8 @@
                                         DefaultTarget="{x:Null}">
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Downloading}"
                             Target="pack://application:,,,/Resources/Icons/Download-48.png"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Waiting}"
+                            Target="{x:Null}"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Canceled}"
                             Target="pack://application:,,,/Resources/Icons/Delete-26.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.SuccessfulDownload}"
@@ -32,6 +34,8 @@
                                         DefaultTarget="{x:Null}">
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Downloading}"
                             Target="Downloading"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Waiting}"
+                            Target="Waiting"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Canceled}"
                             Target="Canceled"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.SuccessfulDownload}"
