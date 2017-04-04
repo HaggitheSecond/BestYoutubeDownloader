@@ -27,11 +27,11 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.InitializeComponent();
         }
 
-        private async void DownloadListView_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        private void DownloadListView_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.V && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
-                await this.ViewModel.AddItem(Clipboard.GetText());
+                this.ViewModel.AddItem(Clipboard.GetText());
                 e.Handled = true;
             }
         }
@@ -41,11 +41,11 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         }
 
-        private async void DownloadList_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        private void DownloadList_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.V && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
-                await this.ViewModel.AddItem(Clipboard.GetText());
+                this.ViewModel.AddItem(Clipboard.GetText());
                 e.Handled = true;
 
                 return;

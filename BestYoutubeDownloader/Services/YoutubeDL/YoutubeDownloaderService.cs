@@ -29,7 +29,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         public async Task<bool> DownloadVideo(Action<string> output, string url)
         {
-            if (url.IsViableYoutubeUrl() == false)
+            if (url.IsViableUrl() == false)
                 return false;
 
             output = this.WrapOutput(output);
@@ -56,7 +56,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         public async Task<string> GetMetaData(string url)
         {
-            //if (url.IsViableYoutubeUrl() == false)
+            //if (url.IsViableUrl() == false)
             //    return false;
             //try
             //{

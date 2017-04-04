@@ -135,11 +135,23 @@
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Bottom"
               Margin="0,5,0,5">
-            <TextBox Text="{Binding AddItemText, UpdateSourceTrigger=PropertyChanged}"
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" 
+                    Text="{Binding AddItemText, UpdateSourceTrigger=PropertyChanged}"
                      HorizontalAlignment="Stretch"
                      TextWrapping="NoWrap"/>
-            <Button Command="{Binding AddItemCommand}"
+            <Button Grid.Column="1" 
+                    Command="{Binding AddItemCommand}"
                     Content="Add Item"
+                    HorizontalAlignment="Right"/>
+            <Button Grid.Column="2" 
+                    Command="{Binding ImportItemsCommand}"
+                    Content="Import"
+                    Margin="5,0,0,0"
                     HorizontalAlignment="Right"/>
         </Grid>
         <Button Grid.Row="2"

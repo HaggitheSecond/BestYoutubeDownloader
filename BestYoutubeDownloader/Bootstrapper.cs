@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using BestYoutubeDownloader.Services;
+using BestYoutubeDownloader.Services.Import;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.Storage;
 using BestYoutubeDownloader.Services.Test;
@@ -44,7 +45,8 @@ namespace BestYoutubeDownloader
                 .Singleton<ITestService, TestService>()
                 .Singleton<IYoutubeDownloaderService, YoutubeDownloaderService>()
                 .Singleton<IStorageService, StorageService>()
-                .Singleton<ISettingsService, SettingsService>();
+                .Singleton<ISettingsService, SettingsService>()
+                .Singleton<IImportService, ImportService>();
 
             this._container
                 .PerRequest<MainViewModel>()
