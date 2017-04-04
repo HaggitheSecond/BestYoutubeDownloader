@@ -93,7 +93,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 if (result)
                 {
                     currentItem.FileName = this._latestDestination;
-                    currentItem.Status = DownloadItemStatus.SuccesfullDownload;
+                    currentItem.Status = DownloadItemStatus.SuccessfulDownload;
                 }
                 else
                 {

@@ -21,23 +21,23 @@
                             Target="pack://application:,,,/Resources/Icons/Download-48.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Canceled}"
                             Target="pack://application:,,,/Resources/Icons/Delete-26.png"/>
-            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.SuccesfullDownload}"
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.SuccessfulDownload}"
                             Target="pack://application:,,,/Resources/Icons/Checkmark-64.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Error}"
                             Target="pack://application:,,,/Resources/Icons/Delete-26.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.None}"
                             Target="{x:Null}"/>
         </dxmvvm:ObjectToObjectConverter>
-        <dxmvvm:ObjectToObjectConverter x:Key="StatusToToolTipConverter"
+        <dxmvvm:ObjectToObjectConverter x:Key="StatusToTextConverter"
                                         DefaultTarget="{x:Null}">
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Downloading}"
-                            Target="Downloading..."/>
+                            Target="Downloading"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Canceled}"
                             Target="Canceled"/>
-            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.SuccesfullDownload}"
-                            Target="Succesfully downloaded"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.SuccessfulDownload}"
+                            Target="Success"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Error}"
-                            Target="Error while downloading"/>
+                            Target="Error"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.None}"
                             Target="{x:Null}"/>
         </dxmvvm:ObjectToObjectConverter>
@@ -104,17 +104,24 @@
                             </Grid.ContextMenu>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="25"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0"
                                    Text="{Binding Url}"
                                    VerticalAlignment="Center"/>
-                            <Image Grid.Column="1"
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Status, Converter={StaticResource StatusToTextConverter}}"
+                                       FontWeight="Light"
+                                       FontSize="10"
+                                       Foreground="DarkGray"
+                                       VerticalAlignment="Center"/>
+                            <Image Grid.Column="2"
                                    Source="{Binding Status, Converter={StaticResource StatusToImageConverter}}"
-                                   HorizontalAlignment="Right"
-                                   Width="16"
-                                   Height="16"
-                                   ToolTip="{Binding Status, Converter={StaticResource StatusToToolTipConverter}}"/>
+                                   VerticalAlignment="Center"
+                                   Width="20"
+                                   Height="20"
+                                   ToolTip="{Binding Status, Converter={StaticResource StatusToTextConverter}}"/>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

@@ -6,6 +6,6 @@
         Downloading,
         Canceled,
         Error,
-        SuccesfullDownload
+        SuccessfulDownload
     }
 }
