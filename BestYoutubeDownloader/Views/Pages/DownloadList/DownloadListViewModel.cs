@@ -14,37 +14,47 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private IYoutubeDownloaderService _youtubeDownloaderService;
 
         public string Name => "Download";
-        
+
         private Action<string> _output;
 
         private BindableCollection<DownloadItem> _items;
-        private string _selectedItem;
+        private DownloadItem _selectedItem;
 
         private string _addItemText;
-        private string _latestOutput;
+
+        private string _latestDestination;
+
+        private int _itemsToDownload;
+        private int _downloadedItems;
 
         public BindableCollection<DownloadItem> Items
         {
             get { return this._items; }
             set { this.SetProperty(ref this._items, value); }
         }
-        
-        public string SelectedItem
+
+        public DownloadItem SelectedItem
         {
             get { return this._selectedItem; }
             set { this.SetProperty(ref this._selectedItem, value); }
         }
-        
+
         public string AddItemText
         {
             get { return this._addItemText; }
             set { this.SetProperty(ref this._addItemText, value); }
         }
 
-        public string LatestOutput
+        public int ItemsToDownload
         {
-            get { return this._latestOutput; }
-            set { this.SetProperty(ref this._latestOutput, value); }
+            get { return this._itemsToDownload; }
+            set { this.SetProperty(ref this._itemsToDownload, value); }
+        }
+
+        public int DownloadedItems
+        {
+            get { return this._downloadedItems; }
+            set { this.SetProperty(ref this._downloadedItems, value); }
         }
 
         public BestAsyncCommand AddItemCommand { get; }
@@ -58,7 +68,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.DownloadAllItemsCommand = new BestAsyncCommand(this.DownloadAllItems, this.CanDownloadAllItems);
             this.Items = new BindableCollection<DownloadItem>();
 
-            this._output = this.Output;
+            this._output = this.DownloadOutput;
         }
 
         private bool CanDownloadAllItems()
@@ -68,11 +78,33 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private async Task DownloadAllItems()
         {
+            this.ItemsToDownload = this.Items.Count(f => f.Status == DownloadItemStatus.None);
+            this.DownloadedItems = 0;
+
             foreach (var currentItem in this.Items)
             {
+                if (currentItem.Status != DownloadItemStatus.None)
+                    continue;
+
+                currentItem.Status = DownloadItemStatus.Downloading;
+
                 var result = await this._youtubeDownloaderService.DownloadVideo(this._output, currentItem.Url);
-                currentItem.WasSuccesful = result;
-            }   
+
+                if (result)
+                {
+                    currentItem.FileName = this._latestDestination;
+                    currentItem.Status = DownloadItemStatus.SuccesfullDownload;
+                }
+                else
+                {
+                    currentItem.Status = DownloadItemStatus.Error;
+                }
+
+                this.DownloadedItems++;
+            }
+
+            this.ItemsToDownload = 0;
+            this.DownloadedItems = 0;
         }
 
         private bool CanAddItem()
@@ -88,7 +120,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public async Task AddItem(string url)
         {
-            if(url.IsViableYoutubeUrl() == false)
+            if (url.IsViableYoutubeUrl() == false)
                 return;
 
             if (this.Items.Any(f => f.Url == url))
@@ -97,9 +129,36 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.Items.Add(new DownloadItem(url));
         }
 
-        private void Output(string obj)
+        public void RemoveSelectedItem()
         {
-            this.LatestOutput = obj;
+            var itemIndex = this.Items.IndexOf(this.SelectedItem);
+
+            this.Items.Remove(this.SelectedItem);
+
+            this.SelectedItem = itemIndex >= this.Items.Count 
+                ? this.Items.LastOrDefault() 
+                : this.Items.ElementAt(itemIndex);
+        }
+
+        private void DownloadOutput(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return;
+
+            if (input.Contains("Destination"))
+            {
+                var inputParts = input.Split(' ').ToList();
+
+                if (inputParts.Count < 3)
+                    return;
+
+                // remove "[download]"/"[ffmepg]" and "Destination"
+                inputParts.RemoveAt(0);
+                inputParts.RemoveAt(0);
+
+                // readding whitespaces
+                this._latestDestination = string.Join(" ", inputParts);
+            }
         }
     }
 }

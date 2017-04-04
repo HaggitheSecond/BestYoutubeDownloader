@@ -38,7 +38,31 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private void DownloadListView_OnPreviewDrop(object sender, DragEventArgs e)
         {
-            
+
+        }
+
+        private async void DownloadList_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.V && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+            {
+                await this.ViewModel.AddItem(Clipboard.GetText());
+                e.Handled = true;
+
+                return;
+            }
+
+            if (e.Key == Key.Delete)
+            {
+                this.ViewModel.RemoveSelectedItem();
+
+                return;
+            }
+        }
+
+        private void DownloadList_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            // forces keyboard focus on the listbox which is needed to enable keydownevents
+            Keyboard.Focus(this.DownloadList);
         }
     }
 }

@@ -81,6 +81,7 @@
     <Compile Include="Common\BestCommand.cs" />
     <Compile Include="Converter\ListBoxConverter\IsISeperatorToVisibiltyConverter.cs" />
     <Compile Include="Converter\IsNullOrEmptyToVisibilityConverter.cs" />
+    <Compile Include="Converter\ZeroToVisibilityConverter.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\CommandPromptHelper.cs" />
     <Compile Include="Extensions\PropertyChangedExtensions.cs" />
@@ -98,6 +99,7 @@
     </Compile>
     <Compile Include="Views\MainViewModel.cs" />
     <Compile Include="Views\Pages\DownloadList\DownloadItem.cs" />
+    <Compile Include="Views\Pages\DownloadList\DownloadItemStatus.cs" />
     <Compile Include="Views\Pages\DownloadList\DownloadListView.xaml.cs">
       <DependentUpon>DownloadListView.xaml</DependentUpon>
     </Compile>
@@ -181,6 +183,14 @@
   <ItemGroup>
     <Resource Include="Resources\Icons\Cancel-50.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Icons\Delete-26.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\Open Folder-64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\Link-64.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
