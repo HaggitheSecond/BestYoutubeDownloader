@@ -46,7 +46,28 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 // --yes-playlist --extract-audio --audio-format mp3 
             }
-            catch (Exception e)
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        public async Task<bool> ExecuteCommand(Action<string> output, string command)
+        {
+            output = this.WrapOutput(output);
+
+            try
+            {
+                this._rawConsoleAction?.Invoke(command);
+
+                await CommandPromptHelper.ExecuteCommand(this._exeDirectoryLocation,
+                    command,
+                    output);
+            }
+            catch (Exception)
             {
                 return false;
             }

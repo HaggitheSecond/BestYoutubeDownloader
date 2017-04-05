@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
+using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.Import;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.YoutubeDL;
@@ -176,19 +177,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             if (string.IsNullOrEmpty(input))
                 return;
 
-            if (input.Contains("Destination"))
+            if (YoutubeDlOutputHelper.TryGetFilePath(input, out string filePath))
             {
-                var inputParts = input.Split(' ').ToList();
-
-                if (inputParts.Count < 3)
-                    return;
-
-                // remove "[download]"/"[ffmepg]" and "Destination"
-                inputParts.RemoveAt(0);
-                inputParts.RemoveAt(0);
-
-                // readding whitespaces
-                this._latestDestination = string.Join(" ", inputParts);
+                this._latestDestination = filePath;
             }
         }
     }

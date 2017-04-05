@@ -85,6 +85,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\CommandPromptHelper.cs" />
     <Compile Include="Extensions\PropertyChangedExtensions.cs" />
+    <Compile Include="Helper\YoutubeDLOutputHelper.cs" />
     <Compile Include="Services\Import\IImportService.cs" />
     <Compile Include="Services\Import\ImportService.cs" />
     <Compile Include="Services\Settings\ISettingsService.cs" />

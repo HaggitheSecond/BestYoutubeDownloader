@@ -6,22 +6,91 @@
              xmlns:local="clr-namespace:BestYoutubeDownloader.Views.Pages.RawConsole"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <TextBox Grid.Row="0"
-                 x:Name="ConsoleTextBox"
-                 Text="{Binding Output}"
-                 IsReadOnly="True" 
-                 VerticalScrollBarVisibility="Visible"
-                 HorizontalScrollBarVisibility="Auto"
-                 TextChanged="TextBoxBase_OnTextChanged"/>
-        <Button Grid.Row="1" 
-                Margin="0,5,0,0"
-                Command="{Binding ClearConsoleCommand}"
-                Content="Clear"
-                HorizontalAlignment="Left"/>
-    </Grid>
+    <TabControl Background="Transparent"
+                TabStripPlacement="Right">
+        <TabItem Header="Output"
+                 >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0"
+                         x:Name="ConsoleTextBox"
+                         Text="{Binding Output}"
+                         IsReadOnly="True" 
+                         VerticalScrollBarVisibility="Visible"
+                         HorizontalScrollBarVisibility="Auto"
+                         TextChanged="TextBoxBase_OnTextChanged"/>
+                <Button Grid.Row="1" 
+                        Margin="0,5,0,0"
+                        Command="{Binding ClearConsoleCommand}"
+                        Content="Clear"
+                        HorizontalAlignment="Left"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Input">
+            <StackPanel>
+                <TextBlock Text="Command"
+                           FontWeight="Bold"/>
+                <Grid HorizontalAlignment="Stretch"
+                      Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" 
+                             Text="{Binding RawInput, UpdateSourceTrigger=PropertyChanged}"
+                             HorizontalAlignment="Stretch"
+                             TextWrapping="Wrap"
+                             Height="50"/>
+                    <Button Grid.Column="1" 
+                            Command="{Binding ExecuteRawInputCommand}"
+                            Content="Execute"
+                            HorizontalAlignment="Right"/>
+                </Grid>
+                <Separator/>
+                <TextBlock Text="url"/>
+                <Grid HorizontalAlignment="Stretch"
+                      Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" 
+                             Text="{Binding RawInputUrl, UpdateSourceTrigger=PropertyChanged}"
+                             HorizontalAlignment="Stretch"
+                             TextWrapping="NoWrap"
+                             VerticalScrollBarVisibility="Auto"/>
+                    <Button Grid.Column="1" 
+                            Command="{Binding AddRawInputUrlCommand}"
+                            Content="Add"
+                            VerticalContentAlignment="Top"
+                            HorizontalAlignment="Right"/>
+                </Grid>
+                <TextBlock Text="outputlocation"/>
+                <Grid  HorizontalAlignment="Stretch"
+                      Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" 
+                             Text="{Binding RawInputOutputLocation, UpdateSourceTrigger=PropertyChanged}"
+                             HorizontalAlignment="Stretch"
+                             TextWrapping="NoWrap"/>
+                    <Button Grid.Column="1" 
+                            Command="{Binding AddRawInputOutputLocationCommand}"
+                            Content="Add"
+                            HorizontalAlignment="Right"/>
+                </Grid>
+                <Button Command="{Binding AddYoutubeDlCommand}"
+                            Content="youtube-dl"
+                            Padding="2"/>
+                <Button Command="{Binding AddExtractAudioCommand}"
+                            Content="extract audio"
+                            Padding="2"/>
+            </StackPanel>
+        </TabItem>
+    </TabControl>
 </UserControl>
