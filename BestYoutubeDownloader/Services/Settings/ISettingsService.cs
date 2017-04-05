@@ -1,4 +1,6 @@
-﻿namespace BestYoutubeDownloader.Services.Settings
+﻿using BestYoutubeDownloader.Common;
+
+namespace BestYoutubeDownloader.Services.Settings
 {
     public interface ISettingsService
     {

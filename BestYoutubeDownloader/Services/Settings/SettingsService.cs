@@ -1,4 +1,5 @@
-﻿using BestYoutubeDownloader.Services.Storage;
+﻿using BestYoutubeDownloader.Common;
+using BestYoutubeDownloader.Services.Storage;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using Caliburn.Micro;
 

@@ -1,6 +1,4 @@
-﻿using BestYoutubeDownloader.Common;
-
-namespace BestYoutubeDownloader.Services.Settings
+﻿namespace BestYoutubeDownloader.Common
 {
     public class DownloadSettings
     {

@@ -4,10 +4,12 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Media.Effects;
+using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.Settings;
 using Caliburn.Micro;
+using Newtonsoft.Json;
 
 namespace BestYoutubeDownloader.Services.YoutubeDL
 {
@@ -40,8 +42,6 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
                 await CommandPromptHelper.ExecuteCommand(this._exeDirectoryLocation,
                     command,
                     output);
-
-                // --yes-playlist --extract-audio --audio-format mp3 
             }
             catch (Exception)
             {
@@ -102,25 +102,26 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return true;
         }
 
-        public async Task GetMetaData(string url)
+        public async Task<MetaData> GetMetaData(string url)
         {
-            //if (url.IsViableUrl() == false)
-            //    return;
+            if (url.IsViableUrl() == false)
+                return null;
 
-            //try
-            //{
-            //    await CommandPromptHelper.ExecuteCommand(this._exeDirectoryLocation,
-            //        "youtube-dl -j"
-            //        output);
-            //}
-            //catch (Exception e)
-            //{
-            //    return;
-            //}
+            try
+            {
+                var result = await CommandPromptHelper.ExecuteCommandWithSingleOutput(this._exeDirectoryLocation,
+                    "youtube-dl -j " + url);
 
-            return;
+                var metadData = JsonConvert.DeserializeObject(result, typeof(MetaData));
+
+                return (MetaData)metadData;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
-
+        
         private bool ValidateExeLocation()
         {
             return File.Exists(this._exeLocation);

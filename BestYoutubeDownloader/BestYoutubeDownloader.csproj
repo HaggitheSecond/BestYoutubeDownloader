@@ -49,6 +49,9 @@
     <Reference Include="DevExpress.Mvvm.UI, Version=16.2.0.0, Culture=neutral, PublicKeyToken=382ad28f6ae31f30, processorArchitecture=MSIL">
       <HintPath>..\packages\DevExpressMvvm.16.2.3.0\lib\net40-client\DevExpress.Mvvm.UI.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
@@ -79,8 +82,10 @@
     </Compile>
     <Compile Include="Common\BestAsyncCommand.cs" />
     <Compile Include="Common\BestCommand.cs" />
+    <Compile Include="Common\MetaData.cs" />
     <Compile Include="Converter\ListBoxConverter\IsISeperatorToVisibiltyConverter.cs" />
     <Compile Include="Converter\IsNullOrEmptyToVisibilityConverter.cs" />
+    <Compile Include="Converter\TimeSpanToFormatedConverter.cs" />
     <Compile Include="Converter\ZeroToVisibilityConverter.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\CommandPromptHelper.cs" />
@@ -90,7 +95,7 @@
     <Compile Include="Services\Import\ImportService.cs" />
     <Compile Include="Common\FileFormats.cs" />
     <Compile Include="Services\Settings\ISettingsService.cs" />
-    <Compile Include="Services\Settings\DownloadSettings.cs" />
+    <Compile Include="Common\DownloadSettings.cs" />
     <Compile Include="Services\Settings\SettingsService.cs" />
     <Compile Include="Services\Storage\IStorageService.cs" />
     <Compile Include="Services\Storage\StorageService.cs" />

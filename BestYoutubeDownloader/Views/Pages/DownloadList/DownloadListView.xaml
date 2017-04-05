@@ -46,6 +46,7 @@
                             Target="{x:Null}"/>
         </dxmvvm:ObjectToObjectConverter>
         <converter:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
+        <converter:TimeSpanToFormatedConverter x:Key="TimeSpanToFormatedConverter"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -111,9 +112,17 @@
                                 <ColumnDefinition Width="60"/>
                                 <ColumnDefinition Width="25"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0"
-                                   Text="{Binding Url}"
-                                   VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock VerticalAlignment="Center">
+                                    <Run Text="{Binding Title}"
+                                         FontWeight="Bold"/>
+                                    <Run Text="{Binding Duration, Converter={StaticResource TimeSpanToFormatedConverter}}"/>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Url}"
+                                           VerticalAlignment="Center"
+                                           FontStyle="Italic"
+                                           Foreground="Gray"/>
+                            </StackPanel>
                             <TextBlock Grid.Column="1"
                                        Text="{Binding Status, Converter={StaticResource StatusToTextConverter}}"
                                        FontWeight="Light"

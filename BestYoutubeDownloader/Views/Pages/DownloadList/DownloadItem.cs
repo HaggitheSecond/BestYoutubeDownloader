@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using Caliburn.Micro;
@@ -10,6 +11,11 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private string _url;
         private DownloadItemStatus _status;
         private string _fileName;
+
+        private string _title;
+        private TimeSpan? _duration;
+
+        private MetaData _metaData;
 
         public string Url
         {
@@ -29,6 +35,18 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             set { this.SetProperty(ref this._fileName, value); }
         }
 
+        public string Title
+        {
+            get { return this._title; }
+            set { this.SetProperty(ref this._title, value); }
+        }
+
+        public TimeSpan? Duration
+        {
+            get { return this._duration; }
+            set { this.SetProperty(ref this._duration, value); }
+        }
+
         public BestCommand OpenUrlCommand { get; }
 
         public BestCommand OpenFileCommand { get; }
@@ -42,6 +60,18 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.Url = url;
 
             this.Status = DownloadItemStatus.None;
+        }
+
+        public void AddMetaData(MetaData metaData)
+        {
+            this._metaData = metaData;
+
+            this.Title = metaData.Title;
+
+            if (double.TryParse(metaData.Duration, out double duration) == false)
+                return;
+
+            this.Duration = TimeSpan.FromSeconds(duration);
         }
 
         private bool CanOpenFile()

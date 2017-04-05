@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Services.Settings;
 
 namespace BestYoutubeDownloader.Services.YoutubeDL
@@ -10,7 +11,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings);
 
-        Task GetMetaData(string url);
+        Task<MetaData> GetMetaData(string url);
         
         Task<string> Validate();
 
