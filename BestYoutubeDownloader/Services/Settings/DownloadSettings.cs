@@ -1,7 +1,21 @@
-﻿namespace BestYoutubeDownloader.Services.Settings
+﻿using BestYoutubeDownloader.Common;
+
+namespace BestYoutubeDownloader.Services.Settings
 {
     public class DownloadSettings
     {
         public string OutputLocation { get; set; }
+
+        // audio options
+
+        public bool ExtractAudio { get; set; }
+
+        public FileFormats AudioFormat { get; set; }
+
+        // debug infos
+
+        public bool PrintDebugInfo { get; set; }
+
+        public bool PrintTraffic { get; set; }
     }
 }

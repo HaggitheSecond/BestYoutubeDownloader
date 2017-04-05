@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -14,20 +15,16 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
     {
         private readonly string _exeLocation;
         private readonly string _exeDirectoryLocation;
-
-        private DownloadSettings _settings;
-
+        
         private Action<string> _rawConsoleAction;
 
         public YoutubeDownloaderService()
         {
             this._exeLocation = Directory.GetCurrentDirectory() + @"\youtube-dl.exe";
             this._exeDirectoryLocation = Directory.GetCurrentDirectory();
-
-            this._settings = IoC.Get<ISettingsService>().GetDownloadSettings();
         }
 
-        public async Task<bool> DownloadVideo(Action<string> output, string url)
+        public async Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings)
         {
             if (url.IsViableUrl() == false)
                 return false;
@@ -36,7 +33,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             try
             {
-                var command = @"youtube-dl -o " + this._settings.OutputLocation + @"\%(title)s.%(ext)s " + url;
+                var command = this.BuildCommand(url, settings);
 
                 this._rawConsoleAction?.Invoke(command);
 
@@ -54,6 +51,36 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return true;
         }
 
+        private string BuildCommand(string url, DownloadSettings settings)
+        {
+            var commandList = new List<string> {"youtube-dl"};
+
+            commandList.AddRange(this.BuildDownloadArguments(settings));
+
+            commandList.Add("-o " + settings.OutputLocation + @"\%(title)s.%(ext)s");
+            commandList.Add(url);
+
+            return string.Join(" ", commandList);
+        }
+
+        private IList<string> BuildDownloadArguments(DownloadSettings settings)
+        {
+            var arguments = new List<string>();
+
+            if (settings.ExtractAudio)
+            {
+                arguments.Add("--extract-audio");
+                arguments.Add("--audio-format " + settings.AudioFormat.ToString().ToLower());
+            }
+
+            if(settings.PrintDebugInfo)
+                arguments.Add("--verbose");
+
+            if(settings.PrintTraffic)
+                arguments.Add("--print-traffic");
+
+            return arguments;
+        }
 
         public async Task<bool> ExecuteCommand(Action<string> output, string command)
         {
@@ -75,24 +102,23 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return true;
         }
 
-        public async Task<string> GetMetaData(string url)
+        public async Task GetMetaData(string url)
         {
             //if (url.IsViableUrl() == false)
-            //    return false;
+            //    return;
+
             //try
             //{
-            //    await CommandPromptHelper.ExecuteCommand(@"C:\Users\Admin\Desktop\youtubedl",
-            //        $@"youtube-dl -o C:\Users\Admin\Desktop\youtubedl\Downloads\%(title)s.%(ext)s  --yes-playlist --extract-audio --audio-format mp3 {url}",
+            //    await CommandPromptHelper.ExecuteCommand(this._exeDirectoryLocation,
+            //        "youtube-dl -j"
             //        output);
             //}
             //catch (Exception e)
             //{
-            //    return false;
+            //    return;
             //}
 
-            //return true;
-
-            return null;
+            return;
         }
 
         private bool ValidateExeLocation()
@@ -121,11 +147,6 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
                 return "ffmpeg not installed";
 
             return string.Empty;
-        }
-
-        public void ReloadSettings()
-        {
-            this._settings = IoC.Get<ISettingsService>().GetDownloadSettings();
         }
 
         private Action<string> WrapOutput(Action<string> output)

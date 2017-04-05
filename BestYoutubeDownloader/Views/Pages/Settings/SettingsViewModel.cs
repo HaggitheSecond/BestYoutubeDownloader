@@ -1,4 +1,6 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Linq;
+using System.Windows.Forms;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.Settings;
@@ -13,16 +15,37 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
     {
         public string Name => "Settings";
 
-        private ISettingsService _settingsService;
-
-        private DownloadSettings _settings;
-
+        private readonly ISettingsService _settingsService;
+        
         private string _outputDirectoryPath;
+
+        private bool _extractAudio;
+
+        private BindableCollection<string> _availableAudioFormats;
+        private string _selectedAudioFormat;
 
         public string OutputDirectoryPath
         {
             get { return this._outputDirectoryPath; }
             set { this.SetProperty(ref this._outputDirectoryPath, value); }
+        }
+
+        public bool ExtractAudio
+        {
+            get { return this._extractAudio; }
+            set { this.SetProperty(ref this._extractAudio, value); }
+        }
+
+        public BindableCollection<string> AvailableAudioFormats
+        {
+            get { return this._availableAudioFormats; }
+            set { this.SetProperty(ref this._availableAudioFormats, value); }
+        }
+
+        public string SelectedAudioFormat
+        {
+            get { return this._selectedAudioFormat; }
+            set { this.SetProperty(ref this._selectedAudioFormat, value); }
         }
 
         public BestCommand ChangeDirectoryCommand { get; }
@@ -36,9 +59,19 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             this.ChangeDirectoryCommand = new BestCommand(this.ChangeDirectory);
             this.SaveCommand = new BestCommand(this.Save);
 
-            this._settings = this._settingsService.GetDownloadSettings();
+            this.AvailableAudioFormats = new BindableCollection<string>(Enum.GetNames(typeof(FileFormats)));
 
-            this._outputDirectoryPath = this._settings.OutputLocation;
+            this.LoadSettings();
+        }
+
+        private void LoadSettings()
+        {
+            var settings = this._settingsService.GetDownloadSettings();
+
+            this.OutputDirectoryPath = settings.OutputLocation;
+            this.ExtractAudio = settings.ExtractAudio;
+
+            this.SelectedAudioFormat = this.AvailableAudioFormats.FirstOrDefault(f => f == settings.AudioFormat.ToString());
         }
 
         private void ChangeDirectory()
@@ -53,9 +86,14 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
         private void Save()
         {
+            if(Enum.TryParse(this.SelectedAudioFormat, out FileFormats format) == false)
+                return;
+
             var settings = new DownloadSettings
             {
-                OutputLocation = this.OutputDirectoryPath
+                OutputLocation = this.OutputDirectoryPath,
+                ExtractAudio = this.ExtractAudio,
+                AudioFormat = format
             };
 
             this._settingsService.UpdateDownloadSettings(settings);

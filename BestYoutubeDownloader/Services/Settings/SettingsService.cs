@@ -40,8 +40,6 @@ namespace BestYoutubeDownloader.Services.Settings
         {
             this._storageService.Save(settings);
             this._settings = settings;
-
-            IoC.Get<IYoutubeDownloaderService>().ReloadSettings();
         }
     }
 }

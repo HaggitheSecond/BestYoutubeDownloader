@@ -100,7 +100,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             {
                 currentItem.Status = DownloadItemStatus.Downloading;
 
-                var result = await this._youtubeDownloaderService.DownloadVideo(this._output, currentItem.Url);
+                var result = await this._youtubeDownloaderService.DownloadVideo(this._output, currentItem.Url, this._settingsService.GetDownloadSettings());
 
                 if (result)
                 {
