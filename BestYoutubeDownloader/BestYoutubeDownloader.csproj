@@ -192,5 +192,8 @@
   <ItemGroup>
     <Resource Include="Resources\Icons\Link-64.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="youtube-dl.exe" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
