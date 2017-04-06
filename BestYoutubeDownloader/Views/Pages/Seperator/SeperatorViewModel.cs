@@ -1,4 +1,5 @@
-﻿using BestYoutubeDownloader.Extensions;
+﻿using System.Windows.Media;
+using BestYoutubeDownloader.Extensions;
 using Caliburn.Micro;
 
 namespace BestYoutubeDownloader.Views.Pages.Seperator
@@ -6,6 +7,7 @@ namespace BestYoutubeDownloader.Views.Pages.Seperator
     public class SeperatorViewModel : Screen, ISeperator
     {
         public string Name => "Does not matter here";
+        public ImageSource Icon => null;
 
         private bool _isEnabled;
 

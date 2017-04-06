@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
@@ -22,6 +24,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private readonly ISettingsService _settingsService;
 
         public string Name => "Download";
+        public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Download-48.png"));
 
         private Action<string> _output;
 

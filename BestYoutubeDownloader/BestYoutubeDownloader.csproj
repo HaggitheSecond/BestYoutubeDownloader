@@ -213,6 +213,8 @@
     <Resource Include="Resources\Icons\Settings-64.png" />
     <Resource Include="Resources\Icons\Support-64.png" />
     <Resource Include="Resources\Icons\Error-64.png" />
+    <Resource Include="Resources\Icons\Console-64.png" />
+    <Resource Include="Resources\Icons\Info-64.png" />
     <Content Include="youtube-dl.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

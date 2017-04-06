@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.Settings;
@@ -16,6 +18,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
     public class SettingsViewModel : Screen, IPage
     {
         public string Name => "Settings";
+        public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Settings-64.png"));
 
         private readonly ISettingsService _settingsService;
         

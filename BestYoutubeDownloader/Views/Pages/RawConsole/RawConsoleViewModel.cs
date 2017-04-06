@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.Settings;
@@ -11,6 +13,7 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
     public class RawConsoleViewModel : Screen, IPage
     {
         public string Name => "Console";
+        public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Console-64.png"));
 
         private readonly IYoutubeDownloaderService _youtubeDlService;
         private readonly ISettingsService _settingsService;

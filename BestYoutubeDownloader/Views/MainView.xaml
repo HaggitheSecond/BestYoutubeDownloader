@@ -56,9 +56,23 @@
                 <DataTemplate>
                     <Grid>
                         <Grid Visibility="{Binding Converter={StaticResource InverseIsISeperatorToVisibiltyConverter}}">
-                            <TextBlock Text="{Binding Name}"
-                                       FontSize="16"
-                                       Margin="0,5,0,5"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Image Grid.Row="0"
+                                       Source="{Binding Icon}"
+                                       Width="20"
+                                       Height="20"
+                                       Margin="5,0,10,0"
+                                       VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           FontSize="16"
+                                           Margin="0,5,0,5"/>
+
+                            </Grid>
                         </Grid>
                         <Grid Visibility="{Binding Converter={StaticResource IsISeperatorToVisibiltyConverter}}"
                               IsEnabled="False">

@@ -66,7 +66,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <CheckBox Grid.Column="0"
-                          Content="Extract Audio"
+                          Content="Show Console"
                           IsChecked="{Binding ShowConsole}"/>
             </Grid>
         </StackPanel>
