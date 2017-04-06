@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using BestYoutubeDownloader.Services;
 using BestYoutubeDownloader.Services.Import;
@@ -68,12 +69,13 @@ namespace BestYoutubeDownloader
 
         private IDictionary<string, object> GetInitialWindowSettings()
         {
-           return new Dictionary<string, object>
+            return new Dictionary<string, object>
             {
                 { nameof(Window.Width), 850},
                 { nameof(Window.Height), 500},
                 { nameof(WindowStartupLocation), WindowStartupLocation.CenterScreen },
-                { nameof(Window.SizeToContent), SizeToContent.Manual }
+                { nameof(Window.SizeToContent), SizeToContent.Manual },
+                { nameof(Window.Icon), new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Download-48.png")) }
             };
         }
 

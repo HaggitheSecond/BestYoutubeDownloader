@@ -8,7 +8,7 @@
              xmlns:converter="clr-namespace:BestYoutubeDownloader.Converter"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             Background="LightGray">
+             Background="White">
     <UserControl.Resources>
         <converter:IsISeperatorToVisibiltyConverter x:Key="IsISeperatorToVisibiltyConverter"/>
         <converter:IsISeperatorToVisibiltyConverter x:Key="InverseIsISeperatorToVisibiltyConverter"
@@ -23,7 +23,8 @@
                  SelectedItem="{Binding ActiveItem}"
                  MaxWidth="200"
                  MinWidth="20"
-                 Background="DarkGray">
+                 Background="White"
+                 BorderThickness="0">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Style.Triggers>

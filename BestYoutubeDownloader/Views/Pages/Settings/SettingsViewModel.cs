@@ -21,7 +21,9 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Settings-64.png"));
 
         private readonly ISettingsService _settingsService;
-        
+
+        private bool _hasChanges;
+
         private string _outputDirectoryPath;
 
         private bool _extractAudio;
@@ -77,11 +79,22 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             this._settingsService = IoC.Get<ISettingsService>();
 
             this.ChangeDirectoryCommand = new BestCommand(this.ChangeDirectory);
-            this.SaveCommand = new BestAsyncCommand(this.Save);
+            this.SaveCommand = new BestAsyncCommand(this.Save, this.CanSave);
 
             this.AvailableAudioFormats = new BindableCollection<string>(Enum.GetNames(typeof(FileFormats)));
 
             this.LoadSettings();
+
+            this.PropertyChanged += (sender, args) =>
+            {
+                if(args.PropertyName == nameof(this._hasChanges)
+                || args.PropertyName == nameof(this.Parent)
+                || args.PropertyName == nameof(this.IsInitialized)
+                || args.PropertyName == nameof(this.IsActive))
+                    return;
+
+                this._hasChanges = true;
+            };
         }
 
         private void LoadSettings()
@@ -105,10 +118,15 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
             this.OutputDirectoryPath = dialog.SelectedPath;
         }
+        
+        private bool CanSave()
+        {
+            return this._hasChanges;
+        }
 
         private async Task Save()
         {
-            if(Enum.TryParse(this.SelectedAudioFormat, out FileFormats format) == false)
+            if (Enum.TryParse(this.SelectedAudioFormat, out FileFormats format) == false)
                 return;
 
             var settings = new DownloadSettings
@@ -121,9 +139,8 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             };
 
             this._settingsService.UpdateDownloadSettings(settings);
-
-            // waiting to make the button more responive
-            await Task.Delay(1000);
+            
+            this._hasChanges = false;
         }
     }
 }
