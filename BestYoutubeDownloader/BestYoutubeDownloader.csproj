@@ -52,6 +52,9 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="policy.2.0.taglib-sharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
+      <HintPath>..\packages\taglib.2.1.0.0\lib\policy.2.0.taglib-sharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
@@ -66,6 +69,9 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="taglib-sharp, Version=2.1.0.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
+      <HintPath>..\packages\taglib.2.1.0.0\lib\taglib-sharp.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -83,6 +89,7 @@
     <Compile Include="Common\BestAsyncCommand.cs" />
     <Compile Include="Common\BestCommand.cs" />
     <Compile Include="Common\MetaData.cs" />
+    <Compile Include="Common\Mp3MetaData.cs" />
     <Compile Include="Converter\ListBoxConverter\IsISeperatorToVisibiltyConverter.cs" />
     <Compile Include="Converter\IsNullOrEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\NullTextConverter.cs" />
@@ -92,6 +99,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\CommandPromptHelper.cs" />
     <Compile Include="Extensions\PropertyChangedExtensions.cs" />
+    <Compile Include="Helper\TagLibHelper.cs" />
     <Compile Include="Helper\YoutubeDLOutputHelper.cs" />
     <Compile Include="Services\Import\IImportService.cs" />
     <Compile Include="Services\Import\ImportService.cs" />
@@ -202,7 +210,12 @@
     <Resource Include="Resources\Icons\Link-64.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="youtube-dl.exe" />
+    <Resource Include="Resources\Icons\Settings-64.png" />
+    <Resource Include="Resources\Icons\Support-64.png" />
+    <Resource Include="Resources\Icons\Error-64.png" />
+    <Content Include="youtube-dl.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -98,6 +99,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             foreach (var currentItem in this.Items)
             {
+                if (currentItem.Status != DownloadItemStatus.Waiting)
+                    continue;
+
                 currentItem.Status = DownloadItemStatus.Downloading;
 
                 var result = await this._youtubeDownloaderService.DownloadVideo(this._output, currentItem.Url, this._settingsService.GetDownloadSettings());
@@ -105,6 +109,23 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 if (result)
                 {
                     currentItem.FileName = this._latestDestination;
+
+                    if (this._settingsService.GetDownloadSettings().TagAudio)
+                    {
+                        currentItem.Status = DownloadItemStatus.Working;
+
+                        var mp3Data = TagLibHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(currentItem.FileName));
+
+                        if (mp3Data.NeedCheck)
+                        {
+                            currentItem.Status = DownloadItemStatus.NeedsCheck;
+                            currentItem.Mp3MetaData = mp3Data;
+                            continue;
+                        }
+
+                        TagLibHelper.TagMp3(currentItem.FileName, mp3Data);
+                    }
+
                     currentItem.Status = DownloadItemStatus.SuccessfulDownload;
                 }
                 else

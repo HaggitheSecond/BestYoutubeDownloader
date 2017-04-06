@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
@@ -20,9 +22,12 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         private string _outputDirectoryPath;
 
         private bool _extractAudio;
+        private bool _tagAudio;
 
         private BindableCollection<string> _availableAudioFormats;
         private string _selectedAudioFormat;
+
+        private bool _showConsole;
 
         public string OutputDirectoryPath
         {
@@ -48,16 +53,28 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             set { this.SetProperty(ref this._selectedAudioFormat, value); }
         }
 
+        public bool TagAudio
+        {
+            get { return this._tagAudio; }
+            set { this.SetProperty(ref this._tagAudio, value); }
+        }
+
+        public bool ShowConsole
+        {
+            get { return this._showConsole; }
+            set { this.SetProperty(ref this._showConsole, value); }
+        }
+
         public BestCommand ChangeDirectoryCommand { get; }
 
-        public BestCommand SaveCommand { get; }
+        public BestAsyncCommand SaveCommand { get; }
 
         public SettingsViewModel()
         {
             this._settingsService = IoC.Get<ISettingsService>();
 
             this.ChangeDirectoryCommand = new BestCommand(this.ChangeDirectory);
-            this.SaveCommand = new BestCommand(this.Save);
+            this.SaveCommand = new BestAsyncCommand(this.Save);
 
             this.AvailableAudioFormats = new BindableCollection<string>(Enum.GetNames(typeof(FileFormats)));
 
@@ -70,6 +87,8 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
             this.OutputDirectoryPath = settings.OutputLocation;
             this.ExtractAudio = settings.ExtractAudio;
+            this.TagAudio = settings.TagAudio;
+            this.ShowConsole = settings.ShowConsole;
 
             this.SelectedAudioFormat = this.AvailableAudioFormats.FirstOrDefault(f => f == settings.AudioFormat.ToString());
         }
@@ -84,7 +103,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             this.OutputDirectoryPath = dialog.SelectedPath;
         }
 
-        private void Save()
+        private async Task Save()
         {
             if(Enum.TryParse(this.SelectedAudioFormat, out FileFormats format) == false)
                 return;
@@ -93,10 +112,15 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             {
                 OutputLocation = this.OutputDirectoryPath,
                 ExtractAudio = this.ExtractAudio,
-                AudioFormat = format
+                AudioFormat = format,
+                TagAudio = this.TagAudio,
+                ShowConsole = this.ShowConsole
             };
 
             this._settingsService.UpdateDownloadSettings(settings);
+
+            // waiting to make the button more responive
+            await Task.Delay(1000);
         }
     }
 }

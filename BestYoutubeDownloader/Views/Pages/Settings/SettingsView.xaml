@@ -13,8 +13,8 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
             <TextBlock Text="Output-Directory"
-                       Margin="0,0,0,5"/>
-            <Grid>
+                       FontWeight="Bold"/>
+            <Grid Margin="0,5,0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -31,9 +31,10 @@
                         HorizontalAlignment="Right"/>
             </Grid>
             <Separator/>
-            <TextBlock Text="Audio-Options"
+            <TextBlock Text="Audio"
+                       FontWeight="Bold"
                        Margin="0,5,0,5"/>
-            <Grid>
+            <Grid Margin="0,5,0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -41,10 +42,32 @@
                 <CheckBox Grid.Column="0"
                             Content="Extract Audio"
                           IsChecked="{Binding ExtractAudio}"/>
-                <ComboBox Grid.Column="1"
+                <CheckBox Grid.Column="1"
+                          Content="Fill mp3 title and artist"
+                          IsChecked="{Binding TagAudio}"/>
+            </Grid>
+            <Grid Margin="0,5,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ComboBox Grid.Column="0"
                           ItemsSource="{Binding AvailableAudioFormats}"
                           SelectedItem="{Binding SelectedAudioFormat}"
                           IsEditable="False"/>
+            </Grid>
+            <Separator/>
+            <TextBlock Text="Program"
+                       FontWeight="Bold"
+                       Margin="0,5,0,5"/>
+            <Grid Margin="0,5,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Column="0"
+                          Content="Extract Audio"
+                          IsChecked="{Binding ShowConsole}"/>
             </Grid>
         </StackPanel>
         <Button Grid.Row="1"

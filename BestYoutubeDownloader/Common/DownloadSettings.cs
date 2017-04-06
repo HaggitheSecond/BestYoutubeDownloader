@@ -10,10 +10,16 @@
 
         public FileFormats AudioFormat { get; set; }
 
+        public bool TagAudio { get; set; }
+
         // debug infos
 
         public bool PrintDebugInfo { get; set; }
 
         public bool PrintTraffic { get; set; }
+
+        // program settings
+
+        public bool ShowConsole { get; set; }
     }
 }

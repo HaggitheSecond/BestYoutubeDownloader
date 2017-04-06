@@ -16,6 +16,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private TimeSpan? _duration;
 
         private MetaData _metaData;
+        private Mp3MetaData _mp3MetaData;
 
         public string Url
         {
@@ -45,6 +46,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         {
             get { return this._duration; }
             set { this.SetProperty(ref this._duration, value); }
+        }
+
+        public Mp3MetaData Mp3MetaData
+        {
+            get { return this._mp3MetaData; }
+            set { this.SetProperty(ref this._mp3MetaData, value); }
         }
 
         public BestCommand OpenUrlCommand { get; }

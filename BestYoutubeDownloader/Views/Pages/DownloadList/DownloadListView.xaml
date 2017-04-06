@@ -31,6 +31,10 @@
                             Target="pack://application:,,,/Resources/Icons/Delete-26.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.None}"
                             Target="{x:Null}"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Working}"
+                            Target="pack://application:,,,/Resources/Icons/Support-64.png"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
+                            Target="pack://application:,,,/Resources/Icons/Error-64.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
                             Target="{x:Null}"/>
         </dxmvvm:ObjectToObjectConverter>
@@ -48,6 +52,10 @@
                             Target="Error"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.None}"
                             Target="{x:Null}"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Working}"
+                            Target="Working"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
+                            Target="Input required"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
                             Target="Loading"/>
         </dxmvvm:ObjectToObjectConverter>

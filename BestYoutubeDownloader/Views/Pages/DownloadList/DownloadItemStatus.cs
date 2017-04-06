@@ -6,6 +6,8 @@
         Loading,
         Waiting,
         Downloading,
+        Working,
+        NeedsCheck,
         Canceled,
         Error,
         SuccessfulDownload

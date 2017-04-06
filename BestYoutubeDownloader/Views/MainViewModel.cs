@@ -3,6 +3,7 @@ using System.Windows.Input;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services;
+using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using BestYoutubeDownloader.Views.Pages;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
@@ -54,9 +55,12 @@ namespace BestYoutubeDownloader.Views
             this.DownloadListViewModel = IoC.Get<DownloadListViewModel>();
             this.Items.Add(this.DownloadListViewModel);
 
-            this.RawConsoleViewModel = IoC.Get<RawConsoleViewModel>();
-            this.Items.Add(this.RawConsoleViewModel);
-            
+            if (IoC.Get<ISettingsService>().GetDownloadSettings().ShowConsole)
+            {
+                this.RawConsoleViewModel = IoC.Get<RawConsoleViewModel>();
+                this.Items.Add(this.RawConsoleViewModel);
+            }
+
             this.SettingsViewModel = IoC.Get<SettingsViewModel>();
             this.Items.Add(this.SettingsViewModel);
 
@@ -65,7 +69,7 @@ namespace BestYoutubeDownloader.Views
             this.InfoViewModel = IoC.Get<InfoViewModel>();
             this.Items.Add(this.InfoViewModel);
         }
-
+        
         protected override async void OnActivate()
         {
             var youtubeDlService = IoC.Get<IYoutubeDownloaderService>();
