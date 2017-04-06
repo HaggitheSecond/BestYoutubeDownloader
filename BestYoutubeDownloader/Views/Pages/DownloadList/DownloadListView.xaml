@@ -29,6 +29,8 @@
                             Target="pack://application:,,,/Resources/Icons/Delete-26.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.None}"
                             Target="{x:Null}"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
+                            Target="{x:Null}"/>
         </dxmvvm:ObjectToObjectConverter>
         <dxmvvm:ObjectToObjectConverter x:Key="StatusToTextConverter"
                                         DefaultTarget="{x:Null}">
@@ -44,9 +46,12 @@
                             Target="Error"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.None}"
                             Target="{x:Null}"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
+                            Target="Loading"/>
         </dxmvvm:ObjectToObjectConverter>
         <converter:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
         <converter:TimeSpanToFormatedConverter x:Key="TimeSpanToFormatedConverter"/>
+        <converter:NullTextConverter x:Key="NullTextConverter"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -89,60 +94,63 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid HorizontalAlignment="Stretch"
-                              Height="30">
-                            <Grid.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Command="{Binding OpenUrlCommand}"
-                                              Header="Open Link">
-                                        <MenuItem.Icon>
-                                            <Image Source="pack://application:,,,/Resources/Icons/Link-64.png"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <Separator/>
-                                    <MenuItem Command="{Binding OpenFileCommand}"
-                                              Header="Open File">
-                                        <MenuItem.Icon>
-                                            <Image Source="pack://application:,,,/Resources/Icons/Open Folder-64.png"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </ContextMenu>
-                            </Grid.ContextMenu>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="60"/>
-                                <ColumnDefinition Width="25"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock VerticalAlignment="Center">
-                                    <Run Text="{Binding Title}"
+                              Height="50">
+                            <Grid VerticalAlignment="Center"
+                                  HorizontalAlignment="Stretch">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Command="{Binding OpenUrlCommand}"
+                                                  Header="Open Link">
+                                            <MenuItem.Icon>
+                                                <Image Source="pack://application:,,,/Resources/Icons/Link-64.png"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Command="{Binding OpenFileCommand}"
+                                                  Header="Open File">
+                                            <MenuItem.Icon>
+                                                <Image Source="pack://application:,,,/Resources/Icons/Open Folder-64.png"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="25"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock VerticalAlignment="Center">
+                                    <Run Text="{Binding Title, Converter={StaticResource NullTextConverter}, ConverterParameter='Title'}"
                                          FontWeight="Bold"/>
                                     <Run Text="{Binding Duration, Converter={StaticResource TimeSpanToFormatedConverter}}"/>
-                                </TextBlock>
-                                <TextBlock Text="{Binding Url}"
-                                           VerticalAlignment="Center"
-                                           FontStyle="Italic"
-                                           Foreground="Gray"/>
-                            </StackPanel>
-                            <TextBlock Grid.Column="1"
-                                       Text="{Binding Status, Converter={StaticResource StatusToTextConverter}}"
-                                       FontWeight="Light"
-                                       FontSize="10"
-                                       Foreground="DarkGray"
-                                       VerticalAlignment="Center"/>
-                            <Image Grid.Column="2"
-                                   Source="{Binding Status, Converter={StaticResource StatusToImageConverter}}"
-                                   VerticalAlignment="Center"
-                                   Width="20"
-                                   Height="20"
-                                   ToolTip="{Binding Status, Converter={StaticResource StatusToTextConverter}}"/>
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding Url}"
+                                               VerticalAlignment="Center"
+                                               FontStyle="Italic"
+                                               Foreground="Gray"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Status, Converter={StaticResource StatusToTextConverter}}"
+                                           FontWeight="Light"
+                                           FontSize="10"
+                                           Foreground="DarkGray"
+                                           VerticalAlignment="Center"/>
+                                <Image Grid.Column="2"
+                                       Source="{Binding Status, Converter={StaticResource StatusToImageConverter}}"
+                                       VerticalAlignment="Center"
+                                       Width="30"
+                                       Height="30"
+                                       ToolTip="{Binding Status, Converter={StaticResource StatusToTextConverter}}"/>
+                            </Grid>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
         <Grid Grid.Row="1"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Bottom"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Bottom"
               Margin="0,5,0,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -150,7 +158,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" 
-                    Text="{Binding AddItemText, UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding AddItemText, UpdateSourceTrigger=PropertyChanged}"
                      HorizontalAlignment="Stretch"
                      TextWrapping="NoWrap"/>
             <Button Grid.Column="1" 

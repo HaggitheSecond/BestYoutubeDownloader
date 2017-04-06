@@ -70,7 +70,7 @@ namespace BestYoutubeDownloader
         {
            return new Dictionary<string, object>
             {
-                { nameof(Window.Width), 700},
+                { nameof(Window.Width), 850},
                 { nameof(Window.Height), 500},
                 { nameof(WindowStartupLocation), WindowStartupLocation.CenterScreen },
                 { nameof(Window.SizeToContent), SizeToContent.Manual }

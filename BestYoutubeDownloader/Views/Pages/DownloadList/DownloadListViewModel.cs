@@ -65,7 +65,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         }
 
         public BestAsyncCommand AddItemCommand { get; }
-        public BestCommand ImportItemsCommand { get; }
+        public BestAsyncCommand ImportItemsCommand { get; }
 
         public BestAsyncCommand DownloadAllItemsCommand { get; }
 
@@ -75,7 +75,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this._settingsService = IoC.Get<ISettingsService>();
 
             this.AddItemCommand = new BestAsyncCommand( async () => { await this.AddItem(this.AddItemText); }, this.CanAddItem);
-            this.ImportItemsCommand = new BestCommand(this.ImportItems);
+            this.ImportItemsCommand = new BestAsyncCommand(this.ImportItems);
 
             this.DownloadAllItemsCommand = new BestAsyncCommand(this.DownloadAllItems, this.CanDownloadAllItems);
 
@@ -142,12 +142,16 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             this.Items.Add(item);
 
+            item.Status = DownloadItemStatus.Loading;
+
             var metaData = await this._youtubeDownloaderService.GetMetaData(item.Url);
             
             item.AddMetaData(metaData);
+            
+            item.Status = DownloadItemStatus.None;
         }
 
-        private void ImportItems()
+        private async Task ImportItems()
         {
             var fileDialog = new OpenFileDialog
             {
@@ -164,6 +168,17 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             var items = importService.ImportDownloadItemsFromFile(fileDialog.FileName);
 
             this.Items = new BindableCollection<DownloadItem>(items);
+
+            foreach (var currentItem in items)
+            {
+                currentItem.Status = DownloadItemStatus.Loading;
+
+                var metaData = await this._youtubeDownloaderService.GetMetaData(currentItem.Url);
+
+                currentItem.AddMetaData(metaData);
+
+                currentItem.Status = DownloadItemStatus.None;
+            }
 
         }
 
