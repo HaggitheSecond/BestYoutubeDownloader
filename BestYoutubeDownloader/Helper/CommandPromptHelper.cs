@@ -33,7 +33,7 @@ namespace BestYoutubeDownloader.Helper
                     if (string.IsNullOrWhiteSpace(args.Data) == false)
                         output = args.Data;
                 };
-                
+
                 process.Start();
                 process.BeginOutputReadLine();
                 process.WaitForExit();
@@ -52,6 +52,7 @@ namespace BestYoutubeDownloader.Helper
                 Verb = "runas",
                 Arguments = "/c " + command,
                 RedirectStandardOutput = true,
+                RedirectStandardError = true,
                 CreateNoWindow = true
             };
 

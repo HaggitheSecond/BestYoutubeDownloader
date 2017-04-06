@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using BestYoutubeDownloader.Extensions;
 
 namespace BestYoutubeDownloader.Views.Pages.DownloadList
 {
@@ -27,25 +28,44 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.InitializeComponent();
         }
 
-        private void DownloadListView_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        private async void DownloadListView_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.V && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
-                this.ViewModel.AddItem(Clipboard.GetText());
+                await this.ViewModel.AddItem(Clipboard.GetText());
                 e.Handled = true;
             }
         }
 
-        private void DownloadListView_OnPreviewDrop(object sender, DragEventArgs e)
+        private async void DownloadListView_OnPreviewDrop(object sender, DragEventArgs e)
         {
+            if (e.Data.GetDataPresent(DataFormats.Text))
+            {
+                var data = (string)e.Data.GetData(DataFormats.Text);
 
+                await this.ViewModel.AddItem(data);
+            }
         }
 
-        private void DownloadList_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        private void DownloadList_OnDragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.Text))
+            {
+                var data = (string)e.Data.GetData(DataFormats.Text);
+
+                this.DownloadList.AllowDrop = data.IsViableUrl();
+            }
+            else
+            {
+                this.DownloadList.AllowDrop = false;
+            }
+        }
+        
+        private async void DownloadList_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.V && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
-                this.ViewModel.AddItem(Clipboard.GetText());
+                await this.ViewModel.AddItem(Clipboard.GetText());
                 e.Handled = true;
 
                 return;

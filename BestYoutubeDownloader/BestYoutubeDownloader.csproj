@@ -86,6 +86,7 @@
     <Compile Include="Converter\ListBoxConverter\IsISeperatorToVisibiltyConverter.cs" />
     <Compile Include="Converter\IsNullOrEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\NullTextConverter.cs" />
+    <Compile Include="Converter\NullTextToForegroundConverter.cs" />
     <Compile Include="Converter\TimeSpanToFormatedConverter.cs" />
     <Compile Include="Converter\ZeroToVisibilityConverter.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

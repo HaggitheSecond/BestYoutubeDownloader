@@ -12,6 +12,8 @@
              PreviewDrop="DownloadListView_OnPreviewDrop">
     <UserControl.Resources>
         <dxmvvm:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converter:IsNullOrEmptyToVisibilityConverter x:Key="InverseIsNullOrEmptyToVisibilityConverter"
+                                                      Inverse="True"/>
         <dxmvvm:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"
                                              Inverse="True"/>
         <converter:IsNullOrEmptyToVisibilityConverter x:Key="IsNullOrEmptyToVisibilityConverter"/>
@@ -52,6 +54,7 @@
         <converter:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
         <converter:TimeSpanToFormatedConverter x:Key="TimeSpanToFormatedConverter"/>
         <converter:NullTextConverter x:Key="NullTextConverter"/>
+        <converter:NullTextToForegroundConverter x:Key="NullTextToForegroundConverter"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -67,7 +70,10 @@
                      HorizontalContentAlignment="Stretch"
                      PreviewKeyDown="DownloadList_OnPreviewKeyDown"
                      MouseEnter="DownloadList_OnMouseEnter"
-                     FocusVisualStyle="{x:Null}">
+                     FocusVisualStyle="{x:Null}"
+                     Drop="DownloadListView_OnPreviewDrop"
+                     DragEnter="DownloadList_OnDragEnter"
+                     AllowDrop="True">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
                         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -117,11 +123,12 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition Width="25"/>
+                                    <ColumnDefinition Width="40"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
                                     <TextBlock VerticalAlignment="Center">
-                                    <Run Text="{Binding Title, Converter={StaticResource NullTextConverter}, ConverterParameter='Title'}"
+                                    <Run Text="{Binding Title, Converter={StaticResource NullTextConverter}, ConverterParameter='No title'}"
+                                         Foreground="{Binding Title, Converter={StaticResource NullTextToForegroundConverter}}"
                                          FontWeight="Bold"/>
                                     <Run Text="{Binding Duration, Converter={StaticResource TimeSpanToFormatedConverter}}"/>
                                     </TextBlock>
@@ -147,6 +154,13 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <TextBlock VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       IsHitTestVisible="False"
+                       Text="Paste or drop&#x0a;your link here"
+                       Opacity="0.5"
+                       Foreground="Gray"
+                       Visibility="{Binding Items, Converter={StaticResource InverseIsNullOrEmptyToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
         <Grid Grid.Row="1"
               HorizontalAlignment="Stretch"
