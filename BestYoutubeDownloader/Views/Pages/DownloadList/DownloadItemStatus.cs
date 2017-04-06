@@ -9,6 +9,7 @@
         Working,
         NeedsCheck,
         Canceled,
+        NonDownloadable,
         Error,
         SuccessfulDownload
     }

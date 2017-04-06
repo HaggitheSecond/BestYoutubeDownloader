@@ -169,10 +169,16 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             item.Status = DownloadItemStatus.Loading;
 
             var metaData = await this._youtubeDownloaderService.GetMetaData(item.Url);
-            
-            item.AddMetaData(metaData);
-            
-            item.Status = DownloadItemStatus.None;
+
+            if (metaData == null)
+            {
+                item.Status = DownloadItemStatus.NonDownloadable;
+            }
+            else
+            {
+                item.AddMetaData(metaData);
+                item.Status = DownloadItemStatus.None;
+            }
         }
 
         private async Task ImportItems()

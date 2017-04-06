@@ -45,7 +45,10 @@
                                     <Trigger Property="IsSelected" Value="true">
                                         <Setter TargetName="Border" 
                                                 Property="Background"
-                                                Value="LightGray"/>
+                                                Value="Red"/>
+                                        <Setter TargetName="Border" 
+                                                Property="Opacity"
+                                                Value="0.5"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>

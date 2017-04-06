@@ -31,6 +31,8 @@
                             Target="pack://application:,,,/Resources/Icons/Delete-26.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.None}"
                             Target="{x:Null}"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NonDownloadable}"
+                            Target="pack://application:,,,/Resources/Icons/Error-64.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Working}"
                             Target="pack://application:,,,/Resources/Icons/Support-64.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
@@ -52,6 +54,8 @@
                             Target="Error"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.None}"
                             Target="{x:Null}"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NonDownloadable}"
+                            Target="Non downloadable"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Working}"
                             Target="Working"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
@@ -129,8 +133,9 @@
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition x:Name="ListBoxItemColumn1"
+                                                      Width="*"/>
+                                    <ColumnDefinition Width="65"/>
                                     <ColumnDefinition Width="40"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
@@ -143,7 +148,10 @@
                                     <TextBlock Text="{Binding Url}"
                                                VerticalAlignment="Center"
                                                FontStyle="Italic"
-                                               Foreground="Gray"/>
+                                               Foreground="Gray"
+                                               TextTrimming="CharacterEllipsis"
+                                               HorizontalAlignment="Left"
+                                               Width="{Binding ElementName=ListBoxItemColumn1, Path=Width}"/>
                                 </StackPanel>
                                 <TextBlock Grid.Column="1"
                                            Text="{Binding Status, Converter={StaticResource StatusToTextConverter}}"
