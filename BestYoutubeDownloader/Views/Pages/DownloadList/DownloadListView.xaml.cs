@@ -84,5 +84,17 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             // forces keyboard focus on the listbox which is needed to enable keydownevents
             Keyboard.Focus(this.DownloadList);
         }
+
+        private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var grid = (Grid) sender;
+
+            var cp =
+                this.DownloadList.ItemContainerGenerator.ContainerFromItem(0) as
+                    ContentPresenter;
+
+            var tb = cp.FindVisualChild<TextBox>();
+
+        }
     }
 }

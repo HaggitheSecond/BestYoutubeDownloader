@@ -114,7 +114,7 @@
                         <Grid HorizontalAlignment="Stretch"
                               Height="50">
                             <Grid VerticalAlignment="Center"
-                                  HorizontalAlignment="Stretch">
+                                  HorizontalAlignment="Stretch" SizeChanged="Grid_SizeChanged">
                                 <Grid.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Command="{Binding OpenUrlCommand}"
@@ -134,24 +134,28 @@
                                 </Grid.ContextMenu>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition x:Name="ListBoxItemColumn1"
-                                                      Width="*"/>
+                                                      Width="*"
+                                                      />
                                     <ColumnDefinition Width="65"/>
                                     <ColumnDefinition Width="40"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock VerticalAlignment="Center">
+                                    <TextBlock x:Name="TextBlockTitle"
+                                                VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               HorizontalAlignment="Left">
                                     <Run Text="{Binding Title, Converter={StaticResource NullTextConverter}, ConverterParameter='No title'}"
                                          Foreground="{Binding Title, Converter={StaticResource NullTextToForegroundConverter}}"
                                          FontWeight="Bold"/>
                                     <Run Text="{Binding Duration, Converter={StaticResource TimeSpanToFormatedConverter}}"/>
                                     </TextBlock>
-                                    <TextBlock Text="{Binding Url}"
+                                    <TextBlock x:Name="TextBlockUrl"
+                                                Text="{Binding Url}"
                                                VerticalAlignment="Center"
                                                FontStyle="Italic"
                                                Foreground="Gray"
                                                TextTrimming="CharacterEllipsis"
-                                               HorizontalAlignment="Left"
-                                               Width="{Binding ElementName=ListBoxItemColumn1, Path=Width}"/>
+                                               HorizontalAlignment="Left"/>
                                 </StackPanel>
                                 <TextBlock Grid.Column="1"
                                            Text="{Binding Status, Converter={StaticResource StatusToTextConverter}}"

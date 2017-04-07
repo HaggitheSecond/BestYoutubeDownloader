@@ -7,8 +7,7 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:converter="clr-namespace:BestYoutubeDownloader.Converter"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
-             Background="White">
+             d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <converter:IsISeperatorToVisibiltyConverter x:Key="IsISeperatorToVisibiltyConverter"/>
         <converter:IsISeperatorToVisibiltyConverter x:Key="InverseIsISeperatorToVisibiltyConverter"
@@ -45,10 +44,7 @@
                                     <Trigger Property="IsSelected" Value="true">
                                         <Setter TargetName="Border" 
                                                 Property="Background"
-                                                Value="Red"/>
-                                        <Setter TargetName="Border" 
-                                                Property="Opacity"
-                                                Value="0.5"/>
+                                                Value="{Binding Color}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>

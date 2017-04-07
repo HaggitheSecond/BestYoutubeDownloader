@@ -9,5 +9,6 @@ namespace BestYoutubeDownloader.Views.Pages.Info
     {
         public string Name => "About";
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Info-64.png"));
+        public SolidColorBrush Color => new SolidColorBrush(Colors.Yellow);
     }
 }

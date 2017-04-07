@@ -25,6 +25,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public string Name => "Download";
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Download-48.png"));
+        public SolidColorBrush Color => new SolidColorBrush(Colors.Red);
 
         private Action<string> _output;
 

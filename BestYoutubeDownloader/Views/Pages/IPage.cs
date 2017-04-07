@@ -9,5 +9,7 @@ namespace BestYoutubeDownloader.Views.Pages
         string Name { get; }
 
         ImageSource Icon { get; }
+
+        SolidColorBrush Color { get; }
     }
 }

@@ -19,6 +19,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
     {
         public string Name => "Settings";
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Settings-64.png"));
+        public SolidColorBrush Color => new SolidColorBrush(Colors.Aquamarine);
 
         private readonly ISettingsService _settingsService;
 

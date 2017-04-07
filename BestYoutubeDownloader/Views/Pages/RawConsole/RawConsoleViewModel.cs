@@ -14,6 +14,7 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
     {
         public string Name => "Console";
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Console-64.png"));
+        public SolidColorBrush Color => new SolidColorBrush(Colors.Gray);
 
         private readonly IYoutubeDownloaderService _youtubeDlService;
         private readonly ISettingsService _settingsService;
