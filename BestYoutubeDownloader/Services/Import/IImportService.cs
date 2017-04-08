@@ -7,5 +7,7 @@ namespace BestYoutubeDownloader.Services.Import
     public interface IImportService
     {
         IList<DownloadItem> ImportDownloadItemsFromFile(string filePath);
+
+        IList<string> GetSupportedSitesFromFile();
     }
 }

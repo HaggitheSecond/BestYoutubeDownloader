@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Services;
 using BestYoutubeDownloader.Services.Import;
 using BestYoutubeDownloader.Services.Settings;
@@ -64,21 +65,9 @@ namespace BestYoutubeDownloader
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            this.DisplayRootViewFor<MainViewModel>(this.GetInitialWindowSettings());
+            this.DisplayRootViewFor<MainViewModel>(WindowSettings.GetMainWindowSettings());
         }
-
-        private IDictionary<string, object> GetInitialWindowSettings()
-        {
-            return new Dictionary<string, object>
-            {
-                { nameof(Window.Width), 850},
-                { nameof(Window.Height), 500},
-                { nameof(WindowStartupLocation), WindowStartupLocation.CenterScreen },
-                { nameof(Window.SizeToContent), SizeToContent.Manual },
-                { nameof(Window.Icon), new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Download-48.png")) }
-            };
-        }
-
+        
         #endregion
 
         #region IoC

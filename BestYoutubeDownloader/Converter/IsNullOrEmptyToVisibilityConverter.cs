@@ -28,8 +28,8 @@ namespace BestYoutubeDownloader.Converter
             }
 
             return this.Inverse
-                    ? Visibility.Visible
-                    : Visibility.Hidden;
+                    ? Visibility.Hidden
+                    : Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

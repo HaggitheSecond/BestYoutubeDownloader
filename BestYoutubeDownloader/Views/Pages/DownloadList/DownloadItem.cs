@@ -27,7 +27,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         public DownloadItemStatus Status
         {
             get { return this._status; }
-            set { this.SetProperty(ref this._status, value); }
+            set
+            {
+                this.SetProperty(ref this._status, value);
+
+                this.IsLoading = value == DownloadItemStatus.Downloading;
+            }
         }
 
         public string FileName
@@ -52,6 +57,14 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         {
             get { return this._mp3MetaData; }
             set { this.SetProperty(ref this._mp3MetaData, value); }
+        }
+
+        private bool _isLoading;
+
+        public bool IsLoading
+        {
+            get { return this._isLoading; }
+            set { this.SetProperty(ref this._isLoading, value); }
         }
 
         public BestCommand OpenUrlCommand { get; }

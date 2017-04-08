@@ -90,6 +90,7 @@
     <Compile Include="Common\BestCommand.cs" />
     <Compile Include="Common\MetaData.cs" />
     <Compile Include="Common\Mp3MetaData.cs" />
+    <Compile Include="Common\WindowSettings.cs" />
     <Compile Include="Converter\ListBoxConverter\IsISeperatorToVisibiltyConverter.cs" />
     <Compile Include="Converter\IsNullOrEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\NullTextConverter.cs" />
@@ -139,6 +140,10 @@
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\Settings\SettingsViewModel.cs" />
+    <Compile Include="Views\SupportedSites\SupportedSitesView.xaml.cs">
+      <DependentUpon>SupportedSitesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SupportedSites\SupportedSitesViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
@@ -164,6 +169,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="supportedsites.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -186,6 +194,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Pages\Settings\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SupportedSites\SupportedSitesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

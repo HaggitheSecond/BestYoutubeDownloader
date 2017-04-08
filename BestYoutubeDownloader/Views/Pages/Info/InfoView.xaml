@@ -7,7 +7,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <StackPanel Orientation="Horizontal"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal"
                     VerticalAlignment="Top">
             <Image Source="pack://application:,,,/Resources/Icons/Download-48.png"
                    Width="30"
@@ -18,5 +24,20 @@
                        FontSize="20"
                        FontWeight="Bold"/>
         </StackPanel>
+        <Separator Grid.Row="1"/>
+        <Grid Grid.Row="2"
+                    Margin="0,15,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                        Text="Youtube-dl and this downloader support a long list of sites."/>
+            <Button Grid.Column="1"
+                    Content="Check supported sites"
+                    Width="150"
+                    Command="{Binding CheckSitesCommand}"/>
+        </Grid>
     </Grid>
 </UserControl>
+
