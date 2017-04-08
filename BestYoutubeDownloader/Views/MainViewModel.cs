@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using BestYoutubeDownloader.Common;
+using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services;
 using BestYoutubeDownloader.Services.Settings;
@@ -16,12 +17,18 @@ using DevExpress.Mvvm;
 
 namespace BestYoutubeDownloader.Views
 {
-    public class MainViewModel : Conductor<IPage>.Collection.OneActive
+    public class MainViewModel : Conductor<IPage>.Collection.OneActive, IHandle<SettingsChanged>
     {
+        private readonly IEventAggregator _eventAggregator;
+        private readonly ISettingsService _settingsService;
+        private readonly IYoutubeDownloaderService _youtubeDownloaderService;
+
         private DownloadListViewModel _downloadListViewModel;
         private RawConsoleViewModel _rawConsoleViewModel;
         private SettingsViewModel _settingsViewModel;
         private InfoViewModel _infoViewModel;
+
+        private bool _isEnabled;
 
         public DownloadListViewModel DownloadListViewModel
         {
@@ -48,18 +55,30 @@ namespace BestYoutubeDownloader.Views
             set { this.SetProperty(ref this._infoViewModel, value); }
         }
 
-        public MainViewModel()
+        public bool IsEnabled
         {
+            get { return this._isEnabled; }
+            set { this.SetProperty(ref this._isEnabled, value); }
+        }
+
+        public MainViewModel(IEventAggregator eventAggregator, ISettingsService settingsService, IYoutubeDownloaderService youtubeDownloaderService)
+        {
+            this._eventAggregator = eventAggregator;
+            this._settingsService = settingsService;
+            this._youtubeDownloaderService = youtubeDownloaderService;
+
             this.DisplayName = "Youtube DL";
+
+            this._eventAggregator.Subscribe(this);
 
             this.DownloadListViewModel = IoC.Get<DownloadListViewModel>();
             this.Items.Add(this.DownloadListViewModel);
 
-            if (IoC.Get<ISettingsService>().GetDownloadSettings().ShowConsole)
-            {
-                this.RawConsoleViewModel = IoC.Get<RawConsoleViewModel>();
+            this.RawConsoleViewModel = IoC.Get<RawConsoleViewModel>();
+
+            if (this._settingsService.GetDownloadSettings().ShowConsole)
                 this.Items.Add(this.RawConsoleViewModel);
-            }
+            
 
             this.SettingsViewModel = IoC.Get<SettingsViewModel>();
             this.Items.Add(this.SettingsViewModel);
@@ -72,9 +91,9 @@ namespace BestYoutubeDownloader.Views
         
         protected override async void OnActivate()
         {
-            var youtubeDlService = IoC.Get<IYoutubeDownloaderService>();
+            this.ActivateItem(this.DownloadListViewModel);
 
-            var validationResult = await youtubeDlService.Validate();
+            var validationResult = await this._youtubeDownloaderService.Validate();
 
             if (validationResult != string.Empty)
             {
@@ -84,7 +103,17 @@ namespace BestYoutubeDownloader.Views
                 }
             }
 
-            this.ActivateItem(this.DownloadListViewModel);
+            this.IsEnabled = true;
+        }
+
+        public void Handle(SettingsChanged message)
+        {
+            if (message.Settings.ShowConsole)
+                this.Items.Insert(1, this.RawConsoleViewModel);
+            else
+                this.Items.Remove(this.RawConsoleViewModel);
+
+
         }
     }
 }

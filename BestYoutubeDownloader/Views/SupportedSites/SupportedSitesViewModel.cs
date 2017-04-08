@@ -36,7 +36,7 @@ namespace BestYoutubeDownloader.Views.SupportedSites
         public BestCommand CloseCommand { get; }
         public BestCommand GoToUpdatedListCommand { get; }
 
-        public SupportedSitesViewModel()
+        public SupportedSitesViewModel(IImportService importService)
         {
             this.CloseCommand = new BestCommand(() => this.TryClose());
 
@@ -44,8 +44,6 @@ namespace BestYoutubeDownloader.Views.SupportedSites
             {
                 Process.Start("https://github.com/rg3/youtube-dl/blob/master/docs/supportedsites.md");
             });
-
-            var importService = IoC.Get<IImportService>();
 
             var lines = importService.GetSupportedSitesFromFile();
 

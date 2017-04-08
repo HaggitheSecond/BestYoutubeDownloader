@@ -97,6 +97,7 @@
     <Compile Include="Converter\NullTextToForegroundConverter.cs" />
     <Compile Include="Converter\TimeSpanToFormatedConverter.cs" />
     <Compile Include="Converter\ZeroToVisibilityConverter.cs" />
+    <Compile Include="Events\SettingsChanged.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\CommandPromptHelper.cs" />

@@ -22,11 +22,7 @@ namespace BestYoutubeDownloader.Views.Pages.Info
 
         private void CheckSites()
         {
-            var windowManager = IoC.Get<IWindowManager>();
-
-            var viewModel = new SupportedSitesViewModel();
-
-            windowManager.ShowDialog(viewModel, null, WindowSettings.GetWindowSettings(400, 600));
+            IoC.Get<IWindowManager>().ShowDialog(IoC.Get<SupportedSitesViewModel>(), null, WindowSettings.GetWindowSettings(400, 600));
         }
     }
 }

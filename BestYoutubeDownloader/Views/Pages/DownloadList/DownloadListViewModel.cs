@@ -74,10 +74,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public BestAsyncCommand DownloadAllItemsCommand { get; }
 
-        public DownloadListViewModel()
+        public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService, ISettingsService settingsService)
         {
-            this._youtubeDownloaderService = IoC.Get<IYoutubeDownloaderService>();
-            this._settingsService = IoC.Get<ISettingsService>();
+            this._youtubeDownloaderService = youtubeDlService;
+            this._settingsService = settingsService;
 
             this.AddItemCommand = new BestAsyncCommand( async () => { await this.AddItem(this.AddItemText); }, this.CanAddItem);
             this.ImportItemsCommand = new BestAsyncCommand(this.ImportItems);

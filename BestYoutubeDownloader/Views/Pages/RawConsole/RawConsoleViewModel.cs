@@ -61,10 +61,10 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
 
         public BestCommand AddExtractAudioCommand { get; }
 
-        public RawConsoleViewModel()
+        public RawConsoleViewModel(IYoutubeDownloaderService youtubeDlService, ISettingsService settingsService)
         {
-            this._youtubeDlService = IoC.Get<IYoutubeDownloaderService>();
-            this._settingsService = IoC.Get<ISettingsService>();
+            this._youtubeDlService = youtubeDlService;
+            this._settingsService = settingsService;
 
             this._youtubeDlService.RegisterOutputAction(this.AddOutput);
 

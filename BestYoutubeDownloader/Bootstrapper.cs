@@ -17,6 +17,7 @@ using BestYoutubeDownloader.Views.Pages.Info;
 using BestYoutubeDownloader.Views.Pages.RawConsole;
 using BestYoutubeDownloader.Views.Pages.Seperator;
 using BestYoutubeDownloader.Views.Pages.Settings;
+using BestYoutubeDownloader.Views.SupportedSites;
 using Caliburn.Micro;
 
 namespace BestYoutubeDownloader
@@ -48,7 +49,8 @@ namespace BestYoutubeDownloader
                 .Singleton<IYoutubeDownloaderService, YoutubeDownloaderService>()
                 .Singleton<IStorageService, StorageService>()
                 .Singleton<ISettingsService, SettingsService>()
-                .Singleton<IImportService, ImportService>();
+                .Singleton<IImportService, ImportService>()
+                .Singleton<IEventAggregator, EventAggregator>();
 
             this._container
                 .PerRequest<MainViewModel>()
@@ -56,7 +58,8 @@ namespace BestYoutubeDownloader
                 .PerRequest<SettingsViewModel>()
                 .PerRequest<SeperatorViewModel>()
                 .PerRequest<InfoViewModel>()
-                .PerRequest<RawConsoleViewModel>();
+                .PerRequest<RawConsoleViewModel>()
+                .PerRequest<SupportedSitesViewModel>();
         }
 
         #endregion

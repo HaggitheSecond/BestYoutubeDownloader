@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
+using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.Storage;
@@ -22,6 +23,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         public SolidColorBrush Color => new SolidColorBrush(Colors.Aquamarine);
 
         private readonly ISettingsService _settingsService;
+        private readonly IEventAggregator _eventAggregator;
 
         private bool _hasChanges;
 
@@ -75,9 +77,10 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
         public BestAsyncCommand SaveCommand { get; }
 
-        public SettingsViewModel()
+        public SettingsViewModel(ISettingsService settingsService, IEventAggregator eventAggregator)
         {
-            this._settingsService = IoC.Get<ISettingsService>();
+            this._settingsService = settingsService;
+            this._eventAggregator = eventAggregator;
 
             this.ChangeDirectoryCommand = new BestCommand(this.ChangeDirectory);
             this.SaveCommand = new BestAsyncCommand(this.Save, this.CanSave);
@@ -141,6 +144,8 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
             this._settingsService.UpdateDownloadSettings(settings);
             
+            this._eventAggregator.PublishOnUIThread(new SettingsChanged(settings));
+
             this._hasChanges = false;
         }
     }

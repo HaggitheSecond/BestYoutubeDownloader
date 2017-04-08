@@ -15,7 +15,7 @@ namespace BestYoutubeDownloader.Converter
             if(value == null)
                 return this.Inverse 
                     ? Visibility.Visible 
-                    : Visibility.Hidden;
+                    : Visibility.Collapsed;
 
             if (value is ICollection)
             {
@@ -24,11 +24,11 @@ namespace BestYoutubeDownloader.Converter
                 if (valueCollection.Count == 0)
                     return this.Inverse
                     ? Visibility.Visible
-                    : Visibility.Hidden;
+                    : Visibility.Collapsed;
             }
 
             return this.Inverse
-                    ? Visibility.Hidden
+                    ? Visibility.Collapsed
                     : Visibility.Visible;
         }
 
