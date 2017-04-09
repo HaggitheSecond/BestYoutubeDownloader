@@ -10,6 +10,7 @@ using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.Import;
+using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using Caliburn.Micro;
@@ -22,6 +23,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
     {
         private readonly IYoutubeDownloaderService _youtubeDownloaderService;
         private readonly ISettingsService _settingsService;
+        private readonly IMetaDataTagService _metaDataTagService;
 
         public string Name => "Download";
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Download-48.png"));
@@ -74,10 +76,11 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public BestAsyncCommand DownloadAllItemsCommand { get; }
 
-        public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService, ISettingsService settingsService)
+        public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService, ISettingsService settingsService, IMetaDataTagService metaDataTagService)
         {
             this._youtubeDownloaderService = youtubeDlService;
             this._settingsService = settingsService;
+            this._metaDataTagService = metaDataTagService;
 
             this.AddItemCommand = new BestAsyncCommand( async () => { await this.AddItem(this.AddItemText); }, this.CanAddItem);
             this.ImportItemsCommand = new BestAsyncCommand(this.ImportItems);
@@ -120,7 +123,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                     {
                         currentItem.Status = DownloadItemStatus.Working;
 
-                        var mp3Data = TagLibHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(currentItem.FileName));
+                        var mp3Data = MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(currentItem.FileName));
 
                         currentItem.Mp3MetaData = mp3Data;
 
@@ -130,7 +133,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                             continue;
                         }
 
-                        TagLibHelper.TagMp3(currentItem.FileName, mp3Data);
+                        this._metaDataTagService.TagMetaData(currentItem.FileName, mp3Data);
                     }
 
                     currentItem.Status = DownloadItemStatus.SuccessfulDownload;

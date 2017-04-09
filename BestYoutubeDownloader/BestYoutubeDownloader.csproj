@@ -102,11 +102,14 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\CommandPromptHelper.cs" />
     <Compile Include="Extensions\PropertyChangedExtensions.cs" />
+    <Compile Include="Helper\MetaDataHelper.cs" />
     <Compile Include="Helper\TagLibHelper.cs" />
     <Compile Include="Helper\YoutubeDLOutputHelper.cs" />
     <Compile Include="Services\Import\IImportService.cs" />
     <Compile Include="Services\Import\ImportService.cs" />
     <Compile Include="Common\FileFormats.cs" />
+    <Compile Include="Services\MetaDataTag\IMetaDataTagService.cs" />
+    <Compile Include="Services\MetaDataTag\MetaDataTagService.cs" />
     <Compile Include="Services\Settings\ISettingsService.cs" />
     <Compile Include="Common\DownloadSettings.cs" />
     <Compile Include="Services\Settings\SettingsService.cs" />

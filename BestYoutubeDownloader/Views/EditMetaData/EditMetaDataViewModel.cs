@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
+using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using Caliburn.Micro;
 
@@ -15,6 +16,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
     public class EditMetaDataViewModel : Screen
     {
         private readonly IYoutubeDownloaderService _downloaderService;
+        private readonly IMetaDataTagService _metaDataTagService;
 
         private bool _hasChanges;
 
@@ -94,11 +96,12 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
         public  BestCommand OpenDirectoryCommand { get; }
         
-        public EditMetaDataViewModel(IYoutubeDownloaderService downloaderService)
+        public EditMetaDataViewModel(IYoutubeDownloaderService downloaderService, IMetaDataTagService metaDataTagService)
         {
             this.DisplayName = "Edit metadata";
 
             this._downloaderService = downloaderService;
+            this._metaDataTagService = metaDataTagService;
 
             this.SaveCommand = new BestCommand(this.Save, this._hasChanges);
             this.LoadCoverImageCommand = new BestAsyncCommand(this.LoadCoverImage, this.CanLoadCover);
@@ -178,7 +181,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             this.Mp3MetaData.Artist = this.Artist;
             this.Mp3MetaData.Title = this.Title;
 
-            TagLibHelper.TagMp3(this._filePath, this.Mp3MetaData);
+            this._metaDataTagService.TagMetaData(this._filePath, this.Mp3MetaData);
 
             if (this.Image != null)
             {
@@ -192,7 +195,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
                 if(File.Exists(path) == false)
                     return;
                 
-                TagLibHelper.TagMp3Cover(this.FilePath, path);
+                this._metaDataTagService.TagCoverImage(this.FilePath, path);
             }
 
             this.TryClose(true);
