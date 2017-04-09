@@ -22,6 +22,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private ImageSource _image;
 
+        private FileFormats _format;
+
         public string Url
         {
             get { return this._url; }
@@ -34,8 +36,6 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             set
             {
                 this.SetProperty(ref this._status, value);
-
-                this.IsLoading = value == DownloadItemStatus.Downloading;
             }
         }
 
@@ -63,12 +63,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             set { this.SetProperty(ref this._mp3MetaData, value); }
         }
 
-        private bool _isLoading;
-
-        public bool IsLoading
+        public FileFormats Format
         {
-            get { return this._isLoading; }
-            set { this.SetProperty(ref this._isLoading, value); }
+            get { return this._format; }
+            set { this.SetProperty(ref this._format, value); }
         }
 
         public BestCommand OpenUrlCommand { get; }
@@ -89,9 +87,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             this.Status = DownloadItemStatus.None;
         }
-        public void AddMetaData(MetaData metaData)
+        public void AddMetaData(MetaData metaData, FileFormats format)
         {
             this._metaData = metaData;
+            this.Format = format;
 
             this.Title = metaData.Title;
 
@@ -118,7 +117,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private bool CanChangeMetaData()
         {
-            return this.Status == DownloadItemStatus.NeedsCheck || this.Status == DownloadItemStatus.SuccessfulDownload;
+            return (this.Status == DownloadItemStatus.NeedsCheck || this.Status == DownloadItemStatus.SuccessfulDownload) && this.Format == FileFormats.Mp3;
         }
 
         private void ChangeMetaData()
@@ -134,6 +133,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             if (result.HasValue && result.Value)
             {
                 this._image = viewModel.Image;
+                this.Status = DownloadItemStatus.SuccessfulDownload;
             }
         }
     }

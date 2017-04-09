@@ -91,7 +91,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private bool CanDownloadAllItems()
         {
-            return this.Items.Count != 0;
+            return this.Items.Count(f => f.Status == DownloadItemStatus.None) != 0;
         }
 
         private async Task DownloadAllItems()
@@ -106,15 +106,17 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 if (currentItem.Status != DownloadItemStatus.Waiting)
                     continue;
 
+                var settings = this._settingsService.GetDownloadSettings();
+
                 currentItem.Status = DownloadItemStatus.Downloading;
 
-                var result = await this._youtubeDownloaderService.DownloadVideo(this._output, currentItem.Url, this._settingsService.GetDownloadSettings());
+                var result = await this._youtubeDownloaderService.DownloadVideo(this._output, currentItem.Url, settings);
 
                 if (result)
                 {
                     currentItem.FileName = this._latestDestination;
 
-                    if (this._settingsService.GetDownloadSettings().TagAudio)
+                    if (settings.TagAudio && settings.AudioFormat == FileFormats.Mp3)
                     {
                         currentItem.Status = DownloadItemStatus.Working;
 
@@ -178,7 +180,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             }
             else
             {
-                item.AddMetaData(metaData);
+                item.AddMetaData(metaData, this._settingsService.GetDownloadSettings().AudioFormat);
                 item.Status = DownloadItemStatus.None;
             }
         }
@@ -207,7 +209,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
                 var metaData = await this._youtubeDownloaderService.GetMetaData(currentItem.Url);
 
-                currentItem.AddMetaData(metaData);
+                currentItem.AddMetaData(metaData, this._settingsService.GetDownloadSettings().AudioFormat);
 
                 currentItem.Status = DownloadItemStatus.None;
             }
