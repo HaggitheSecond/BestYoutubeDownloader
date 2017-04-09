@@ -116,6 +116,10 @@
     <Compile Include="Services\Test\TestService.cs" />
     <Compile Include="Services\YoutubeDL\IYoutubeDownloaderService.cs" />
     <Compile Include="Services\YoutubeDL\YoutubeDownloaderService.cs" />
+    <Compile Include="Views\EditMetaData\EditMetaDataView.xaml.cs">
+      <DependentUpon>EditMetaDataView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditMetaData\EditMetaDataViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
@@ -178,6 +182,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\EditMetaData\EditMetaDataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -229,6 +237,7 @@
     <Resource Include="Resources\Icons\Error-64.png" />
     <Resource Include="Resources\Icons\Console-64.png" />
     <Resource Include="Resources\Icons\Info-64.png" />
+    <Resource Include="Resources\Icons\Picture-64.png" />
     <Content Include="youtube-dl.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

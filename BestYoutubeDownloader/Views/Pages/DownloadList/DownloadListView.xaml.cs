@@ -96,5 +96,20 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             var tb = cp.FindVisualChild<TextBox>();
 
         }
+
+        private void ListBoxItem_LeftMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(e.ClickCount != 2)
+                return;
+
+            var grid = (Grid) sender;
+
+            if(grid == null)
+                return;
+
+            var item = (DownloadItem)grid.DataContext;
+
+            item.ChangeMetaDataCommand.Execute(null);
+        }
     }
 }

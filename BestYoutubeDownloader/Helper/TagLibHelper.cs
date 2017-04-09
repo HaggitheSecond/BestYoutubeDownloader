@@ -1,5 +1,9 @@
-﻿using BestYoutubeDownloader.Common;
+﻿using System.IO;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using BestYoutubeDownloader.Common;
 using Caliburn.Micro;
+using TagLib;
 
 namespace BestYoutubeDownloader.Helper
 {
@@ -10,6 +14,18 @@ namespace BestYoutubeDownloader.Helper
             var f = TagLib.File.Create(file);
             f.Tag.Title = metaData.Title;
             f.Tag.Performers = new[] { metaData.Artist };
+            f.Save();
+        }
+
+        public static void TagMp3Cover(string file, string imagePath)
+        {
+            var picture = new TagLib.Picture(imagePath);
+
+            var f = TagLib.File.Create(file);
+            f.Tag.Pictures = new TagLib.IPicture[]
+            {
+                picture
+            };
             f.Save();
         }
 
@@ -24,7 +40,7 @@ namespace BestYoutubeDownloader.Helper
             switch (strings.Length)
             {
                 case 0:
-                    
+
                 case 1:
 
                     title = strings[0];

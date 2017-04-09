@@ -120,10 +120,11 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
                         var mp3Data = TagLibHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(currentItem.FileName));
 
+                        currentItem.Mp3MetaData = mp3Data;
+
                         if (mp3Data.NeedCheck)
                         {
                             currentItem.Status = DownloadItemStatus.NeedsCheck;
-                            currentItem.Mp3MetaData = mp3Data;
                             continue;
                         }
 

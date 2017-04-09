@@ -12,6 +12,7 @@ using BestYoutubeDownloader.Services.Storage;
 using BestYoutubeDownloader.Services.Test;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using BestYoutubeDownloader.Views;
+using BestYoutubeDownloader.Views.EditMetaData;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
 using BestYoutubeDownloader.Views.Pages.Info;
 using BestYoutubeDownloader.Views.Pages.RawConsole;
@@ -59,7 +60,8 @@ namespace BestYoutubeDownloader
                 .PerRequest<SeperatorViewModel>()
                 .PerRequest<InfoViewModel>()
                 .PerRequest<RawConsoleViewModel>()
-                .PerRequest<SupportedSitesViewModel>();
+                .PerRequest<SupportedSitesViewModel>()
+                .PerRequest<EditMetaDataViewModel>();
         }
 
         #endregion

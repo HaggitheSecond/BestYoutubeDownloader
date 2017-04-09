@@ -134,7 +134,8 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid HorizontalAlignment="Stretch"
-                              Height="50">
+                              Height="50"
+                              MouseLeftButtonDown="ListBoxItem_LeftMouseDown">
                             <Grid VerticalAlignment="Center"
                                   HorizontalAlignment="Stretch" SizeChanged="Grid_SizeChanged">
                                 <Grid.ContextMenu>
@@ -145,11 +146,17 @@
                                                 <Image Source="pack://application:,,,/Resources/Icons/Link-64.png"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <Separator/>
                                         <MenuItem Command="{Binding OpenFileCommand}"
                                                   Header="Open File">
                                             <MenuItem.Icon>
                                                 <Image Source="pack://application:,,,/Resources/Icons/Open Folder-64.png"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Command="{Binding ChangeMetaDataCommand}"
+                                                  Header="Edit metadata">
+                                            <MenuItem.Icon>
+                                                <Image Source="pack://application:,,,/Resources/Icons/Support-64.png"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
                                     </ContextMenu>
@@ -240,7 +247,8 @@
                     <TextBlock Margin="10,0,10,0">
                             <Run Text="Download"/>
                     </TextBlock>
-                    <TextBlock Visibility="{Binding ItemsToDownload, Converter={StaticResource ZeroToVisibilityConverter}}">
+                    <TextBlock Visibility="{Binding ItemsToDownload, Converter={StaticResource ZeroToVisibilityConverter}}"
+                               Margin="0,0,10,0">
                             <Run Text="("/>
                             <Run Text="{Binding DownloadedItems}"/>
                             <Run Text="/"/>

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Media.Effects;
+using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
@@ -17,7 +19,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
     {
         private readonly string _exeLocation;
         private readonly string _exeDirectoryLocation;
-        
+
         private Action<string> _rawConsoleAction;
 
         public YoutubeDownloaderService()
@@ -53,11 +55,11 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         private string BuildCommand(string url, DownloadSettings settings)
         {
-            var commandList = new List<string> {"youtube-dl"};
+            var commandList = new List<string> { "youtube-dl" };
 
             commandList.AddRange(this.BuildDownloadArguments(settings));
 
-            commandList.Add("-o " + settings.OutputLocation + @"\%(title)s.%(ext)s");
+            commandList.Add(this.BuildOutputPath(settings.OutputLocation));
             commandList.Add(url);
 
             return string.Join(" ", commandList);
@@ -73,13 +75,18 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
                 arguments.Add("--audio-format " + settings.AudioFormat.ToString().ToLower());
             }
 
-            if(settings.PrintDebugInfo)
+            if (settings.PrintDebugInfo)
                 arguments.Add("--verbose");
 
-            if(settings.PrintTraffic)
+            if (settings.PrintTraffic)
                 arguments.Add("--print-traffic");
 
             return arguments;
+        }
+
+        private string BuildOutputPath(string outputPath)
+        {
+            return "-o " + outputPath + @"\%(title)s.%(ext)s";
         }
 
         public async Task<bool> ExecuteCommand(Action<string> output, string command)
@@ -121,7 +128,64 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
                 return null;
             }
         }
-        
+
+        public async Task<ImageSource> GetThumbNail(string url)
+        {
+            if (url.IsViableUrl() == false)
+                return null;
+
+            try
+            {
+                var outputUrl = IoC.Get<ISettingsService>().GetDownloadSettings().OutputLocation + @"\ThumbNails";
+
+                if (Directory.Exists(outputUrl) == false)
+                    Directory.CreateDirectory(outputUrl);
+
+                var imageOutputUrl = string.Empty;
+
+                var command = this.BuildThumbNailDownloadCommand(url, outputUrl);
+
+                await CommandPromptHelper.ExecuteCommand(this._exeDirectoryLocation,
+                    command, 
+                    (string input) =>
+                    {
+                        if (input != null && input.Contains("Writing thumbnail to:"))
+                            imageOutputUrl = input;
+                    });
+
+                if (string.IsNullOrWhiteSpace(imageOutputUrl))
+                    return null;
+
+                var stringParts = imageOutputUrl.Split(':');
+
+                var imageUrl = stringParts[stringParts.Length-2] + ":" + stringParts[stringParts.Length-1].Trim();
+
+                var uri = new Uri(imageUrl);
+
+                var image = new BitmapImage(uri);
+
+                return image;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        private string BuildThumbNailDownloadCommand(string url, string outputPath)
+        {
+            var arguments = new List<string>
+            {
+                "youtube-dl",
+                "--write-all-thumbnails",
+                "--skip-download",
+                this.BuildOutputPath(outputPath),
+                url
+            };
+
+            return string.Join(" ", arguments);
+        }
+
         private bool ValidateExeLocation()
         {
             return File.Exists(this._exeLocation);
@@ -164,5 +228,6 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         {
             this._rawConsoleAction = output;
         }
+
     }
 }

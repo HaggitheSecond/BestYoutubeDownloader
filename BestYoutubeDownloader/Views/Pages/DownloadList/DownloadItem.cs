@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Windows.Media;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
+using BestYoutubeDownloader.Views.EditMetaData;
 using Caliburn.Micro;
 
 namespace BestYoutubeDownloader.Views.Pages.DownloadList
@@ -17,6 +19,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private MetaData _metaData;
         private Mp3MetaData _mp3MetaData;
+
+        private ImageSource _image;
 
         public string Url
         {
@@ -71,17 +75,20 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public BestCommand OpenFileCommand { get; }
 
+        public BestCommand ChangeMetaDataCommand { get; }
+
         public DownloadItem(string url)
         {
             this.OpenUrlCommand = new BestCommand(this.OpenUrl);
 
             this.OpenFileCommand = new BestCommand(this.OpenFile, this.CanOpenFile);
 
+            this.ChangeMetaDataCommand = new BestCommand(this.ChangeMetaData, this.CanChangeMetaData);
+
             this.Url = url;
 
             this.Status = DownloadItemStatus.None;
         }
-
         public void AddMetaData(MetaData metaData)
         {
             this._metaData = metaData;
@@ -107,6 +114,27 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private void OpenUrl()
         {
             Process.Start(this.Url);
+        }
+
+        private bool CanChangeMetaData()
+        {
+            return this.Status == DownloadItemStatus.NeedsCheck || this.Status == DownloadItemStatus.SuccessfulDownload;
+        }
+
+        private void ChangeMetaData()
+        {
+            var windowManager = IoC.Get<IWindowManager>();
+
+            var viewModel = IoC.Get<EditMetaDataViewModel>();
+
+            viewModel.Initialize(this.Mp3MetaData, this._metaData, this.FileName, this.Url, this._image);
+
+            var result = windowManager.ShowDialog(viewModel, null, WindowSettings.GetWindowSettings(500, 500));
+
+            if (result.HasValue && result.Value)
+            {
+                this._image = viewModel.Image;
+            }
         }
     }
 }

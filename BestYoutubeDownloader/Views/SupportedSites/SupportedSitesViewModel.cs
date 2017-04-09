@@ -38,6 +38,8 @@ namespace BestYoutubeDownloader.Views.SupportedSites
 
         public SupportedSitesViewModel(IImportService importService)
         {
+            this.DisplayName = "Supported Sites";
+
             this.CloseCommand = new BestCommand(() => this.TryClose());
 
             this.GoToUpdatedListCommand = new BestCommand(() =>
