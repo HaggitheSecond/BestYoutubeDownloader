@@ -8,7 +8,8 @@
              xmlns:converter="clr-namespace:BestYoutubeDownloader.Converter"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             IsEnabled="{Binding IsEnabled}">
+             IsEnabled="{Binding IsEnabled}"
+             SizeChanged="MainView_OnSizeChanged">
     <UserControl.Resources>
         <converter:IsISeperatorToVisibiltyConverter x:Key="IsISeperatorToVisibiltyConverter"/>
         <converter:IsISeperatorToVisibiltyConverter x:Key="InverseIsISeperatorToVisibiltyConverter"
@@ -19,12 +20,14 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ListBox ItemsSource="{Binding Items}"
+        <ListBox x:Name="MainListBox"
+                 ItemsSource="{Binding Items}"
                  SelectedItem="{Binding ActiveItem}"
                  MaxWidth="200"
                  MinWidth="20"
                  Background="White"
-                 BorderThickness="0">
+                 BorderThickness="0"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Style.Triggers>

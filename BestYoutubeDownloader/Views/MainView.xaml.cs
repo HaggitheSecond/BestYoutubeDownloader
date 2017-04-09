@@ -24,5 +24,12 @@ namespace BestYoutubeDownloader.Views
         {
             InitializeComponent();
         }
+
+        private void MainView_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var view = (MainView) sender;
+
+            this.MainListBox.MaxWidth = view.ActualWidth < 500 ? 40 : int.MaxValue;
+        }
     }
 }
