@@ -111,5 +111,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             item.ChangeMetaDataCommand.Execute(null);
         }
+
+        private void DownloadList_OnSourceUpdated(object sender, DataTransferEventArgs e)
+        {
+            
+        }
     }
 }

@@ -41,6 +41,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private int _itemsToDownload;
         private int _downloadedItems;
 
+        private bool _addingItem;
+        private bool _showAddItemsTextBlock;
+
         public BindableCollection<DownloadItem> Items
         {
             get { return this._items; }
@@ -71,23 +74,56 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             set { this.SetProperty(ref this._downloadedItems, value); }
         }
 
+        // non mvvm-properties - if you know a cleaner/better way to solve these you're welcome to share
+
+        public bool AddingItem
+        {
+            get { return this._addingItem; }
+            set { this.SetProperty(ref this._addingItem, value); }
+        }
+
+        public bool ShowAddItemsTextBlock
+        {
+            get { return this._showAddItemsTextBlock; }
+            set { this.SetProperty(ref this._showAddItemsTextBlock, value); }
+        }
+
+        public BestCommand ShowAddItemCommand { get; }
+        public BestCommand ClearItemsCommand { get; }
+
         public BestAsyncCommand AddItemCommand { get; }
         public BestAsyncCommand ImportItemsCommand { get; }
 
         public BestAsyncCommand DownloadAllItemsCommand { get; }
 
-        public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService, ISettingsService settingsService, IMetaDataTagService metaDataTagService)
+        public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService, ISettingsService settingsService,
+            IMetaDataTagService metaDataTagService)
         {
             this._youtubeDownloaderService = youtubeDlService;
             this._settingsService = settingsService;
             this._metaDataTagService = metaDataTagService;
 
-            this.AddItemCommand = new BestAsyncCommand( async () => { await this.AddItem(this.AddItemText); }, this.CanAddItem);
+            this.ShowAddItemCommand = new BestCommand(() => { this.AddingItem = true; });
+            this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); },
+                this.Items != null && this.Items.Count != 0);
+
+            this.AddItemCommand = new BestAsyncCommand(async () => { await this.AddItem(this.AddItemText); },
+                this.CanAddItem);
             this.ImportItemsCommand = new BestAsyncCommand(this.ImportItems);
 
             this.DownloadAllItemsCommand = new BestAsyncCommand(this.DownloadAllItems, this.CanDownloadAllItems);
 
             this.Items = new BindableCollection<DownloadItem>();
+            this.Items.CollectionChanged += (sender, args) =>
+            {
+                if (this.Items == null || this.Items.Count == 0)
+                    this.ShowAddItemsTextBlock = true;
+                else
+                    this.ShowAddItemsTextBlock = false;
+            };
+            
+            this.AddingItem = false;
+            this.ShowAddItemsTextBlock = true;
 
             this._output = this.DownloadOutput;
         }
@@ -102,52 +138,59 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.ItemsToDownload = this.Items.Count(f => f.Status == DownloadItemStatus.None);
             this.DownloadedItems = 0;
 
-            this.Items.Where(f => f.Status == DownloadItemStatus.None).ForEach(f => f.Status = DownloadItemStatus.Waiting);
+            this.Items.Where(f => f.Status == DownloadItemStatus.None)
+                .ForEach(f => f.Status = DownloadItemStatus.Waiting);
 
             foreach (var currentItem in this.Items)
             {
-                if (currentItem.Status != DownloadItemStatus.Waiting)
-                    continue;
-
-                var settings = this._settingsService.GetDownloadSettings();
-
-                currentItem.Status = DownloadItemStatus.Downloading;
-
-                var result = await this._youtubeDownloaderService.DownloadVideo(this._output, currentItem.Url, settings);
-
-                if (result)
-                {
-                    currentItem.FileName = this._latestDestination;
-
-                    if (settings.TagAudio && settings.AudioFormat == FileFormats.Mp3)
-                    {
-                        currentItem.Status = DownloadItemStatus.Working;
-
-                        var mp3Data = MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(currentItem.FileName));
-
-                        currentItem.Mp3MetaData = mp3Data;
-
-                        if (mp3Data.NeedCheck)
-                        {
-                            currentItem.Status = DownloadItemStatus.NeedsCheck;
-                            continue;
-                        }
-
-                        this._metaDataTagService.TagMetaData(currentItem.FileName, mp3Data);
-                    }
-
-                    currentItem.Status = DownloadItemStatus.SuccessfulDownload;
-                }
-                else
-                {
-                    currentItem.Status = DownloadItemStatus.Error;
-                }
+                await this.DownloadItem(currentItem);
 
                 this.DownloadedItems++;
             }
 
             this.ItemsToDownload = 0;
             this.DownloadedItems = 0;
+        }
+
+        public async Task DownloadItem(DownloadItem item)
+        {
+            if (item.Status != DownloadItemStatus.Waiting)
+                return;
+
+            var settings = this._settingsService.GetDownloadSettings();
+
+            item.Status = DownloadItemStatus.Downloading;
+
+            var result = await this._youtubeDownloaderService.DownloadVideo(this._output, item.Url, settings);
+
+            if (result)
+            {
+                item.FileName = this._latestDestination;
+
+                if (settings.TagAudio && settings.AudioFormat == FileFormats.Mp3)
+                {
+                    item.Status = DownloadItemStatus.Working;
+
+                    var mp3Data =
+                        MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(item.FileName));
+
+                    item.Mp3MetaData = mp3Data;
+
+                    if (mp3Data.NeedCheck)
+                    {
+                        item.Status = DownloadItemStatus.NeedsCheck;
+                        return;
+                    }
+
+                    this._metaDataTagService.TagMetaData(item.FileName, mp3Data);
+                }
+
+                item.Status = DownloadItemStatus.SuccessfulDownload;
+            }
+            else
+            {
+                item.Status = DownloadItemStatus.Error;
+            }
         }
 
         private bool CanAddItem()
@@ -186,6 +229,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 item.AddMetaData(metaData, this._settingsService.GetDownloadSettings().AudioFormat);
                 item.Status = DownloadItemStatus.None;
             }
+
+            this.AddingItem = false;
+            this.AddItemText = string.Empty;
         }
 
         private async Task ImportItems()
@@ -204,7 +250,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             var items = importService.ImportDownloadItemsFromFile(fileDialog.FileName);
 
-            this.Items = new BindableCollection<DownloadItem>(items);
+            this.Items.Clear();
+            this.Items.AddRange(items);
 
             foreach (var currentItem in items)
             {
@@ -217,6 +264,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 currentItem.Status = DownloadItemStatus.None;
             }
 
+            this.AddingItem = false;
         }
 
         public void RemoveSelectedItem()
@@ -225,9 +273,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             this.Items.Remove(this.SelectedItem);
 
-            this.SelectedItem = itemIndex >= this.Items.Count
-                ? this.Items.LastOrDefault()
-                : this.Items.ElementAt(itemIndex);
+            if (this.Items.Count != 0)
+                this.SelectedItem = itemIndex >= this.Items.Count
+                    ? this.Items.LastOrDefault()
+                    : this.Items.ElementAt(itemIndex);
         }
 
         private void DownloadOutput(string input)
