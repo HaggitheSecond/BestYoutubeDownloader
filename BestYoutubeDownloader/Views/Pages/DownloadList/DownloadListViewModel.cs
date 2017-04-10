@@ -121,7 +121,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 else
                     this.ShowAddItemsTextBlock = false;
             };
-            
+
             this.AddingItem = false;
             this.ShowAddItemsTextBlock = true;
 
@@ -171,21 +171,45 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 {
                     item.Status = DownloadItemStatus.Working;
 
-                    var mp3Data =
-                        MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(item.FileName));
+                    var mp3Data = MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(item.FileName));
 
                     item.Mp3MetaData = mp3Data;
 
                     if (mp3Data.NeedCheck)
                     {
                         item.Status = DownloadItemStatus.NeedsCheck;
-                        return;
                     }
 
                     this._metaDataTagService.TagMetaData(item.FileName, mp3Data);
                 }
 
-                item.Status = DownloadItemStatus.SuccessfulDownload;
+                if (settings.TagCoverImage && settings.AudioFormat == FileFormats.Mp3)
+                {
+                    var imageResult = await this._youtubeDownloaderService.GetThumbNail(item.Url);
+
+                    if (imageResult != null)
+                    {
+                        var bitmapImage = imageResult as BitmapImage;
+
+                        var path = bitmapImage?.UriSource.LocalPath;
+
+                        if (path != null)
+                        {
+                            if (File.Exists(path))
+                            {
+                                this._metaDataTagService.TagCoverImage(item.FileName, path);
+                                item.Image = imageResult;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        item.Status = DownloadItemStatus.NeedsCheck;
+                    }
+                }
+
+                if (item.Status != DownloadItemStatus.NeedsCheck)
+                    item.Status = DownloadItemStatus.SuccessfulDownload;
             }
             else
             {

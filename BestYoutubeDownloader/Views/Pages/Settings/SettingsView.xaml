@@ -54,7 +54,12 @@
                 <ComboBox Grid.Column="0"
                           ItemsSource="{Binding AvailableAudioFormats}"
                           SelectedItem="{Binding SelectedAudioFormat}"
-                          IsEditable="False"/>
+                          IsEditable="False"
+                          Margin="0,0,10,0"/>
+                <CheckBox Grid.Column="1"
+                          Content="Load covers"
+                          IsChecked="{Binding TagCoverImage}"
+                          VerticalAlignment="Center"/>
             </Grid>
             <Separator/>
             <TextBlock Text="Program"

@@ -12,6 +12,8 @@
 
         public bool TagAudio { get; set; }
 
+        public bool TagCoverImage { get; set; }
+
         // debug infos
 
         public bool PrintDebugInfo { get; set; }

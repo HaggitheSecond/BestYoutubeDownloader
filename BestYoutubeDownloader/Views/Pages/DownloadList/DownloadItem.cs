@@ -69,6 +69,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             set { this.SetProperty(ref this._format, value); }
         }
 
+        public ImageSource Image
+        {
+            get { return this._image; }
+            set { this.SetProperty(ref this._image, value); }
+        }
+
         public BestCommand OpenUrlCommand { get; }
 
         public BestCommand OpenFileCommand { get; }
@@ -126,7 +132,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             var viewModel = IoC.Get<EditMetaDataViewModel>();
 
-            viewModel.Initialize(this.Mp3MetaData, this._metaData, this.FileName, this.Url, this._image);
+            viewModel.Initialize(this.Mp3MetaData, this._metaData, this.FileName, this.Url, this.Image);
 
             var result = windowManager.ShowDialog(viewModel, null, WindowSettings.GetWindowSettings(500, 500));
 
