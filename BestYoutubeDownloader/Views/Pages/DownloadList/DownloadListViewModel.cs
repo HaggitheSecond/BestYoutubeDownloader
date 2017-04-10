@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -94,6 +95,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         public BestAsyncCommand AddItemCommand { get; }
         public BestAsyncCommand ImportItemsCommand { get; }
 
+        public BestCommand OpenOutputCommand { get; }
+
         public BestAsyncCommand DownloadAllItemsCommand { get; }
 
         public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService, ISettingsService settingsService,
@@ -104,12 +107,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this._metaDataTagService = metaDataTagService;
 
             this.ShowAddItemCommand = new BestCommand(() => { this.AddingItem = true; });
-            this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); },
-                this.Items != null && this.Items.Count != 0);
+            this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); },this.Items != null && this.Items.Count != 0);
 
-            this.AddItemCommand = new BestAsyncCommand(async () => { await this.AddItem(this.AddItemText); },
-                this.CanAddItem);
+            this.AddItemCommand = new BestAsyncCommand(async () => { await this.AddItem(this.AddItemText); },this.CanAddItem);
             this.ImportItemsCommand = new BestAsyncCommand(this.ImportItems);
+
+            this.OpenOutputCommand = new BestCommand(this.OpenOutput, this.CanOpenOutput);
 
             this.DownloadAllItemsCommand = new BestAsyncCommand(this.DownloadAllItems, this.CanDownloadAllItems);
 
@@ -126,6 +129,16 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.ShowAddItemsTextBlock = true;
 
             this._output = this.DownloadOutput;
+        }
+
+        private bool CanOpenOutput()
+        {
+            return string.IsNullOrWhiteSpace(this._settingsService.GetDownloadSettings().OutputLocation) == false;
+        }
+
+        private void OpenOutput()
+        {
+            Process.Start(this._settingsService.GetDownloadSettings().OutputLocation);
         }
 
         private bool CanDownloadAllItems()

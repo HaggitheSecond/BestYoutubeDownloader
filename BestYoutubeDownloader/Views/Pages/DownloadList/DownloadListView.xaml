@@ -98,6 +98,13 @@
                                 <Image Source="pack://application:,,,/Resources/Icons/Delete-26.png"/>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Open Output-Folder"
+                                  Command="{Binding OpenOutputCommand}">
+                            <MenuItem.Icon>
+                                <Image Source="pack://application:,,,/Resources/Icons/Open Folder-64.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </ContextMenu>
                 </ListBox.ContextMenu>
                 <ListBox.ItemContainerStyle>
