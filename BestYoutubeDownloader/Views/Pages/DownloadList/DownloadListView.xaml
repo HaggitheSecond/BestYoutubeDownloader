@@ -93,8 +93,15 @@
                                 <Image Source="pack://application:,,,/Resources/Icons/Plus Math-64.png"/>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <Separator/>
                         <MenuItem Header="Clear Items"
                                   Command="{Binding ClearItemsCommand}">
+                            <MenuItem.Icon>
+                                <Image Source="pack://application:,,,/Resources/Icons/Delete-26.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Clear finished Items"
+                                  Command="{Binding ClearFinishedItemsCommand}">
                             <MenuItem.Icon>
                                 <Image Source="pack://application:,,,/Resources/Icons/Delete-26.png"/>
                             </MenuItem.Icon>
@@ -129,28 +136,6 @@
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
-                        <Setter Property="LayoutTransform">
-                            <Setter.Value>
-                                <ScaleTransform x:Name="transform" />
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <EventTrigger.Actions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" 
-                                                             From="0" 
-                                                             To="1" 
-                                                             Duration="0:0:1" />
-                                            <DoubleAnimation Storyboard.TargetProperty="LayoutTransform.ScaleY" 
-                                                             From="0" 
-                                                             Duration="0:0:.1"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger.Actions>
-                            </EventTrigger>
-                        </Style.Triggers>
                     </Style>
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>

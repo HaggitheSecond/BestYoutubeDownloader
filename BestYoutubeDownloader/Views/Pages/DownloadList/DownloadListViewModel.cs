@@ -100,6 +100,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         public BestCommand ShowAddItemCommand { get; }
         public BestCommand ClearItemsCommand { get; }
 
+        public BestCommand ClearFinishedItemsCommand { get; }
+
         public BestAsyncCommand AddItemCommand { get; }
         public BestAsyncCommand ImportItemsCommand { get; }
 
@@ -116,6 +118,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             this.ShowAddItemCommand = new BestCommand(() => { this.AddingItem = true; });
             this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); }, this.Items != null && this.Items.Count != 0);
+            this.ClearFinishedItemsCommand = new BestCommand(() =>
+            {
+                var items = this.Items.Where(f => f.Status != DownloadItemStatus.SuccessfulDownload);
+                this.Items = new BindableCollection<DownloadItem>(items);
+
+            }, this.Items != null && this.Items.Count != 0);
 
             this.AddItemCommand = new BestAsyncCommand(async () => { await this.AddItem(this.AddItemText); }, this.CanAddItem);
             this.ImportItemsCommand = new BestAsyncCommand(this.ImportItems);
