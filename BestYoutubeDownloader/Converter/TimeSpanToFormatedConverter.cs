@@ -12,15 +12,8 @@ namespace BestYoutubeDownloader.Converter
                 return string.Empty;
 
             var duration = (TimeSpan) value;
-
-            var formatedDuration = string.Empty;
-
-            if(duration.TotalHours > 1)
-                formatedDuration = duration.ToString(@"h\:m\:s");
-            else
-                formatedDuration = duration.ToString(@"m\:s");
-
-            return "(" + formatedDuration + ")";
+            
+            return "(" + duration.ToString(duration.TotalHours > 1 ? @"hh\:mm\:ss" : @"mm\:ss") + ")";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

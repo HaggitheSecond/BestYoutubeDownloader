@@ -42,6 +42,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private int _itemsToDownload;
         private int _downloadedItems;
 
+        private bool _isDownloading;
+
         private bool _addingItem;
         private bool _showAddItemsTextBlock;
 
@@ -73,6 +75,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         {
             get { return this._downloadedItems; }
             set { this.SetProperty(ref this._downloadedItems, value); }
+        }
+
+        public bool IsDownloading
+        {
+            get { return this._isDownloading; }
+            set { this.SetProperty(ref this._isDownloading, value); }
         }
 
         // non mvvm-properties - if you know a cleaner/better way to solve these you're welcome to share
@@ -107,9 +115,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this._metaDataTagService = metaDataTagService;
 
             this.ShowAddItemCommand = new BestCommand(() => { this.AddingItem = true; });
-            this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); },this.Items != null && this.Items.Count != 0);
+            this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); }, this.Items != null && this.Items.Count != 0);
 
-            this.AddItemCommand = new BestAsyncCommand(async () => { await this.AddItem(this.AddItemText); },this.CanAddItem);
+            this.AddItemCommand = new BestAsyncCommand(async () => { await this.AddItem(this.AddItemText); }, this.CanAddItem);
             this.ImportItemsCommand = new BestAsyncCommand(this.ImportItems);
 
             this.OpenOutputCommand = new BestCommand(this.OpenOutput, this.CanOpenOutput);
@@ -148,27 +156,34 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private async Task DownloadAllItems()
         {
-            this.ItemsToDownload = this.Items.Count(f => f.Status == DownloadItemStatus.None);
-            this.DownloadedItems = 0;
-
-            this.Items.Where(f => f.Status == DownloadItemStatus.None)
-                .ForEach(f => f.Status = DownloadItemStatus.Waiting);
-
-            foreach (var currentItem in this.Items)
+            try
             {
-                await this.DownloadItem(currentItem);
+                this.IsDownloading = true;
 
-                this.DownloadedItems++;
+                this.ItemsToDownload = this.Items.Count(f => f.Status == DownloadItemStatus.None);
+                this.DownloadedItems = 0;
+
+                this.Items.Where(f => f.Status == DownloadItemStatus.None)
+                    .ForEach(f => f.Status = DownloadItemStatus.Waiting);
+
+                foreach (var currentItem in this.Items)
+                {
+                    var result = await this.DownloadItem(currentItem);
+
+                    if (result)
+                        this.DownloadedItems++;
+                }
             }
-
-            this.ItemsToDownload = 0;
-            this.DownloadedItems = 0;
+            finally
+            {
+                this.IsDownloading = false;
+            }
         }
 
-        public async Task DownloadItem(DownloadItem item)
+        public async Task<bool> DownloadItem(DownloadItem item)
         {
             if (item.Status != DownloadItemStatus.Waiting)
-                return;
+                return false;
 
             var settings = this._settingsService.GetDownloadSettings();
 
@@ -223,10 +238,13 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
                 if (item.Status != DownloadItemStatus.NeedsCheck)
                     item.Status = DownloadItemStatus.SuccessfulDownload;
+
+                return true;
             }
             else
             {
                 item.Status = DownloadItemStatus.Error;
+                return false;
             }
         }
 
