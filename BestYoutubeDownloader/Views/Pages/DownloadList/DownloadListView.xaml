@@ -76,13 +76,26 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid>
+        <StackPanel Grid.Row="0"
+                    HorizontalAlignment="Right"
+                    Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Orientation="Horizontal">
+            <Image Source="pack://application:,,,/Resources/Icons/Download-48.png"
+                   VerticalAlignment="Center"
+                   Width="15"
+                   Height="15"/>
+            <TextBlock Text="{Binding CurrentDownloadStatus.CurrentDownloadSpeed}"
+                       Margin="10,0,0,10"
+                       FontSize="15"/>
+        </StackPanel>
+        <Grid Grid.Row="1">
             <ListBox x:Name="DownloadList" 
-                     Grid.Row="0"
+                     BorderBrush="Transparent"
                      ItemsSource="{Binding Items}"
                      SelectedItem="{Binding SelectedItem}"
                      HorizontalContentAlignment="Stretch"
@@ -239,7 +252,7 @@
                        Foreground="Gray"
                        Visibility="{Binding ShowAddItemsTextBlock, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </Grid>
-        <Grid Grid.Row="1"
+        <Grid Grid.Row="2"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Bottom"
               Margin="0,5,0,5"
@@ -263,7 +276,7 @@
                     Margin="5,0,0,0"
                     HorizontalAlignment="Right"/>
         </Grid>
-        <Button Grid.Row="2"
+        <Button Grid.Row="3"
                 Command="{Binding DownloadAllItemsCommand}"
                 HorizontalAlignment="Stretch"
                 Height="25"

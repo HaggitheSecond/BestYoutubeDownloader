@@ -78,7 +78,6 @@ namespace BestYoutubeDownloader.Views
 
             if (this._settingsService.GetDownloadSettings().ShowConsole)
                 this.Items.Add(this.RawConsoleViewModel);
-            
 
             this.SettingsViewModel = IoC.Get<SettingsViewModel>();
             this.Items.Add(this.SettingsViewModel);
@@ -88,7 +87,7 @@ namespace BestYoutubeDownloader.Views
             this.InfoViewModel = IoC.Get<InfoViewModel>();
             this.Items.Add(this.InfoViewModel);
         }
-        
+
         protected override async void OnActivate()
         {
             this.ActivateItem(this.DownloadListViewModel);
@@ -109,10 +108,14 @@ namespace BestYoutubeDownloader.Views
         public void Handle(SettingsChanged message)
         {
             if (message.Settings.ShowConsole)
-                this.Items.Insert(1, this.RawConsoleViewModel);
+            {
+                if (this.Items.Contains(this.RawConsoleViewModel) == false)
+                    this.Items.Insert(1, this.RawConsoleViewModel);
+            }
             else
+            {
                 this.Items.Remove(this.RawConsoleViewModel);
-
+            }
 
         }
     }
