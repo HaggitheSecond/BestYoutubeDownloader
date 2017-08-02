@@ -46,6 +46,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private bool _addingItem;
         private bool _showAddItemsTextBlock;
+        private DownloadStatus _currentDownloadStatus;
 
         public BindableCollection<DownloadItem> Items
         {
@@ -75,6 +76,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         {
             get { return this._downloadedItems; }
             set { this.SetProperty(ref this._downloadedItems, value); }
+        }
+
+        public DownloadStatus CurrentDownloadStatus
+        {
+            get { return this._currentDownloadStatus; }
+            set { this.SetProperty(ref this._currentDownloadStatus, value); }
         }
 
         public bool IsDownloading
@@ -202,6 +209,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             if (result)
             {
                 item.FileName = this._latestDestination;
+
+                if (item.FileName.ContainsNonAscii())
+                {
+                    item.Status = DownloadItemStatus.MetaDataNonTagable;
+                    return true;
+                }
 
                 if (settings.TagAudio && settings.AudioFormat == FileFormats.Mp3)
                 {
@@ -350,6 +363,16 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             if (YoutubeDlOutputHelper.TryGetFilePath(input, out string filePath))
             {
                 this._latestDestination = filePath;
+            }
+
+            if (YoutubeDlOutputHelper.TryReadDownloadStatus(input, out DownloadStatus status))
+            {
+                this.CurrentDownloadStatus = status;
+
+                var currentItem = this.Items.FirstOrDefault(f => f.IsDownloading);
+
+                if (currentItem != null)
+                    currentItem.CurrentPercent = status.PercentDone;
             }
         }
     }

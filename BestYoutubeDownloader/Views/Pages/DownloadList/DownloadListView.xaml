@@ -36,6 +36,8 @@
                             Target="pack://application:,,,/Resources/Icons/Support-64.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
                             Target="pack://application:,,,/Resources/Icons/Error-64.png"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
+                            Target="pack://application:,,,/Resources/Icons/Error-64.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
                             Target="{x:Null}"/>
         </dxmvvm:ObjectToObjectConverter>
@@ -61,11 +63,16 @@
                             Target="Input required"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
                             Target="Loading"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.MetaDataNonTagable}"
+                            Target="Metadata not tagable"/>
         </dxmvvm:ObjectToObjectConverter>
         <converter:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
         <converter:TimeSpanToFormatedConverter x:Key="TimeSpanToFormatedConverter"/>
         <converter:NullTextConverter x:Key="NullTextConverter"/>
         <converter:NullTextToForegroundConverter x:Key="NullTextToForegroundConverter"/>
+        <dxmvvm:BooleanToObjectConverter x:Key="IsDownloadingToForegroundConverter"
+                                         TrueValue="{x:Static Brushes.Black}"
+                                         FalseValue="{x:Static Brushes.DarkGray}"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -139,7 +146,7 @@
                     </Style>
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate DataType="{x:Type local:DownloadItem}">
                         <Grid HorizontalAlignment="Stretch"
                               Height="50"
                               MouseLeftButtonDown="ListBoxItem_LeftMouseDown">
@@ -173,6 +180,7 @@
                                                       Width="*"
                                                       />
                                     <ColumnDefinition Width="65"/>
+                                    <ColumnDefinition Width="35"/>
                                     <ColumnDefinition Width="40"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
@@ -197,9 +205,21 @@
                                            Text="{Binding Status, Converter={StaticResource StatusToTextConverter}}"
                                            FontWeight="Light"
                                            FontSize="10"
-                                           Foreground="DarkGray"
+                                           Foreground="{Binding IsDownloading, Converter={StaticResource IsDownloadingToForegroundConverter}}"
                                            VerticalAlignment="Center"/>
-                                <Image Grid.Column="2"
+                                <TextBlock Grid.Column="2"
+                                           VerticalAlignment="Center"
+                                           Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Run Text="{Binding CurrentPercent}"
+                                           FontSize="10"
+                                           FontWeight="Light"
+                                         Foreground="{Binding IsDownloading, Converter={StaticResource IsDownloadingToForegroundConverter}}"/>
+                                    <Run Text="%"
+                                           FontSize="10"
+                                           FontWeight="Light"
+                                         Foreground="{Binding IsDownloading, Converter={StaticResource IsDownloadingToForegroundConverter}}"/>
+                                </TextBlock>
+                                <Image Grid.Column="3"
                                        Source="{Binding Status, Converter={StaticResource StatusToImageConverter}}"
                                        VerticalAlignment="Center"
                                        Width="30"

@@ -12,6 +12,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
     {
         private string _url;
         private DownloadItemStatus _status;
+        private decimal _currentPercent;
+
         private string _fileName;
 
         private string _title;
@@ -23,6 +25,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private ImageSource _image;
 
         private FileFormats _format;
+        private bool _isDownloading;
 
         public string Url
         {
@@ -35,8 +38,16 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             get { return this._status; }
             set
             {
+                this.IsDownloading = value == DownloadItemStatus.Downloading;
+
                 this.SetProperty(ref this._status, value);
             }
+        }
+
+        public decimal CurrentPercent
+        {
+            get { return this._currentPercent; }
+            set { this.SetProperty(ref this._currentPercent, value); }
         }
 
         public string FileName
@@ -73,6 +84,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         {
             get { return this._image; }
             set { this.SetProperty(ref this._image, value); }
+        }
+
+        public bool IsDownloading
+        {
+            get { return this._isDownloading; }
+            set { this.SetProperty(ref this._isDownloading, value); }
         }
 
         public BestCommand OpenUrlCommand { get; }
@@ -123,7 +140,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private bool CanChangeMetaData()
         {
-            return (this.Status == DownloadItemStatus.NeedsCheck || this.Status == DownloadItemStatus.SuccessfulDownload) && this.Format == FileFormats.Mp3;
+            return (this.Status == DownloadItemStatus.NeedsCheck || this.Status == DownloadItemStatus.SuccessfulDownload) 
+                && this.Format == FileFormats.Mp3
+                && this.FileName.ContainsNonAscii() == false;
         }
 
         private void ChangeMetaData()

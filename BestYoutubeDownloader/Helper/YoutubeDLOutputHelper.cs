@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using BestYoutubeDownloader.Views.Pages.DownloadList;
 
 namespace BestYoutubeDownloader.Helper
 {
@@ -29,6 +31,29 @@ namespace BestYoutubeDownloader.Helper
             var tempResult = string.Join(" ", inputParts);
 
             result = tempResult.Replace('"', ' ');
+
+            return true;
+        }
+
+        public static bool TryReadDownloadStatus(string input, out DownloadStatus result)
+        {
+            result = new DownloadStatus();
+
+            if (input.Contains("[download]") == false)
+                return false;
+
+            if (input.Contains("Destination:") || input.Contains("merged."))
+                return false;
+
+            var parts = input.Split(char.Parse(" "));
+
+            result.PercentDone = Convert.ToDecimal(parts.FirstOrDefault(f => f.Contains("%"))?.Replace("%", ""));
+
+            result.TotalSize = parts.FirstOrDefault(f => f.Contains("KiB") || f.Contains("MiB") || f.Contains("GiB"));
+
+            result.CurrentDownloadSpeed = parts.FirstOrDefault(f => f.Contains("KiB/s") || f.Contains("MiB/s") || f.Contains("GiB/s"));
+
+            result.Eta = TimeSpan.Parse(parts.FirstOrDefault(f => f.Contains(":")));
 
             return true;
         }

@@ -105,6 +105,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\CommandPromptHelper.cs" />
     <Compile Include="Extensions\PropertyChangedExtensions.cs" />
+    <Compile Include="Views\Pages\DownloadList\DownloadStatus.cs" />
     <Compile Include="Helper\MetaDataHelper.cs" />
     <Compile Include="Helper\TagLibHelper.cs" />
     <Compile Include="Helper\YoutubeDLOutputHelper.cs" />

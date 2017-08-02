@@ -10,6 +10,7 @@
         NeedsCheck,
         Canceled,
         NonDownloadable,
+        MetaDataNonTagable,
         Error,
         SuccessfulDownload
     }
