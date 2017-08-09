@@ -68,7 +68,7 @@
         </dxmvvm:ObjectToObjectConverter>
         <converter:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
         <converter:TimeSpanToFormatedConverter x:Key="TimeSpanToFormatedConverter"/>
-        <converter:NullTextConverter x:Key="NullTextConverter"/>
+        <converter:NullTextAndTruncateConverter x:Key="NullTextAndTruncateConverter"/>
         <converter:NullTextToForegroundConverter x:Key="NullTextToForegroundConverter"/>
         <dxmvvm:BooleanToObjectConverter x:Key="IsDownloadingToForegroundConverter"
                                          TrueValue="{x:Static Brushes.Black}"
@@ -160,7 +160,8 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type local:DownloadItem}">
-                        <Grid HorizontalAlignment="Stretch"
+                        <Grid x:Name="ItemGrid"
+                            HorizontalAlignment="Stretch"
                               Height="50"
                               MouseLeftButtonDown="ListBoxItem_LeftMouseDown">
                             <Grid VerticalAlignment="Center"
@@ -196,14 +197,16 @@
                                     <ColumnDefinition Width="35"/>
                                     <ColumnDefinition Width="40"/>
                                 </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
+                                <StackPanel Grid.Column="0"
+                                            ToolTip="{Binding Title}">
                                     <TextBlock x:Name="TextBlockTitle"
                                                 VerticalAlignment="Center"
                                                TextTrimming="CharacterEllipsis"
                                                HorizontalAlignment="Left">
-                                    <Run Text="{Binding Title, Converter={StaticResource NullTextConverter}, ConverterParameter='No title'}"
-                                         Foreground="{Binding Title, Converter={StaticResource NullTextToForegroundConverter}}"
-                                         FontWeight="Bold"/>
+                                    <Run Text="{Binding Title, Converter={StaticResource NullTextAndTruncateConverter}, ConverterParameter='Loading...'}"
+                                            Foreground="{Binding Title, Converter={StaticResource NullTextToForegroundConverter}}"
+                                         FontWeight="Bold">
+                                    </Run>
                                     <Run Text="{Binding Duration, Converter={StaticResource TimeSpanToFormatedConverter}}"/>
                                     </TextBlock>
                                     <TextBlock x:Name="TextBlockUrl"

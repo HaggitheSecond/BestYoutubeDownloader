@@ -53,7 +53,7 @@ namespace BestYoutubeDownloader.Helper
 
             result.CurrentDownloadSpeed = parts.FirstOrDefault(f => f.Contains("KiB/s") || f.Contains("MiB/s") || f.Contains("GiB/s"));
 
-            result.Eta = TimeSpan.Parse(parts.FirstOrDefault(f => f.Contains(":")));
+            //result.Eta = TimeSpan.Parse(parts.FirstOrDefault(f => f.Contains(":")));
 
             return true;
         }
