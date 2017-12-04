@@ -111,12 +111,12 @@ namespace BestYoutubeDownloader.Views
             {
                 if (this.Items.Contains(this.RawConsoleViewModel) == false)
                     this.Items.Insert(1, this.RawConsoleViewModel);
+                
             }
             else
             {
                 this.Items.Remove(this.RawConsoleViewModel);
             }
-
         }
     }
 }

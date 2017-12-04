@@ -81,18 +81,23 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0"
-                    HorizontalAlignment="Right"
+        <Grid Grid.Row="0">
+            <TextBlock Text="Currently extracting audio only!"
+                       Visibility="{Binding IsExtractingAudio, Converter={StaticResource BooleanToVisibilityConverter}}"
+                       FontWeight="Bold"
+                       Foreground="Gray"/>
+            <StackPanel  HorizontalAlignment="Right"
                     Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Orientation="Horizontal">
-            <Image Source="pack://application:,,,/Resources/Icons/Download-48.png"
+                <Image Source="pack://application:,,,/Resources/Icons/Download-48.png"
                    VerticalAlignment="Center"
                    Width="15"
                    Height="15"/>
-            <TextBlock Text="{Binding CurrentDownloadStatus.CurrentDownloadSpeed}"
+                <TextBlock Text="{Binding CurrentDownloadStatus.CurrentDownloadSpeed}"
                        Margin="10,0,0,10"
                        FontSize="15"/>
-        </StackPanel>
+            </StackPanel>
+        </Grid>
         <Grid Grid.Row="1">
             <ListBox x:Name="DownloadList" 
                      BorderBrush="Transparent"
@@ -183,6 +188,12 @@
                                         <Separator/>
                                         <MenuItem Command="{Binding ChangeMetaDataCommand}"
                                                   Header="Edit metadata">
+                                            <MenuItem.Icon>
+                                                <Image Source="pack://application:,,,/Resources/Icons/Support-64.png"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Command="{Binding ResetStatusCommand}"
+                                                  Header="Reset downloadstatus">
                                             <MenuItem.Icon>
                                                 <Image Source="pack://application:,,,/Resources/Icons/Support-64.png"/>
                                             </MenuItem.Icon>

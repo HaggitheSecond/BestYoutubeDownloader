@@ -98,6 +98,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public BestCommand ChangeMetaDataCommand { get; }
 
+        public BestCommand ResetStatusCommand { get; }
+
         public DownloadItem(string url)
         {
             this.OpenUrlCommand = new BestCommand(this.OpenUrl);
@@ -106,10 +108,13 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             this.ChangeMetaDataCommand = new BestCommand(this.ChangeMetaData, this.CanChangeMetaData);
 
+            this.ResetStatusCommand = new BestCommand(this.ResetStatus, this.CanResetStatus);
+
             this.Url = url;
 
             this.Status = DownloadItemStatus.None;
         }
+
         public void AddMetaData(MetaData metaData, FileFormats format)
         {
             this._metaData = metaData;
@@ -160,6 +165,19 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 this._image = viewModel.Image;
                 this.Status = DownloadItemStatus.SuccessfulDownload;
             }
+        }
+
+
+        private bool CanResetStatus()
+        {
+            return this.Status == DownloadItemStatus.SuccessfulDownload;
+        }
+
+        private void ResetStatus()
+        {
+            this.Status = DownloadItemStatus.None;
+            this.Mp3MetaData = null;
+            this.FileName = string.Empty;
         }
     }
 }

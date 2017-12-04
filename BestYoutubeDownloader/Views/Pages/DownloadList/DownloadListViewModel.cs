@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
+using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.Import;
@@ -20,8 +21,8 @@ using Screen = Caliburn.Micro.Screen;
 
 namespace BestYoutubeDownloader.Views.Pages.DownloadList
 {
-    public class DownloadListViewModel : Screen, IPage
-    {
+    public class DownloadListViewModel : Screen, IPage, IHandle<SettingsChanged>
+    { 
         private readonly IYoutubeDownloaderService _youtubeDownloaderService;
         private readonly ISettingsService _settingsService;
         private readonly IMetaDataTagService _metaDataTagService;
@@ -47,6 +48,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private bool _addingItem;
         private bool _showAddItemsTextBlock;
         private DownloadStatus _currentDownloadStatus;
+        private bool _isExtractingAudio;
 
         public BindableCollection<DownloadItem> Items
         {
@@ -90,6 +92,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             set { this.SetProperty(ref this._isDownloading, value); }
         }
 
+        public bool IsExtractingAudio
+        {
+            get { return this._isExtractingAudio; }
+            set { this.SetProperty(ref this._isExtractingAudio, value); }
+        }
+
         // non mvvm-properties - if you know a cleaner/better way to solve these you're welcome to share
 
         public bool AddingItem
@@ -116,12 +124,16 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public BestAsyncCommand DownloadAllItemsCommand { get; }
 
-        public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService, ISettingsService settingsService,
-            IMetaDataTagService metaDataTagService)
+        public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService, 
+            ISettingsService settingsService,
+            IMetaDataTagService metaDataTagService,
+            IEventAggregator eventAggregator)
         {
             this._youtubeDownloaderService = youtubeDlService;
             this._settingsService = settingsService;
             this._metaDataTagService = metaDataTagService;
+
+            eventAggregator.Subscribe(this);
 
             this.ShowAddItemCommand = new BestCommand(() => { this.AddingItem = true; });
             this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); }, this.Items != null && this.Items.Count != 0);
@@ -152,6 +164,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.ShowAddItemsTextBlock = true;
 
             this._output = this.DownloadOutput;
+
+            this.IsExtractingAudio = this._settingsService.GetDownloadSettings().ExtractAudio;
         }
 
         private bool CanOpenOutput()
@@ -374,6 +388,11 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 if (currentItem != null)
                     currentItem.CurrentPercent = status.PercentDone;
             }
+        }
+
+        public void Handle(SettingsChanged message)
+        {
+            this.IsExtractingAudio = message.Settings.ExtractAudio;
         }
     }
 }
