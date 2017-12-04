@@ -5,5 +5,6 @@
         public string Artist { get; set; }
         public string Title { get; set; }
         public bool NeedCheck { get; set; }
+        public string CheckReason { get; set; }
     }
 }

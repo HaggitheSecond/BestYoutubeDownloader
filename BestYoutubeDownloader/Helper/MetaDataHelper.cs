@@ -1,4 +1,8 @@
-﻿using BestYoutubeDownloader.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using BestYoutubeDownloader.Common;
 
 namespace BestYoutubeDownloader.Helper
 {
@@ -7,6 +11,8 @@ namespace BestYoutubeDownloader.Helper
         public static Mp3MetaData GetTitleAndArtist(string input)
         {
             var needsCheck = false;
+            var reasons = new List<string>();
+
             var artist = string.Empty;
             var title = string.Empty;
 
@@ -20,6 +26,7 @@ namespace BestYoutubeDownloader.Helper
 
                     title = strings[0];
                     needsCheck = true;
+                    reasons.Add("Unable to split properly");
                     break;
                 case 2:
 
@@ -35,18 +42,45 @@ namespace BestYoutubeDownloader.Helper
                     }
 
                     needsCheck = true;
+                    reasons.Add("Unable to split properly");
                     break;
             }
 
             title = title.Trim();
             artist = artist.Trim();
 
+            if (ContainsWhitelistedWords(title))
+            {
+                reasons.Add("Title contains whitelisted text");
+                needsCheck = true;
+            }
+
+            if (ContainsWhitelistedWords(artist))
+            {
+                reasons.Add("Artist contains whitelisted text");
+                needsCheck = true;
+            }
+
             return new Mp3MetaData
             {
                 Artist = artist,
                 Title = title,
-                NeedCheck = needsCheck
+                NeedCheck = needsCheck,
+                CheckReason = string.Join(Environment.NewLine, reasons)
             };
+
+            bool ContainsWhitelistedWords(string text)
+            {
+                var formatedText = text.ToUpper();
+                formatedText = formatedText.Trim();
+
+                if (formatedText.Contains("Lyrics".ToUpper()) ||
+                    formatedText.Contains("(") ||
+                    formatedText.Contains(")"))
+                    return true;
+
+                return false;
+            }
         }
     }
 }

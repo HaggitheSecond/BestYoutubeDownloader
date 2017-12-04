@@ -215,13 +215,13 @@
                                                TextTrimming="CharacterEllipsis"
                                                HorizontalAlignment="Left">
                                     <Run Text="{Binding Title, Converter={StaticResource NullTextAndTruncateConverter}, ConverterParameter='Loading...'}"
-                                            Foreground="{Binding Title, Converter={StaticResource NullTextToForegroundConverter}}"
+                                         Foreground="{Binding Title, Converter={StaticResource NullTextToForegroundConverter}}"
                                          FontWeight="Bold">
                                     </Run>
                                     <Run Text="{Binding Duration, Converter={StaticResource TimeSpanToFormatedConverter}}"/>
                                     </TextBlock>
                                     <TextBlock x:Name="TextBlockUrl"
-                                                Text="{Binding Url}"
+                                               Text="{Binding Url, Converter={StaticResource NullTextAndTruncateConverter}}"
                                                VerticalAlignment="Center"
                                                FontStyle="Italic"
                                                Foreground="Gray"
@@ -251,7 +251,7 @@
                                        VerticalAlignment="Center"
                                        Width="30"
                                        Height="30"
-                                       ToolTip="{Binding Status, Converter={StaticResource StatusToTextConverter}}"/>
+                                       ToolTip="{Binding StatusTooltip}"/>
                             </Grid>
                         </Grid>
                     </DataTemplate>

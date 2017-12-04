@@ -26,6 +26,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private FileFormats _format;
         private bool _isDownloading;
+        
+        private string _statusTooltip;
 
         public string Url
         {
@@ -40,8 +42,56 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             {
                 this.IsDownloading = value == DownloadItemStatus.Downloading;
 
+                switch (value)
+                {
+                    case DownloadItemStatus.None:
+                        this.StatusTooltip = string.Empty;
+                        break;
+                    case DownloadItemStatus.Loading:
+                        this.StatusTooltip = "Loading";
+                        break;
+                    case DownloadItemStatus.Waiting:
+                        this.StatusTooltip = "Waiting";
+                        break;
+                    case DownloadItemStatus.Downloading:
+                        this.StatusTooltip = "Downloading";
+                        break;
+                    case DownloadItemStatus.Working:
+                        this.StatusTooltip = "Working";
+                        break;
+                    case DownloadItemStatus.NeedsCheck:
+
+                        if (this.Mp3MetaData != null)
+                            this.StatusTooltip = this.Mp3MetaData.CheckReason;
+
+                        break;
+                    case DownloadItemStatus.Canceled:
+                        this.StatusTooltip = "Canceled";
+                        break;
+                    case DownloadItemStatus.NonDownloadable:
+                        this.StatusTooltip = "Non downloadable";
+                        break;
+                    case DownloadItemStatus.MetaDataNonTagable:
+                        this.StatusTooltip = "Metadata not tagable";
+                        break;
+                    case DownloadItemStatus.Error:
+                        this.StatusTooltip = "Error";
+                        break;
+                    case DownloadItemStatus.SuccessfulDownload:
+                        this.StatusTooltip = "Success";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(value), value, null);
+                }
+
                 this.SetProperty(ref this._status, value);
             }
+        }
+
+        public string StatusTooltip
+        {
+            get { return this._statusTooltip; }
+            set { this.SetProperty(ref this._statusTooltip, value); }
         }
 
         public decimal CurrentPercent
