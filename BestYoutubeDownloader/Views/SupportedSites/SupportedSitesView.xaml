@@ -6,7 +6,9 @@
              xmlns:local="clr-namespace:BestYoutubeDownloader.Views.SupportedSites"
              xmlns:converter="clr-namespace:BestYoutubeDownloader.Converter"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             Padding="2"
+             
+             d:DataContext="{d:DesignInstance local:SupportedSitesViewModel}">
     <UserControl.Resources>
         <converter:NullTextConverter x:Key="NullTextConverter"/>
         <converter:NullTextToForegroundConverter x:Key="NullTextToForegroundConverter"/>

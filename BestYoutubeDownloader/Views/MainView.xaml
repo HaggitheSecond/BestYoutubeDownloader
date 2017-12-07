@@ -7,9 +7,9 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:converter="clr-namespace:BestYoutubeDownloader.Converter"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
              IsEnabled="{Binding IsEnabled}"
-             SizeChanged="MainView_OnSizeChanged">
+             SizeChanged="MainView_OnSizeChanged"
+             d:DataContext="{d:DesignInstance local:MainViewModel}">
     <UserControl.Resources>
         <converter:IsISeperatorToVisibiltyConverter x:Key="IsISeperatorToVisibiltyConverter"/>
         <converter:IsISeperatorToVisibiltyConverter x:Key="InverseIsISeperatorToVisibiltyConverter"

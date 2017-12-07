@@ -22,7 +22,7 @@ using Screen = Caliburn.Micro.Screen;
 namespace BestYoutubeDownloader.Views.Pages.DownloadList
 {
     public class DownloadListViewModel : Screen, IPage, IHandle<SettingsChanged>
-    { 
+    {
         private readonly IYoutubeDownloaderService _youtubeDownloaderService;
         private readonly ISettingsService _settingsService;
         private readonly IMetaDataTagService _metaDataTagService;
@@ -124,7 +124,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public BestAsyncCommand DownloadAllItemsCommand { get; }
 
-        public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService, 
+        public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService,
             ISettingsService settingsService,
             IMetaDataTagService metaDataTagService,
             IEventAggregator eventAggregator)
@@ -192,12 +192,11 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 this.ItemsToDownload = this.Items.Count(f => f.Status == DownloadItemStatus.None);
                 this.DownloadedItems = 0;
 
-                this.Items.Where(f => f.Status == DownloadItemStatus.None)
-                    .ForEach(f => f.Status = DownloadItemStatus.Waiting);
+                this.Items.Where(f => f.Status == DownloadItemStatus.None).ForEach(f => f.Status = DownloadItemStatus.Waiting);
 
                 foreach (var currentItem in this.Items)
                 {
-                    var result = await this.DownloadItem(currentItem);
+                    var result = await currentItem.Download(this._output);
 
                     if (result)
                         this.DownloadedItems++;
@@ -206,80 +205,6 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             finally
             {
                 this.IsDownloading = false;
-            }
-        }
-
-        public async Task<bool> DownloadItem(DownloadItem item)
-        {
-            if (item.Status != DownloadItemStatus.Waiting)
-                return false;
-
-            var settings = this._settingsService.GetDownloadSettings();
-
-            item.Status = DownloadItemStatus.Downloading;
-
-            var result = await this._youtubeDownloaderService.DownloadVideo(this._output, item.Url, settings);
-
-            if (result)
-            {
-                item.FileName = this._latestDestination;
-
-                if (item.FileName.ContainsNonAscii())
-                {
-                    item.Status = DownloadItemStatus.MetaDataNonTagable;
-                    return true;
-                }
-
-                if (settings.TagAudio && settings.AudioFormat == FileFormats.Mp3)
-                {
-                    item.Status = DownloadItemStatus.Working;
-
-                    var mp3Data = MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(item.FileName));
-
-                    item.Mp3MetaData = mp3Data;
-
-                    if (mp3Data.NeedCheck)
-                    {
-                        item.Status = DownloadItemStatus.NeedsCheck;
-                    }
-
-                    this._metaDataTagService.TagMetaData(item.FileName, mp3Data);
-                }
-
-                if (settings.TagCoverImage && settings.AudioFormat == FileFormats.Mp3)
-                {
-                    var imageResult = await this._youtubeDownloaderService.GetThumbNail(item.Url);
-
-                    if (imageResult != null)
-                    {
-                        var bitmapImage = imageResult as BitmapImage;
-
-                        var path = bitmapImage?.UriSource.LocalPath;
-
-                        if (path != null)
-                        {
-                            if (File.Exists(path))
-                            {
-                                this._metaDataTagService.TagCoverImage(item.FileName, path);
-                                item.Image = imageResult;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        item.Status = DownloadItemStatus.NeedsCheck;
-                    }
-                }
-
-                if (item.Status != DownloadItemStatus.NeedsCheck)
-                    item.Status = DownloadItemStatus.SuccessfulDownload;
-
-                return true;
-            }
-            else
-            {
-                item.Status = DownloadItemStatus.Error;
-                return false;
             }
         }
 
@@ -373,11 +298,6 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         {
             if (string.IsNullOrEmpty(input))
                 return;
-
-            if (YoutubeDlOutputHelper.TryGetFilePath(input, out string filePath))
-            {
-                this._latestDestination = filePath;
-            }
 
             if (YoutubeDlOutputHelper.TryReadDownloadStatus(input, out DownloadStatus status))
             {

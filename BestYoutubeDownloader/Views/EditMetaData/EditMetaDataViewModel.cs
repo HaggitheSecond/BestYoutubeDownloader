@@ -8,6 +8,7 @@ using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.MetaDataTag;
+using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using Caliburn.Micro;
 
@@ -30,6 +31,8 @@ namespace BestYoutubeDownloader.Views.EditMetaData
         private string _artist;
 
         private ImageSource _image;
+
+        private bool _adjustFileName;
 
         public Mp3MetaData Mp3MetaData
         {
@@ -90,13 +93,19 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             set { this.SetProperty(ref this._image, value); }
         }
 
+        public bool AdjustFileName
+        {
+            get { return this._adjustFileName; }
+            set { this.SetProperty(ref this._adjustFileName, value); }
+        }
+
         public BestCommand SaveCommand { get; }
 
         public BestAsyncCommand LoadCoverImageCommand { get; }
 
-        public  BestCommand OpenDirectoryCommand { get; }
-        
-        public EditMetaDataViewModel(IYoutubeDownloaderService downloaderService, IMetaDataTagService metaDataTagService)
+        public BestCommand OpenDirectoryCommand { get; }
+
+        public EditMetaDataViewModel(IYoutubeDownloaderService downloaderService, IMetaDataTagService metaDataTagService, ISettingsService settingsService)
         {
             this.DisplayName = "Edit metadata";
 
@@ -118,6 +127,30 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
                 this._hasChanges = true;
             };
+
+            this.AdjustFileName = settingsService.GetDownloadSettings().AdjustFileName;
+        }
+
+        public void Initialize(Mp3MetaData mp3MetaData, MetaData metaData, string filePath, string url, ImageSource image = null)
+        {
+            if (mp3MetaData == null)
+                mp3MetaData = new Mp3MetaData();
+
+            if (metaData == null)
+                metaData = new MetaData();
+
+            this.Mp3MetaData = mp3MetaData;
+
+            this.Title = mp3MetaData.Title;
+            this.Artist = mp3MetaData.Artist;
+
+            this.MetaData = metaData;
+
+            this.FilePath = filePath;
+            this.Url = url;
+
+            if (image != null)
+                this.Image = image;
         }
 
         private bool CanOpenDirectory()
@@ -133,7 +166,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
             var directory = Path.GetDirectoryName(path);
 
-            if(directory == null)
+            if (directory == null)
                 return;
 
             Process.Start(directory);
@@ -154,28 +187,6 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             this.Image = result;
         }
 
-        public void Initialize(Mp3MetaData mp3MetaData, MetaData metaData, string filePath, string url, ImageSource image = null)
-        {
-            if(mp3MetaData == null)
-                mp3MetaData = new Mp3MetaData();
-
-            if(metaData == null)
-                metaData = new MetaData();
-
-            this.Mp3MetaData = mp3MetaData;
-
-            this.Title = mp3MetaData.Title;
-            this.Artist = mp3MetaData.Artist;
-
-            this.MetaData = metaData;
-
-            this.FilePath = filePath;
-            this.Url = url;
-
-            if (image != null)
-                this.Image = image;
-        }
-
         private void Save()
         {
             this.Mp3MetaData.Artist = this.Artist;
@@ -189,13 +200,13 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
                 var path = bitmapImage?.UriSource.LocalPath;
 
-                if(path == null)
-                    return;
-
-                if(File.Exists(path) == false)
-                    return;
-                
-                this._metaDataTagService.TagCoverImage(this.FilePath, path);
+                if (path != null)
+                {
+                    if (File.Exists(path))
+                    {
+                        this._metaDataTagService.TagCoverImage(this.FilePath, path);
+                    }
+                }
             }
 
             this.TryClose(true);

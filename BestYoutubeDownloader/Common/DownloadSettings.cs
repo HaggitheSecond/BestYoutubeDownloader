@@ -14,6 +14,8 @@
 
         public bool TagCoverImage { get; set; }
 
+        public bool AdjustFileName { get; set; }
+
         // debug infos
 
         public bool PrintDebugInfo { get; set; }

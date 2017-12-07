@@ -72,7 +72,7 @@ namespace BestYoutubeDownloader.Helper
 
             bool ContainsWhitelistedWords(string text)
             {
-                return text.ToUpper().Trim().Contains("Lyrics", ")", "(", "[", "]", "Original", "HD");
+                return text.ToUpper().Trim().Contains("Lyrics", ")", "(", "[", "]", "Original", "HD", "@");
             }
         }
     }

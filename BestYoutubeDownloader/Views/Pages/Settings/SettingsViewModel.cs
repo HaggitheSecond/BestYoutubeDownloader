@@ -32,6 +32,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         private bool _extractAudio;
         private bool _tagAudio;
         private bool _tagCoverImage;
+        private bool _adjustFileName;
 
         private BindableCollection<string> _availableAudioFormats;
         private string _selectedAudioFormat;
@@ -72,6 +73,12 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         {
             get { return this._tagCoverImage; }
             set { this.SetProperty(ref this._tagCoverImage, value); }
+        }
+
+        public bool AdjustFileName
+        {
+            get { return this._adjustFileName; }
+            set { this.SetProperty(ref this._adjustFileName, value); }
         }
 
         public bool ShowConsole
@@ -117,6 +124,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             this.TagAudio = settings.TagAudio;
             this.ShowConsole = settings.ShowConsole;
             this.TagCoverImage = settings.TagCoverImage;
+            this.AdjustFileName = settings.AdjustFileName;
 
             this.SelectedAudioFormat = this.AvailableAudioFormats.FirstOrDefault(f => f == settings.AudioFormat.ToString());
         }
@@ -148,7 +156,8 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
                 AudioFormat = format,
                 TagAudio = this.TagAudio,
                 ShowConsole = this.ShowConsole,
-                TagCoverImage = this.TagCoverImage
+                TagCoverImage = this.TagCoverImage,
+                AdjustFileName = this.AdjustFileName
             };
 
             this._settingsService.UpdateDownloadSettings(settings);

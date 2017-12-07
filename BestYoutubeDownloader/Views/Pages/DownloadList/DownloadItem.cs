@@ -1,15 +1,29 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
+using BestYoutubeDownloader.Helper;
+using BestYoutubeDownloader.Services.MetaDataTag;
+using BestYoutubeDownloader.Services.Settings;
+using BestYoutubeDownloader.Services.YoutubeDL;
 using BestYoutubeDownloader.Views.EditMetaData;
 using Caliburn.Micro;
+using Action = System.Action;
 
 namespace BestYoutubeDownloader.Views.Pages.DownloadList
 {
     public class DownloadItem : PropertyChangedBase
     {
+        #region Fields
+
+        private readonly IYoutubeDownloaderService _youtubeDownloaderService;
+        private readonly ISettingsService _settingsService;
+        private readonly IMetaDataTagService _metaDataTagService;
+
         private string _url;
         private DownloadItemStatus _status;
         private decimal _currentPercent;
@@ -26,8 +40,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private FileFormats _format;
         private bool _isDownloading;
-        
+
         private string _statusTooltip;
+
+        #endregion
+
+        #region Properties
 
         public string Url
         {
@@ -142,6 +160,11 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             set { this.SetProperty(ref this._isDownloading, value); }
         }
 
+
+        #endregion
+
+        #region Commands
+
         public BestCommand OpenUrlCommand { get; }
 
         public BestCommand OpenFileCommand { get; }
@@ -150,8 +173,14 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public BestCommand ResetStatusCommand { get; }
 
+        #endregion
+
         public DownloadItem(string url)
         {
+            this._youtubeDownloaderService = IoC.Get<IYoutubeDownloaderService>();
+            this._settingsService = IoC.Get<ISettingsService>();
+            this._metaDataTagService = IoC.Get<IMetaDataTagService>();
+
             this.OpenUrlCommand = new BestCommand(this.OpenUrl);
 
             this.OpenFileCommand = new BestCommand(this.OpenFile, this.CanOpenFile);
@@ -165,18 +194,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.Status = DownloadItemStatus.None;
         }
 
-        public void AddMetaData(MetaData metaData, FileFormats format)
-        {
-            this._metaData = metaData;
-            this.Format = format;
-
-            this.Title = metaData.Title;
-
-            if (double.TryParse(metaData.Duration, out double duration) == false)
-                return;
-
-            this.Duration = TimeSpan.FromSeconds(duration);
-        }
+        #region CommandMethods
 
         private bool CanOpenFile()
         {
@@ -195,9 +213,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private bool CanChangeMetaData()
         {
-            return (this.Status == DownloadItemStatus.NeedsCheck || this.Status == DownloadItemStatus.SuccessfulDownload) 
-                && this.Format == FileFormats.Mp3
-                && this.FileName.ContainsNonAscii() == false;
+            return (this.Status == DownloadItemStatus.NeedsCheck || this.Status == DownloadItemStatus.SuccessfulDownload)
+                   && this.Format == FileFormats.Mp3
+                   && this.FileName.ContainsNonAscii() == false;
         }
 
         private void ChangeMetaData()
@@ -217,7 +235,6 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             }
         }
 
-
         private bool CanResetStatus()
         {
             return this.Status == DownloadItemStatus.SuccessfulDownload;
@@ -229,5 +246,131 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.Mp3MetaData = null;
             this.FileName = string.Empty;
         }
+
+        #endregion
+
+        #region Public Methods
+
+        public async Task<bool> Download(Action<string> output)
+        {
+            if (this.Status != DownloadItemStatus.Waiting)
+                return false;
+
+            this.Status = DownloadItemStatus.Downloading;
+
+            var result = await this._youtubeDownloaderService.DownloadVideo(WrapedOutput, this.Url, this._settingsService.GetDownloadSettings());
+
+            if (result)
+            {
+                return await this.SetMetaData();
+            }
+
+            this.Status = DownloadItemStatus.Error;
+            return false;
+            
+            void WrapedOutput(string input)
+            {
+                if (string.IsNullOrEmpty(input))
+                    return;
+
+                if (YoutubeDlOutputHelper.TryGetFilePath(input, out string filePath))
+                    this.FileName = filePath;
+
+                if (YoutubeDlOutputHelper.TryReadDownloadStatus(input, out DownloadStatus status))
+                    this.CurrentPercent = status.PercentDone;
+
+                output.Invoke(input);
+            }
+        }
+
+        public void AddMetaData(MetaData metaData, FileFormats format)
+        {
+            this._metaData = metaData;
+            this.Format = format;
+
+            this.Title = metaData.Title;
+
+            if (double.TryParse(metaData.Duration, out double duration) == false)
+                return;
+
+            this.Duration = TimeSpan.FromSeconds(duration);
+        }
+
+        #endregion
+
+        #region Privat Methods
+
+        private async Task<bool> SetMetaData()
+        {
+            if (this.FileName.ContainsNonAscii())
+            {
+                this.Status = DownloadItemStatus.MetaDataNonTagable;
+                return true;
+            }
+
+            var settings = this._settingsService.GetDownloadSettings();
+
+            if (settings.TagAudio && settings.AudioFormat == FileFormats.Mp3)
+            {
+                this.Status = DownloadItemStatus.Working;
+
+                var mp3Data = MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(this.FileName));
+
+                this.Mp3MetaData = mp3Data;
+
+                if (mp3Data.NeedCheck)
+                {
+                    this.Status = DownloadItemStatus.NeedsCheck;
+                }
+
+                this._metaDataTagService.TagMetaData(this.FileName, mp3Data);
+
+                if (settings.TagCoverImage)
+                {
+                    await this.SetImage();
+                }
+
+                if (settings.AdjustFileName && this.Status == DownloadItemStatus.SuccessfulDownload)
+                {
+                    this.SetFileName();
+                }
+            }
+
+            if (this.Status != DownloadItemStatus.NeedsCheck)
+                this.Status = DownloadItemStatus.SuccessfulDownload;
+
+            return true;
+        }
+
+        private async Task SetImage()
+        {
+            var imageResult = await this._youtubeDownloaderService.GetThumbNail(this.Url);
+
+            if (imageResult != null)
+            {
+                var bitmapImage = imageResult as BitmapImage;
+                var path = bitmapImage?.UriSource.LocalPath;
+
+                if (path != null)
+                {
+                    if (File.Exists(path))
+                    {
+                        this._metaDataTagService.TagCoverImage(this.FileName, path);
+                        this.Image = imageResult;
+                    }
+                }
+            }
+            else
+            {
+                this.Status = DownloadItemStatus.NeedsCheck;
+            }
+        }
+
+        private void SetFileName()
+        {
+
+        }
+
+        #endregion
     }
 }

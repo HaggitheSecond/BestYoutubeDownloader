@@ -5,7 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BestYoutubeDownloader.Views.Pages.Info"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             Padding="2"
+             
+             d:DataContext="{d:DesignInstance local:InfoViewModel}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -19,7 +21,7 @@
                    Width="30"
                    Height="30"
                    Margin="0,0,20,0"/>
-            <TextBlock Text="Best YouTubeDownloader"
+            <TextBlock Text="Best YoutubeDownloader"
                        VerticalAlignment="Center"
                        FontSize="20"
                        FontWeight="Bold"/>
