@@ -228,11 +228,16 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             var result = windowManager.ShowDialog(viewModel, null, WindowSettings.GetWindowSettings(500, 500));
 
-            if (result.HasValue && result.Value)
-            {
-                this._image = viewModel.Image;
-                this.Status = DownloadItemStatus.SuccessfulDownload;
-            }
+            if (result.HasValue == false || result.Value == false)
+                return;
+
+            this.SetMetaData(viewModel.Mp3MetaData);
+            this.SetImage(viewModel.Image as BitmapImage);
+
+            if(viewModel.AdjustFileName)
+                this.SetFileName();
+
+            this.Status = DownloadItemStatus.SuccessfulDownload;
         }
 
         private bool CanResetStatus()
@@ -262,12 +267,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             if (result)
             {
-                return await this.SetMetaData();
+                return await this.SetProperties();
             }
 
             this.Status = DownloadItemStatus.Error;
             return false;
-            
+
             void WrapedOutput(string input)
             {
                 if (string.IsNullOrEmpty(input))
@@ -300,7 +305,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         #region Privat Methods
 
-        private async Task<bool> SetMetaData()
+        private async Task<bool> SetProperties()
         {
             if (this.FileName.ContainsNonAscii())
             {
@@ -314,23 +319,17 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             {
                 this.Status = DownloadItemStatus.Working;
 
-                var mp3Data = MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(this.FileName));
-
-                this.Mp3MetaData = mp3Data;
-
-                if (mp3Data.NeedCheck)
-                {
-                    this.Status = DownloadItemStatus.NeedsCheck;
-                }
-
-                this._metaDataTagService.TagMetaData(this.FileName, mp3Data);
+                this.SetMetaData(MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(this.FileName)));
 
                 if (settings.TagCoverImage)
                 {
-                    await this.SetImage();
+                    var imageResult = await this._youtubeDownloaderService.GetThumbNail(this.Url);
+
+                    if (imageResult != null)
+                        this.SetImage(imageResult as BitmapImage);
                 }
 
-                if (settings.AdjustFileName && this.Status == DownloadItemStatus.SuccessfulDownload)
+                if (settings.AdjustFileName && this.Status == DownloadItemStatus.Working)
                 {
                     this.SetFileName();
                 }
@@ -342,33 +341,48 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             return true;
         }
 
-        private async Task SetImage()
+        private void SetMetaData(Mp3MetaData mp3Data)
         {
-            var imageResult = await this._youtubeDownloaderService.GetThumbNail(this.Url);
+            this.Mp3MetaData = mp3Data;
 
-            if (imageResult != null)
-            {
-                var bitmapImage = imageResult as BitmapImage;
-                var path = bitmapImage?.UriSource.LocalPath;
-
-                if (path != null)
-                {
-                    if (File.Exists(path))
-                    {
-                        this._metaDataTagService.TagCoverImage(this.FileName, path);
-                        this.Image = imageResult;
-                    }
-                }
-            }
-            else
+            if (mp3Data.NeedCheck)
             {
                 this.Status = DownloadItemStatus.NeedsCheck;
             }
+
+            this._metaDataTagService.TagMetaData(this.FileName, mp3Data);
+        }
+
+        private void SetImage(BitmapImage image)
+        {
+            if (image == null)
+                return;
+
+            var path = image.UriSource.LocalPath;
+            
+            if (File.Exists(path) == false)
+                return;
+
+            this._metaDataTagService.TagCoverImage(this.FileName, path);
+            this.Image = image;
         }
 
         private void SetFileName()
         {
+            var desiredName = this.Mp3MetaData.Artist + " - " + this.Mp3MetaData.Title;
+            var fileName = Path.GetFileNameWithoutExtension(this.FileName);
 
+            if (fileName == desiredName)
+                return;
+
+            var desiredPath = Path.GetDirectoryName(this.FileName) + @"\" + desiredName + ".mp3";
+
+            if(File.Exists(desiredPath))
+                File.Delete(desiredPath);
+
+            File.Move(this.FileName, desiredPath);
+            this.FileName = desiredPath;
+            this.Title = desiredName;
         }
 
         #endregion

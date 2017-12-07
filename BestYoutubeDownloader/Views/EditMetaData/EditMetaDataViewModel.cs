@@ -31,6 +31,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
         private string _artist;
 
         private ImageSource _image;
+        private bool _isDownloadingPicture;
 
         private bool _adjustFileName;
 
@@ -93,6 +94,12 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             set { this.SetProperty(ref this._image, value); }
         }
 
+        public bool IsDownloadingPicture
+        {
+            get { return this._isDownloadingPicture; }
+            set { this.SetProperty(ref this._isDownloadingPicture, value); }
+        }
+
         public bool AdjustFileName
         {
             get { return this._adjustFileName; }
@@ -112,7 +119,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             this._downloaderService = downloaderService;
             this._metaDataTagService = metaDataTagService;
 
-            this.SaveCommand = new BestCommand(this.Save, this._hasChanges);
+            this.SaveCommand = new BestCommand(() => this.TryClose(true), this._hasChanges);
             this.LoadCoverImageCommand = new BestAsyncCommand(this.LoadCoverImage, this.CanLoadCover);
 
             this.OpenDirectoryCommand = new BestCommand(this.OpenDirectory, this.CanOpenDirectory);
@@ -179,37 +186,21 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
         private async Task LoadCoverImage()
         {
-            var result = await this._downloaderService.GetThumbNail(this.Url);
-
-            if (result == null)
-                return;
-
-            this.Image = result;
-        }
-
-        private void Save()
-        {
-            this.Mp3MetaData.Artist = this.Artist;
-            this.Mp3MetaData.Title = this.Title;
-
-            this._metaDataTagService.TagMetaData(this._filePath, this.Mp3MetaData);
-
-            if (this.Image != null)
+            try
             {
-                var bitmapImage = this.Image as BitmapImage;
+                this.IsDownloadingPicture = true;
 
-                var path = bitmapImage?.UriSource.LocalPath;
+                var result = await this._downloaderService.GetThumbNail(this.Url);
 
-                if (path != null)
-                {
-                    if (File.Exists(path))
-                    {
-                        this._metaDataTagService.TagCoverImage(this.FilePath, path);
-                    }
-                }
+                if (result == null)
+                    return;
+
+                this.Image = result;
             }
-
-            this.TryClose(true);
+            finally
+            {
+                this.IsDownloadingPicture = false;
+            }
         }
     }
 }
