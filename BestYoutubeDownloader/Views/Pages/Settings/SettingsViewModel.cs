@@ -89,7 +89,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
         public BestCommand ChangeDirectoryCommand { get; }
 
-        public BestAsyncCommand SaveCommand { get; }
+        public BestCommand SaveCommand { get; }
 
         public SettingsViewModel(ISettingsService settingsService, IEventAggregator eventAggregator)
         {
@@ -97,7 +97,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             this._eventAggregator = eventAggregator;
 
             this.ChangeDirectoryCommand = new BestCommand(this.ChangeDirectory);
-            this.SaveCommand = new BestAsyncCommand(this.Save, this.CanSave);
+            this.SaveCommand = new BestCommand(this.Save, this.CanSave);
 
             this.AvailableAudioFormats = new BindableCollection<string>(Enum.GetNames(typeof(FileFormats)));
 
@@ -144,7 +144,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             return this._hasChanges;
         }
 
-        private async Task Save()
+        private void Save()
         {
             if (Enum.TryParse(this.SelectedAudioFormat, out FileFormats format) == false)
                 return;

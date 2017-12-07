@@ -39,36 +39,41 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="26"/>
+                </Grid.RowDefinitions>
                 <CheckBox Grid.Column="0"
-                            Content="Extract Audio"
-                          IsChecked="{Binding ExtractAudio}"/>
+                          Grid.Row="0"
+                          Content="Extract Audio"
+                          IsChecked="{Binding ExtractAudio}"
+                          VerticalAlignment="Center"/>
                 <ComboBox Grid.Column="1"
+                          Grid.Row="0"
                           ItemsSource="{Binding AvailableAudioFormats}"
                           SelectedItem="{Binding SelectedAudioFormat}"
+                          IsEnabled="{Binding ExtractAudio}"
                           IsEditable="False"
-                          Margin="0,0,10,0"/>
-            </Grid>
-            <Grid Margin="0,5,0,5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                          Margin="0,0,10,0"
+                          VerticalAlignment="Center"/>
                 <CheckBox Grid.Column="0"
+                          Grid.Row="1"
                           Content="Load covers"
                           IsChecked="{Binding TagCoverImage}"
+                          IsEnabled="{Binding ExtractAudio}"
                           VerticalAlignment="Center"/>
                 <CheckBox Grid.Column="1"
+                          Grid.Row="1"
                           Content="Fill mp3 title and artist"
-                          IsChecked="{Binding TagAudio}"/>
-            </Grid>
-            <Grid Margin="0,5,0,5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                          IsChecked="{Binding TagAudio}"
+                          IsEnabled="{Binding ExtractAudio}"
+                          VerticalAlignment="Center"/>
                 <CheckBox Grid.Column="0"
+                          Grid.Row="2"
                           Content="Adjust Filenames"
                           IsChecked="{Binding AdjustFileName}"
+                          IsEnabled="{Binding ExtractAudio}"
                           VerticalAlignment="Center"/>
             </Grid>
             <Separator/>
