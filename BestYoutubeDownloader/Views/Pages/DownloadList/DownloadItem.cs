@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -214,8 +215,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private bool CanChangeMetaData()
         {
             return (this.Status == DownloadItemStatus.NeedsCheck || this.Status == DownloadItemStatus.SuccessfulDownload)
-                   && this.Format == FileFormats.Mp3
-                   && this.FileName.ContainsNonAscii() == false;
+                   && this.Format == FileFormats.Mp3;
         }
 
         private void ChangeMetaData()
@@ -307,10 +307,21 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private async Task<bool> SetProperties()
         {
-            if (this.FileName.ContainsNonAscii())
+            // adjust the filename to the actual existing file
+
+            // this is need because the filename extracted from the console will not contain non-ascii characters
+            // but the actual filename will contain them - this is needed to be able to write metadata
+
+            // could lead to problems when multiple programs/processes are writing to the directory simultaneously
+
+            if (File.Exists(this.FileName) == false && string.IsNullOrEmpty(this.FileName) == false)
             {
-                this.Status = DownloadItemStatus.MetaDataNonTagable;
-                return true;
+                // ReSharper disable once AssignNullToNotNullAttribute
+                var directory = new DirectoryInfo(Path.GetDirectoryName(this.FileName));
+
+                var latest = directory.GetFiles().ToList().OrderByDescending(f => f.CreationTime).First();
+
+                this.FileName = latest.FullName;
             }
 
             var settings = this._settingsService.GetDownloadSettings();

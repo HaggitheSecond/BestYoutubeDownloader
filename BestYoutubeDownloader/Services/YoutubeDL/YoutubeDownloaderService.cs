@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -158,9 +159,26 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 var stringParts = imageOutputUrl.Split(':');
 
-                var imageUrl = stringParts[stringParts.Length-2] + ":" + stringParts[stringParts.Length-1].Trim();
+                var imagePath = stringParts[stringParts.Length-2] + ":" + stringParts[stringParts.Length-1].Trim();
 
-                var uri = new Uri(imageUrl);
+                // adjust the filename to the actual existing file
+
+                // this is need because the filename extracted from the console will not contain non-ascii characters
+                // but the actual filename will contain them - this is needed to be able to write metadata
+
+                // could lead to problems when multiple programs/processes are writing to the directory simultaneously
+
+                if (File.Exists(imagePath) == false)
+                {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    var directory = new DirectoryInfo(Path.GetDirectoryName(imagePath));
+
+                    var latest = directory.GetFiles().ToList().OrderByDescending(f => f.CreationTime).First();
+
+                    imagePath = latest.FullName;
+                }
+
+                var uri = new Uri(imagePath);
 
                 var image = new BitmapImage(uri);
 

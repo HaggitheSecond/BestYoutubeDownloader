@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace BestYoutubeDownloader.Extensions
 {
@@ -21,13 +22,7 @@ namespace BestYoutubeDownloader.Extensions
 
         public static bool ContainsNonAscii(this string self)
         {
-            foreach (var currentChar in self)
-            {
-                if (currentChar > 128)
-                    return true;
-            }
-
-            return false;
+            return Encoding.UTF8.GetByteCount(self) != self.Length;
         }
 
         public static bool Contains(this string self, params string[] parameters)
