@@ -29,5 +29,10 @@ namespace BestYoutubeDownloader.Extensions
 
             return false;
         }
+
+        public static bool Contains(this string self, params string[] parameters)
+        {
+            return parameters.Any(self.ToUpper().Trim().Contains);
+        }
     }
 }

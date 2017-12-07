@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using BestYoutubeDownloader.Common;
+using BestYoutubeDownloader.Extensions;
 
 namespace BestYoutubeDownloader.Helper
 {
@@ -16,7 +17,7 @@ namespace BestYoutubeDownloader.Helper
             var artist = string.Empty;
             var title = string.Empty;
 
-            var strings = input.Split('-');
+            var strings = input.Split('-', '|', ':');
 
             switch (strings.Length)
             {
@@ -71,15 +72,7 @@ namespace BestYoutubeDownloader.Helper
 
             bool ContainsWhitelistedWords(string text)
             {
-                var formatedText = text.ToUpper();
-                formatedText = formatedText.Trim();
-
-                if (formatedText.Contains("Lyrics".ToUpper()) ||
-                    formatedText.Contains("(") ||
-                    formatedText.Contains(")"))
-                    return true;
-
-                return false;
+                return text.ToUpper().Trim().Contains("Lyrics", ")", "(", "[", "]", "Original", "HD");
             }
         }
     }
