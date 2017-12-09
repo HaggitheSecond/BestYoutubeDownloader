@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -98,6 +99,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                         break;
                     case DownloadItemStatus.SuccessfulDownload:
                         this.StatusTooltip = "Success";
+                        break;
+                    case DownloadItemStatus.ExtractingAudio:
+                        this.StatusTooltip = "Caution: for long videos this will take a few minutes!";
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -258,6 +262,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public async Task<bool> Download(Action<string> output)
         {
+            var temp = new List<string>();
+
             if (this.Status != DownloadItemStatus.Waiting)
                 return false;
 
@@ -275,14 +281,19 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             void WrapedOutput(string input)
             {
+                temp.Add(input);
+
                 if (string.IsNullOrEmpty(input))
                     return;
-
+                
                 if (YoutubeDlOutputHelper.TryGetFilePath(input, out string filePath))
                     this.FileName = filePath;
 
                 if (YoutubeDlOutputHelper.TryReadDownloadStatus(input, out DownloadStatus status))
                     this.CurrentPercent = status.PercentDone;
+
+                if (YoutubeDlOutputHelper.IsExtractingAudio(input))
+                    this.Status = DownloadItemStatus.ExtractingAudio;
 
                 output.Invoke(input);
             }

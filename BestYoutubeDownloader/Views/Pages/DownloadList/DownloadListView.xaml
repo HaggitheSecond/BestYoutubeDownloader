@@ -39,6 +39,8 @@
                             Target="pack://application:,,,/Resources/Icons/Error-64.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
                             Target="pack://application:,,,/Resources/Icons/Error-64.png"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.ExtractingAudio}"
+                            Target="pack://application:,,,/Resources/Icons/Support-64.png"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
                             Target="{x:Null}"/>
         </dxmvvm:ObjectToObjectConverter>
@@ -63,9 +65,11 @@
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
                             Target="Input required"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
-                            Target="Loading"/>
+                            Target="{x:Null}"/>
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.MetaDataNonTagable}"
                             Target="Metadata not tagable"/>
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.ExtractingAudio}"
+                            Target="Extracting Audio"/>
         </dxmvvm:ObjectToObjectConverter>
         <converter:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
         <converter:TimeSpanToFormatedConverter x:Key="TimeSpanToFormatedConverter"/>
@@ -205,7 +209,7 @@
                                     <ColumnDefinition x:Name="ListBoxItemColumn1"
                                                       Width="*"
                                                       />
-                                    <ColumnDefinition Width="65"/>
+                                    <ColumnDefinition Width="70"/>
                                     <ColumnDefinition Width="35"/>
                                     <ColumnDefinition Width="40"/>
                                 </Grid.ColumnDefinitions>

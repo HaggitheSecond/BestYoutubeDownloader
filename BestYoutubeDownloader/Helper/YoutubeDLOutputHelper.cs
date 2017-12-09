@@ -57,5 +57,10 @@ namespace BestYoutubeDownloader.Helper
 
             return true;
         }
+
+        public static bool IsExtractingAudio(string input)
+        {
+            return input.Contains(@"[ffmpeg] Destination:");
+        }
     }
 }

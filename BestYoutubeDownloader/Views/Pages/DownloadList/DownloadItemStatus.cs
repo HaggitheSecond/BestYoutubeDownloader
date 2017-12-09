@@ -12,6 +12,7 @@
         NonDownloadable,
         MetaDataNonTagable,
         Error,
-        SuccessfulDownload
+        SuccessfulDownload,
+        ExtractingAudio
     }
 }
