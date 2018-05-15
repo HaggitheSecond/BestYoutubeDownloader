@@ -136,7 +136,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             eventAggregator.Subscribe(this);
 
             this.ShowAddItemCommand = new BestCommand(() => { this.AddingItem = true; });
-            this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); }, this.Items != null && this.Items.Count != 0);
+            this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); }, this.Items != null && this.Items.Count != 0 && this.IsDownloading == false);
             this.ClearFinishedItemsCommand = new BestCommand(() =>
             {
                 var items = this.Items.Where(f => f.Status != DownloadItemStatus.SuccessfulDownload);
