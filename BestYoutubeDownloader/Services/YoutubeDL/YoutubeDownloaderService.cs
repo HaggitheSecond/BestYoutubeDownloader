@@ -124,7 +124,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 return (MetaData)metadData;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
@@ -184,7 +184,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 return image;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
