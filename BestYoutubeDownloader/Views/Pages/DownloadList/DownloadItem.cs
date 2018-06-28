@@ -391,7 +391,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private void SetFileName()
         {
-            var desiredName = this.Mp3MetaData.Artist + " - " + this.Mp3MetaData.Title;
+            var desiredName = string.IsNullOrEmpty(this.Mp3MetaData.Artist) == false
+                ? this.Mp3MetaData.Artist + " - " + this.Mp3MetaData.Title
+                : this.Mp3MetaData.Title;
+
             var fileName = Path.GetFileNameWithoutExtension(this.FileName);
 
             if (fileName == desiredName)
