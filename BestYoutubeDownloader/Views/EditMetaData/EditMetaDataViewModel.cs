@@ -112,6 +112,8 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
         public BestCommand OpenDirectoryCommand { get; }
 
+        public BestCommand SwitchTitleAndArtistCommand { get; }
+
         public EditMetaDataViewModel(IYoutubeDownloaderService downloaderService, IMetaDataTagService metaDataTagService, ISettingsService settingsService)
         {
             this.DisplayName = "Edit metadata";
@@ -122,6 +124,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             this.SaveCommand = new BestCommand(() => this.TryClose(true), this._hasChanges);
             this.LoadCoverImageCommand = new BestAsyncCommand(this.LoadCoverImage, this.CanLoadCover);
 
+            this.SwitchTitleAndArtistCommand = new BestCommand(this.SwitchTitleAndArtist, this.CanSwitchTitleAndArtist);
             this.OpenDirectoryCommand = new BestCommand(this.OpenDirectory, this.CanOpenDirectory);
 
             this.PropertyChanged += (sender, args) =>
@@ -158,6 +161,19 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
             if (image != null)
                 this.Image = image;
+        }
+
+        private bool CanSwitchTitleAndArtist()
+        {
+            return string.IsNullOrWhiteSpace(this.Title) == false || string.IsNullOrWhiteSpace(this.Artist) == false;
+        }
+
+        private void SwitchTitleAndArtist()
+        {
+            var title = this.Title;
+
+            this.Title = this.Artist;
+            this.Artist = title;
         }
 
         private bool CanOpenDirectory()

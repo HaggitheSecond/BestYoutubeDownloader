@@ -248,6 +248,7 @@
     <Resource Include="Resources\Icons\Info-64.png" />
     <Resource Include="Resources\Icons\Picture-64.png" />
     <Resource Include="Resources\Icons\Plus Math-64.png" />
+    <Resource Include="Resources\Icons\Refresh-filled-50.png" />
     <Content Include="youtube-dl.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
