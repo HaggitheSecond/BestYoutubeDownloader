@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
+using BestYoutubeDownloader.Services.CommandPrompt;
 using BestYoutubeDownloader.Services.Settings;
 using Caliburn.Micro;
 using Newtonsoft.Json;
@@ -18,13 +19,14 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 {
     public class YoutubeDownloaderService : IYoutubeDownloaderService
     {
+        private readonly ICommandPromptService _commandPromptService;
         private readonly string _exeLocation;
         private readonly string _exeDirectoryLocation;
 
-        private Action<string> _rawConsoleAction;
-
-        public YoutubeDownloaderService()
+        public YoutubeDownloaderService(ICommandPromptService commandPromptService)
         {
+            this._commandPromptService = commandPromptService;
+
             this._exeLocation = Directory.GetCurrentDirectory() + @"\youtube-dl.exe";
             this._exeDirectoryLocation = Directory.GetCurrentDirectory();
         }
@@ -33,16 +35,12 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         {
             if (url.IsViableUrl() == false)
                 return false;
-
-            output = this.WrapOutput(output);
-
+            
             try
             {
                 var command = this.BuildCommand(url, settings);
-
-                this._rawConsoleAction?.Invoke(command);
-
-                await CommandPromptHelper.ExecuteCommand(this._exeDirectoryLocation,
+                
+                await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
                     command,
                     output);
             }
@@ -89,27 +87,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         {
             return "-o " + outputPath + @"\%(title)s.%(ext)s";
         }
-
-        public async Task<bool> ExecuteCommand(Action<string> output, string command)
-        {
-            output = this.WrapOutput(output);
-
-            try
-            {
-                this._rawConsoleAction?.Invoke(command);
-
-                await CommandPromptHelper.ExecuteCommand(this._exeDirectoryLocation,
-                    command,
-                    output);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
+        
         public async Task<MetaData> GetMetaData(string url)
         {
             if (url.IsViableUrl() == false)
@@ -117,7 +95,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             try
             {
-                var result = await CommandPromptHelper.ExecuteCommandWithSingleOutput(this._exeDirectoryLocation,
+                var result = await this._commandPromptService.ExecuteCommandPromptCommandWithSingleOutput(this._exeDirectoryLocation,
                     "youtube-dl -j " + url);
 
                 var metadData = JsonConvert.DeserializeObject(result, typeof(MetaData));
@@ -146,7 +124,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 var command = this.BuildThumbNailDownloadCommand(url, outputUrl);
 
-                await CommandPromptHelper.ExecuteCommand(this._exeDirectoryLocation,
+                await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
                     command, 
                     (string input) =>
                     {
@@ -213,7 +191,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         {
             var hasResult = false;
 
-            await CommandPromptHelper.ExecuteCommand(this._exeDirectoryLocation, "ffmpeg -h", s =>
+            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, "ffmpeg -h", s =>
             {
                 hasResult = true;
             });
@@ -231,21 +209,5 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             return string.Empty;
         }
-
-        private Action<string> WrapOutput(Action<string> output)
-        {
-            return s =>
-            {
-                this._rawConsoleAction?.Invoke(s);
-
-                output(s);
-            };
-        }
-
-        public void RegisterOutputAction(Action<string> output)
-        {
-            this._rawConsoleAction = output;
-        }
-
     }
 }

@@ -105,8 +105,9 @@
     <Compile Include="Events\SettingsChanged.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Helper\CommandPromptHelper.cs" />
     <Compile Include="Extensions\PropertyChangedExtensions.cs" />
+    <Compile Include="Services\CommandPrompt\CommandPromptService.cs" />
+    <Compile Include="Services\CommandPrompt\ICommandPromptService.cs" />
     <Compile Include="Views\Pages\DownloadList\DownloadStatus.cs" />
     <Compile Include="Helper\MetaDataHelper.cs" />
     <Compile Include="Helper\TagLibHelper.cs" />

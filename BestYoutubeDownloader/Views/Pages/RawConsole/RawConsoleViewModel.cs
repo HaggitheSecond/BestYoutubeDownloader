@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
+using BestYoutubeDownloader.Services.CommandPrompt;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using Caliburn.Micro;
@@ -66,7 +67,7 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
             this._youtubeDlService = youtubeDlService;
             this._settingsService = settingsService;
 
-            this._youtubeDlService.RegisterOutputAction(this.AddOutput);
+            IoC.Get<ICommandPromptService>().RegisterOutputAction(this.AddOutput);
 
             this.ClearConsoleCommand = new BestCommand(() => { this.Output = string.Empty; }, () => string.IsNullOrEmpty(this.Output) == false);
             this.ExecuteRawInputCommand = new BestAsyncCommand(this.ExecuteRawInput, this.CanExecuteRawInput);
@@ -114,7 +115,7 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
 
         private async Task ExecuteRawInput()
         {
-            var result = await this._youtubeDlService.ExecuteCommand(this.RawOutput, this.RawInput);
+            
         }
 
         private void RawOutput(string obj)
