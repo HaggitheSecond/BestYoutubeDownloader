@@ -61,6 +61,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -95,6 +96,7 @@
     <Compile Include="Common\MetaData.cs" />
     <Compile Include="Common\Mp3MetaData.cs" />
     <Compile Include="Common\WindowSettings.cs" />
+    <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\ListBoxConverter\IsISeperatorToVisibiltyConverter.cs" />
     <Compile Include="Converter\IsNullOrEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\NullTextAndTruncateConverter.cs" />
@@ -146,6 +148,7 @@
     <Compile Include="Views\Pages\Info\InfoViewModel.cs" />
     <Compile Include="Views\Pages\IPage.cs" />
     <Compile Include="Views\Pages\ISeperator.cs" />
+    <Compile Include="Views\Pages\RawConsole\RawConsoleOutputViewModel.cs" />
     <Compile Include="Views\Pages\RawConsole\RawConsoleView.xaml.cs">
       <DependentUpon>RawConsoleView.xaml</DependentUpon>
     </Compile>
@@ -250,6 +253,7 @@
     <Resource Include="Resources\Icons\Picture-64.png" />
     <Resource Include="Resources\Icons\Plus Math-64.png" />
     <Resource Include="Resources\Icons\Refresh-filled-50.png" />
+    <Resource Include="Resources\Icons\Speaker-48.png" />
     <Content Include="youtube-dl.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -14,6 +14,10 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         Task<ImageSource> GetThumbNail(string url);
 
+        Task<string> UpdateYoutubeDl();
+
+        Task<string> GetYoutubeDlVersion();
+
         Task<string> Validate();
     }
 }

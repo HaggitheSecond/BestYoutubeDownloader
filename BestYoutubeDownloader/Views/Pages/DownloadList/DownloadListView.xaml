@@ -1,110 +1,111 @@
 ﻿<UserControl x:Class="BestYoutubeDownloader.Views.Pages.DownloadList.DownloadListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:BestYoutubeDownloader.Views.Pages.DownloadList"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:converter="clr-namespace:BestYoutubeDownloader.Converter"
-             mc:Ignorable="d" 
-             
+             mc:Ignorable="d"
              d:DataContext="{d:DesignInstance local:DownloadListViewModel}">
     <UserControl.Resources>
-        <dxmvvm:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <converter:IsNullOrEmptyToVisibilityConverter x:Key="InverseIsNullOrEmptyToVisibilityConverter"
-                                                      Inverse="True"/>
-        <dxmvvm:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"
-                                             Inverse="True"/>
-        <converter:IsNullOrEmptyToVisibilityConverter x:Key="IsNullOrEmptyToVisibilityConverter"/>
-        <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter"/>
+        <dxmvvm:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
         <dxmvvm:ObjectToObjectConverter x:Key="StatusToImageConverter"
                                         DefaultTarget="{x:Null}">
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Downloading}"
-                            Target="pack://application:,,,/Resources/Icons/Download-48.png"/>
+                            Target="pack://application:,,,/Resources/Icons/Download-48.png" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Waiting}"
-                            Target="{x:Null}"/>
+                            Target="{x:Null}" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Canceled}"
-                            Target="pack://application:,,,/Resources/Icons/Delete-26.png"/>
+                            Target="pack://application:,,,/Resources/Icons/Delete-26.png" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.SuccessfulDownload}"
-                            Target="pack://application:,,,/Resources/Icons/Checkmark-64.png"/>
+                            Target="pack://application:,,,/Resources/Icons/Checkmark-64.png" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Error}"
-                            Target="pack://application:,,,/Resources/Icons/Delete-26.png"/>
+                            Target="pack://application:,,,/Resources/Icons/Delete-26.png" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.None}"
-                            Target="{x:Null}"/>
+                            Target="{x:Null}" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NonDownloadable}"
-                            Target="pack://application:,,,/Resources/Icons/Error-64.png"/>
+                            Target="pack://application:,,,/Resources/Icons/Error-64.png" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Working}"
-                            Target="pack://application:,,,/Resources/Icons/Support-64.png"/>
+                            Target="pack://application:,,,/Resources/Icons/Support-64.png" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
-                            Target="pack://application:,,,/Resources/Icons/Error-64.png"/>
+                            Target="pack://application:,,,/Resources/Icons/Error-64.png" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
-                            Target="pack://application:,,,/Resources/Icons/Error-64.png"/>
+                            Target="pack://application:,,,/Resources/Icons/Error-64.png" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.ExtractingAudio}"
-                            Target="pack://application:,,,/Resources/Icons/Support-64.png"/>
+                            Target="pack://application:,,,/Resources/Icons/Support-64.png" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
-                            Target="{x:Null}"/>
+                            Target="{x:Null}" />
         </dxmvvm:ObjectToObjectConverter>
         <dxmvvm:ObjectToObjectConverter x:Key="StatusToTextConverter"
                                         DefaultTarget="{x:Null}">
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Downloading}"
-                            Target="Downloading"/>
+                            Target="Downloading" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Waiting}"
-                            Target="Waiting"/>
+                            Target="Waiting" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Canceled}"
-                            Target="Canceled"/>
+                            Target="Canceled" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.SuccessfulDownload}"
-                            Target="Success"/>
+                            Target="Success" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Error}"
-                            Target="Error"/>
+                            Target="Error" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.None}"
-                            Target="{x:Null}"/>
+                            Target="{x:Null}" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NonDownloadable}"
-                            Target="Non downloadable"/>
+                            Target="Non downloadable" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Working}"
-                            Target="Working"/>
+                            Target="Working" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.NeedsCheck}"
-                            Target="Input required"/>
+                            Target="Input required" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
-                            Target="{x:Null}"/>
+                            Target="{x:Null}" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.MetaDataNonTagable}"
-                            Target="Metadata not tagable"/>
+                            Target="Metadata not tagable" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.ExtractingAudio}"
-                            Target="Extracting Audio"/>
+                            Target="Extracting Audio" />
         </dxmvvm:ObjectToObjectConverter>
-        <converter:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
-        <converter:TimeSpanToFormatedConverter x:Key="TimeSpanToFormatedConverter"/>
-        <converter:NullTextAndTruncateConverter x:Key="NullTextAndTruncateConverter"/>
-        <converter:NullTextToForegroundConverter x:Key="NullTextToForegroundConverter"/>
+        <converter:TimeSpanToFormatedConverter x:Key="TimeSpanToFormatedConverter" />
+        <converter:NullTextAndTruncateConverter x:Key="NullTextAndTruncateConverter" />
+        <converter:NullTextToForegroundConverter x:Key="NullTextToForegroundConverter" />
         <dxmvvm:BooleanToObjectConverter x:Key="IsDownloadingToForegroundConverter"
                                          TrueValue="{x:Static Brushes.Black}"
-                                         FalseValue="{x:Static Brushes.DarkGray}"/>
+                                         FalseValue="{x:Static Brushes.DarkGray}" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <TextBlock Text="Currently extracting audio only!"
-                       Visibility="{Binding IsExtractingAudio, Converter={StaticResource BooleanToVisibilityConverter}}"
-                       FontWeight="Bold"
-                       Foreground="Gray"/>
+            <StackPanel Visibility="{Binding IsExtractingAudio, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Orientation="Horizontal">
+                <Image Source="pack://application:,,,/Resources/Icons/Speaker-48.png"
+                       Width="15"
+                       Height="15"
+                       VerticalAlignment="Center"
+                       Margin="0,0,2,0"/>
+                <TextBlock Text="Currently extracting audio only!"
+                           FontWeight="Bold"
+                           Foreground="Gray" 
+                           VerticalAlignment="Center"/>
+            </StackPanel>
             <StackPanel  HorizontalAlignment="Right"
-                    Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    Orientation="Horizontal">
+                         Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                         Orientation="Horizontal">
                 <Image Source="pack://application:,,,/Resources/Icons/Download-48.png"
-                   VerticalAlignment="Center"
-                   Width="15"
-                   Height="15"/>
+                       VerticalAlignment="Center"
+                       Width="15"
+                       Height="15" />
                 <TextBlock Text="{Binding CurrentDownloadStatus.CurrentDownloadSpeed}"
-                       Margin="10,0,0,10"
-                       FontSize="15"/>
+                           Margin="10,0,0,10"
+                           FontSize="15" />
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">
-            <ListBox x:Name="DownloadList" 
+            <ListBox x:Name="DownloadList"
                      BorderBrush="Transparent"
                      ItemsSource="{Binding Items}"
                      SelectedItem="{Binding SelectedItem}"
@@ -120,47 +121,49 @@
                         <MenuItem Header="Add Item"
                                   Command="{Binding ShowAddItemCommand}">
                             <MenuItem.Icon>
-                                <Image Source="pack://application:,,,/Resources/Icons/Plus Math-64.png"/>
+                                <Image Source="pack://application:,,,/Resources/Icons/Plus Math-64.png" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <Separator/>
+                        <Separator />
                         <MenuItem Header="Clear Items"
                                   Command="{Binding ClearItemsCommand}">
                             <MenuItem.Icon>
-                                <Image Source="pack://application:,,,/Resources/Icons/Delete-26.png"/>
+                                <Image Source="pack://application:,,,/Resources/Icons/Delete-26.png" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Clear finished Items"
                                   Command="{Binding ClearFinishedItemsCommand}">
                             <MenuItem.Icon>
-                                <Image Source="pack://application:,,,/Resources/Icons/Delete-26.png"/>
+                                <Image Source="pack://application:,,,/Resources/Icons/Delete-26.png" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <Separator/>
+                        <Separator />
                         <MenuItem Header="Open Output-Folder"
                                   Command="{Binding OpenOutputCommand}">
                             <MenuItem.Icon>
-                                <Image Source="pack://application:,,,/Resources/Icons/Open Folder-64.png"/>
+                                <Image Source="pack://application:,,,/Resources/Icons/Open Folder-64.png" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>
                 </ListBox.ContextMenu>
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
-                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                        <Setter Property="FocusVisualStyle"
+                                Value="{x:Null}" />
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
                                     <Border Name="Border"
-                                        Padding="2"
-                                        SnapsToDevicePixels="true">
+                                            Padding="2"
+                                            SnapsToDevicePixels="true">
                                         <ContentPresenter />
                                     </Border>
                                     <ControlTemplate.Triggers>
-                                        <Trigger Property="IsSelected" Value="true">
-                                            <Setter TargetName="Border" 
-                                                Property="Background"
-                                                Value="LightGray"/>
+                                        <Trigger Property="IsSelected"
+                                                 Value="true">
+                                            <Setter TargetName="Border"
+                                                    Property="Background"
+                                                    Value="LightGray" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -171,59 +174,59 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type local:DownloadItem}">
                         <Grid x:Name="ItemGrid"
-                            HorizontalAlignment="Stretch"
+                              HorizontalAlignment="Stretch"
                               Height="50"
                               MouseLeftButtonDown="ListBoxItem_LeftMouseDown">
                             <Grid VerticalAlignment="Center"
-                                  HorizontalAlignment="Stretch" SizeChanged="Grid_SizeChanged">
+                                  HorizontalAlignment="Stretch"
+                                  SizeChanged="Grid_SizeChanged">
                                 <Grid.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Command="{Binding OpenUrlCommand}"
                                                   Header="Open Link">
                                             <MenuItem.Icon>
-                                                <Image Source="pack://application:,,,/Resources/Icons/Link-64.png"/>
+                                                <Image Source="pack://application:,,,/Resources/Icons/Link-64.png" />
                                             </MenuItem.Icon>
                                         </MenuItem>
                                         <MenuItem Command="{Binding OpenFileCommand}"
                                                   Header="Open File">
                                             <MenuItem.Icon>
-                                                <Image Source="pack://application:,,,/Resources/Icons/Open Folder-64.png"/>
+                                                <Image Source="pack://application:,,,/Resources/Icons/Open Folder-64.png" />
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <Separator/>
+                                        <Separator />
                                         <MenuItem Command="{Binding ChangeMetaDataCommand}"
                                                   Header="Edit metadata">
                                             <MenuItem.Icon>
-                                                <Image Source="pack://application:,,,/Resources/Icons/Support-64.png"/>
+                                                <Image Source="pack://application:,,,/Resources/Icons/Support-64.png" />
                                             </MenuItem.Icon>
                                         </MenuItem>
                                         <MenuItem Command="{Binding ResetStatusCommand}"
                                                   Header="Reset downloadstatus">
                                             <MenuItem.Icon>
-                                                <Image Source="pack://application:,,,/Resources/Icons/Support-64.png"/>
+                                                <Image Source="pack://application:,,,/Resources/Icons/Support-64.png" />
                                             </MenuItem.Icon>
                                         </MenuItem>
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition x:Name="ListBoxItemColumn1"
-                                                      Width="*"
-                                                      />
-                                    <ColumnDefinition Width="70"/>
-                                    <ColumnDefinition Width="35"/>
-                                    <ColumnDefinition Width="40"/>
+                                                      Width="*" />
+                                    <ColumnDefinition Width="70" />
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="40" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0"
                                             ToolTip="{Binding Title}">
                                     <TextBlock x:Name="TextBlockTitle"
-                                                VerticalAlignment="Center"
+                                               VerticalAlignment="Center"
                                                TextTrimming="CharacterEllipsis"
                                                HorizontalAlignment="Left">
                                     <Run Text="{Binding Title, Converter={StaticResource NullTextAndTruncateConverter}, ConverterParameter='Loading...'}"
                                          Foreground="{Binding Title, Converter={StaticResource NullTextToForegroundConverter}}"
                                          FontWeight="Bold">
                                     </Run>
-                                    <Run Text="{Binding Duration, Converter={StaticResource TimeSpanToFormatedConverter}}"/>
+                                    <Run Text="{Binding Duration, Converter={StaticResource TimeSpanToFormatedConverter}}" />
                                     </TextBlock>
                                     <TextBlock x:Name="TextBlockUrl"
                                                Text="{Binding Url, Converter={StaticResource NullTextAndTruncateConverter}}"
@@ -231,32 +234,32 @@
                                                FontStyle="Italic"
                                                Foreground="Gray"
                                                TextTrimming="CharacterEllipsis"
-                                               HorizontalAlignment="Left"/>
+                                               HorizontalAlignment="Left" />
                                 </StackPanel>
                                 <TextBlock Grid.Column="1"
                                            Text="{Binding Status, Converter={StaticResource StatusToTextConverter}}"
                                            FontWeight="Light"
                                            FontSize="10"
                                            Foreground="{Binding IsDownloading, Converter={StaticResource IsDownloadingToForegroundConverter}}"
-                                           VerticalAlignment="Center"/>
+                                           VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="2"
                                            VerticalAlignment="Center"
                                            Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Run Text="{Binding CurrentPercent}"
-                                           FontSize="10"
-                                           FontWeight="Light"
-                                         Foreground="{Binding IsDownloading, Converter={StaticResource IsDownloadingToForegroundConverter}}"/>
+                                         FontSize="10"
+                                         FontWeight="Light"
+                                         Foreground="{Binding IsDownloading, Converter={StaticResource IsDownloadingToForegroundConverter}}" />
                                     <Run Text="%"
-                                           FontSize="10"
-                                           FontWeight="Light"
-                                         Foreground="{Binding IsDownloading, Converter={StaticResource IsDownloadingToForegroundConverter}}"/>
+                                         FontSize="10"
+                                         FontWeight="Light"
+                                         Foreground="{Binding IsDownloading, Converter={StaticResource IsDownloadingToForegroundConverter}}" />
                                 </TextBlock>
                                 <Image Grid.Column="3"
                                        Source="{Binding Status, Converter={StaticResource StatusToImageConverter}}"
                                        VerticalAlignment="Center"
                                        Width="30"
                                        Height="30"
-                                       ToolTip="{Binding StatusTooltip}"/>
+                                       ToolTip="{Binding StatusTooltip}" />
                             </Grid>
                         </Grid>
                     </DataTemplate>
@@ -269,7 +272,7 @@
                        Text="Paste or drop&#x0a;your link here"
                        Opacity="0.5"
                        Foreground="Gray"
-                       Visibility="{Binding ShowAddItemsTextBlock, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                       Visibility="{Binding ShowAddItemsTextBlock, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Grid>
         <Grid Grid.Row="2"
               HorizontalAlignment="Stretch"
@@ -277,23 +280,23 @@
               Margin="0,5,0,5"
               Visibility="{Binding AddingItem, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0" 
+            <TextBox Grid.Column="0"
                      Text="{Binding AddItemText, UpdateSourceTrigger=PropertyChanged}"
                      HorizontalAlignment="Stretch"
-                     TextWrapping="NoWrap"/>
-            <Button Grid.Column="1" 
+                     TextWrapping="NoWrap" />
+            <Button Grid.Column="1"
                     Command="{Binding AddItemCommand}"
                     Content="Add Item"
-                    HorizontalAlignment="Right"/>
-            <Button Grid.Column="2" 
+                    HorizontalAlignment="Right" />
+            <Button Grid.Column="2"
                     Command="{Binding ImportItemsCommand}"
                     Content="Import"
                     Margin="5,0,0,0"
-                    HorizontalAlignment="Right"/>
+                    HorizontalAlignment="Right" />
         </Grid>
         <Button Grid.Row="3"
                 Command="{Binding DownloadAllItemsCommand}"
@@ -304,22 +307,22 @@
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="pack://application:,,,/Resources/Icons/Download-48.png"
-                               Width="16"
-                               Height="16"/>
+                           Width="16"
+                           Height="16" />
                     <TextBlock Margin="10,0,10,0">
-                            <Run Text="Download"/>
+                            <Run Text="Download" />
                     </TextBlock>
                     <TextBlock Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"
                                Margin="0,0,10,0">
-                            <Run Text="("/>
-                            <Run Text="{Binding DownloadedItems}"/>
-                            <Run Text="/"/>
-                            <Run Text="{Binding ItemsToDownload}"/>
-                            <Run Text=")"/>
+                            <Run Text="(" />
+                            <Run Text="{Binding DownloadedItems}" />
+                            <Run Text="/" />
+                            <Run Text="{Binding ItemsToDownload}" />
+                            <Run Text=")" />
                     </TextBlock>
                     <Image Source="pack://application:,,,/Resources/Icons/Download-48.png"
                            Width="16"
-                           Height="16"/>
+                           Height="16" />
                 </StackPanel>
             </Button.Content>
         </Button>

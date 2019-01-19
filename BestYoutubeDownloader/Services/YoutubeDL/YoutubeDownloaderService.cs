@@ -31,15 +31,17 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             this._exeDirectoryLocation = Directory.GetCurrentDirectory();
         }
 
+        #region VideoDownload
+
         public async Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings)
         {
             if (url.IsViableUrl() == false)
                 return false;
-            
+
             try
             {
-                var command = this.BuildCommand(url, settings);
-                
+                var command = this.BuildDownloadCommand(url, settings);
+
                 await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
                     command,
                     output);
@@ -52,7 +54,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return true;
         }
 
-        private string BuildCommand(string url, DownloadSettings settings)
+        private string BuildDownloadCommand(string url, DownloadSettings settings)
         {
             var commandList = new List<string> { "youtube-dl" };
 
@@ -87,7 +89,11 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         {
             return "-o " + outputPath + @"\%(title)s.%(ext)s";
         }
-        
+
+        #endregion
+
+        #region MetaData
+
         public async Task<MetaData> GetMetaData(string url)
         {
             if (url.IsViableUrl() == false)
@@ -95,18 +101,29 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             try
             {
-                var result = await this._commandPromptService.ExecuteCommandPromptCommandWithSingleOutput(this._exeDirectoryLocation,
-                    "youtube-dl -j " + url);
+                var result = string.Empty;
 
-                var metadData = JsonConvert.DeserializeObject(result, typeof(MetaData));
+                await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
+                    "youtube-dl -j " + url,
+                    s =>
+                    {
+                        if (string.IsNullOrWhiteSpace(s) == false)
+                            result = s;
+                    });
 
-                return (MetaData)metadData;
+                var metaData = JsonConvert.DeserializeObject(result, typeof(MetaData));
+
+                return (MetaData)metaData;
             }
             catch (Exception)
             {
                 return null;
             }
         }
+
+        #endregion
+
+        #region ThumbNail
 
         public async Task<ImageSource> GetThumbNail(string url)
         {
@@ -125,7 +142,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
                 var command = this.BuildThumbNailDownloadCommand(url, outputUrl);
 
                 await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
-                    command, 
+                    command,
                     (string input) =>
                     {
                         if (input != null && input.Contains("Writing thumbnail to:"))
@@ -137,7 +154,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 var stringParts = imageOutputUrl.Split(':');
 
-                var imagePath = stringParts[stringParts.Length-2] + ":" + stringParts[stringParts.Length-1].Trim();
+                var imagePath = stringParts[stringParts.Length - 2] + ":" + stringParts[stringParts.Length - 1].Trim();
 
                 // adjust the filename to the actual existing file
 
@@ -182,6 +199,39 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return string.Join(" ", arguments);
         }
 
+        #endregion
+
+        #region Version
+
+        public async Task<string> UpdateYoutubeDl()
+        {
+            var result = string.Empty;
+
+            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, "youtube-dl --update", s =>
+            {
+                if (string.IsNullOrWhiteSpace(s) == false)
+                    result = s;
+            });
+
+            return result;
+        }
+
+        public async Task<string> GetYoutubeDlVersion()
+        {
+            var result = string.Empty;
+
+            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, "youtube-dl --version", s =>
+            {
+                if (string.IsNullOrWhiteSpace(s) == false) result = s;
+            });
+
+            return result;
+        }
+
+        #endregion
+
+        #region Validation
+
         private bool ValidateExeLocation()
         {
             return File.Exists(this._exeLocation);
@@ -191,7 +241,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         {
             var hasResult = false;
 
-            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, "ffmpeg -h", s =>
+            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, "ffmpeg", s =>
             {
                 hasResult = true;
             });
@@ -209,5 +259,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             return string.Empty;
         }
+
+        #endregion
     }
 }

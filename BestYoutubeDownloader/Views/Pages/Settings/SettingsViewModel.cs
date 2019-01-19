@@ -10,6 +10,7 @@ using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.Storage;
+using BestYoutubeDownloader.Services.YoutubeDL;
 using Caliburn.Micro;
 using DevExpress.Mvvm.UI;
 using Screen = Caliburn.Micro.Screen;
@@ -24,6 +25,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
         private readonly ISettingsService _settingsService;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IYoutubeDownloaderService _downloaderService;
 
         private bool _hasChanges;
 
@@ -38,6 +40,8 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         private string _selectedAudioFormat;
 
         private bool _showConsole;
+
+        private string _youtubeDlVersion;
 
         public string OutputDirectoryPath
         {
@@ -87,17 +91,27 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             set { this.SetProperty(ref this._showConsole, value); }
         }
 
+        public string YoutubeDlVersion
+        {
+            get { return this._youtubeDlVersion; }
+            set { this.Set(ref this._youtubeDlVersion, value); }
+        }
+
         public BestCommand ChangeDirectoryCommand { get; }
 
         public BestCommand SaveCommand { get; }
 
-        public SettingsViewModel(ISettingsService settingsService, IEventAggregator eventAggregator)
+        public BestAsyncCommand UpdateYoutubeDlVersionCommand { get; }
+
+        public SettingsViewModel(ISettingsService settingsService, IEventAggregator eventAggregator, IYoutubeDownloaderService downloaderService)
         {
             this._settingsService = settingsService;
             this._eventAggregator = eventAggregator;
+            this._downloaderService = downloaderService;
 
             this.ChangeDirectoryCommand = new BestCommand(this.ChangeDirectory);
             this.SaveCommand = new BestCommand(this.Save, this.CanSave);
+            this.UpdateYoutubeDlVersionCommand = new BestAsyncCommand(this.UpdateYoutubeDlVersion);
 
             this.AvailableAudioFormats = new BindableCollection<string>(Enum.GetNames(typeof(FileFormats)));
 
@@ -105,14 +119,20 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
             this.PropertyChanged += (sender, args) =>
             {
-                if(args.PropertyName == nameof(this._hasChanges)
+                if (args.PropertyName == nameof(this._hasChanges)
                 || args.PropertyName == nameof(this.Parent)
                 || args.PropertyName == nameof(this.IsInitialized)
-                || args.PropertyName == nameof(this.IsActive))
+                || args.PropertyName == nameof(this.IsActive)
+                || args.PropertyName == nameof(this.YoutubeDlVersion))
                     return;
 
                 this._hasChanges = true;
             };
+        }
+
+        protected override async void OnActivate()
+        {
+            await this.LoadYoutubeDlVersion();
         }
 
         private void LoadSettings()
@@ -138,7 +158,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
             this.OutputDirectoryPath = dialog.SelectedPath;
         }
-        
+
         private bool CanSave()
         {
             return this._hasChanges;
@@ -161,10 +181,21 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             };
 
             this._settingsService.UpdateDownloadSettings(settings);
-            
+
             this._eventAggregator.PublishOnUIThread(new SettingsChanged(settings));
 
             this._hasChanges = false;
+        }
+
+        private async Task UpdateYoutubeDlVersion()
+        {
+            await this._downloaderService.UpdateYoutubeDl();
+            await this.LoadYoutubeDlVersion();
+        }
+
+        private async Task LoadYoutubeDlVersion()
+        {
+            this.YoutubeDlVersion = await this._downloaderService.GetYoutubeDlVersion();
         }
     }
 }

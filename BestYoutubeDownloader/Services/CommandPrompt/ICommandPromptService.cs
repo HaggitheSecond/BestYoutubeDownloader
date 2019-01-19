@@ -6,9 +6,9 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
     public interface ICommandPromptService
     {
         Task ExecuteCommandPromptCommand(string directory, string command, Action<string> actionOnDataOutput);
+        
+        void RegisterOutputAction(Action<string, bool> output);
 
-        Task<string> ExecuteCommandPromptCommandWithSingleOutput(string directory, string command);
-
-        void RegisterOutputAction(Action<string> output);
+        void OpenCommandPrompt(string directory);
     }
 }
