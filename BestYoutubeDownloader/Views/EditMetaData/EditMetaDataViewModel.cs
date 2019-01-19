@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Markup;
@@ -11,6 +12,7 @@ using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using Caliburn.Micro;
+using Microsoft.Win32;
 
 namespace BestYoutubeDownloader.Views.EditMetaData
 {
@@ -110,10 +112,12 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
         public BestAsyncCommand LoadCoverImageCommand { get; }
 
+        public BestCommand LoadCoverImageFromDeviceCommand { get; }
+
         public BestCommand OpenDirectoryCommand { get; }
 
         public BestCommand SwitchTitleAndArtistCommand { get; }
-
+        
         public EditMetaDataViewModel(IYoutubeDownloaderService downloaderService, IMetaDataTagService metaDataTagService, ISettingsService settingsService)
         {
             this.DisplayName = "Edit metadata";
@@ -123,6 +127,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
             this.SaveCommand = new BestCommand(() => this.TryClose(true), this._hasChanges);
             this.LoadCoverImageCommand = new BestAsyncCommand(this.LoadCoverImage, this.CanLoadCover);
+            this.LoadCoverImageFromDeviceCommand = new BestCommand(this.LoadCoverImageFromDevice);
 
             this.SwitchTitleAndArtistCommand = new BestCommand(this.SwitchTitleAndArtist, this.CanSwitchTitleAndArtist);
             this.OpenDirectoryCommand = new BestCommand(this.OpenDirectory, this.CanOpenDirectory);
@@ -197,7 +202,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
         private bool CanLoadCover()
         {
-            return this.Image == null;
+            return true;
         }
 
         private async Task LoadCoverImage()
@@ -206,6 +211,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             {
                 this.IsDownloadingPicture = true;
 
+                this.Image = null;
                 var result = await this._downloaderService.GetThumbNail(this.Url);
 
                 if (result == null)
@@ -217,6 +223,21 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             {
                 this.IsDownloadingPicture = false;
             }
+        }
+        
+        private void LoadCoverImageFromDevice()
+        {
+            var dialog = new OpenFileDialog()
+            {
+                Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png"
+            };
+
+            if (dialog.ShowDialog().GetValueOrDefault() == false)
+                return;
+
+            var path = dialog.FileName;
+
+            this.Image = new BitmapImage(new Uri(path));
         }
     }
 }

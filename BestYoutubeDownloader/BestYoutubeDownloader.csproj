@@ -254,6 +254,11 @@
     <Resource Include="Resources\Icons\Plus Math-64.png" />
     <Resource Include="Resources\Icons\Refresh-filled-50.png" />
     <Resource Include="Resources\Icons\Speaker-48.png" />
+    <Resource Include="Resources\Icons\Music-48.png" />
+    <Resource Include="Resources\Icons\Contacts-48.png" />
+    <Resource Include="Resources\Icons\Tags-48.png" />
+    <Resource Include="Resources\Icons\File-48.png" />
+    <Resource Include="Resources\Icons\Monitor-48.png" />
     <Content Include="youtube-dl.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

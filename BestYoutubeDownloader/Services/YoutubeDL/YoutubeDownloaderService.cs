@@ -127,6 +127,8 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         public async Task<ImageSource> GetThumbNail(string url)
         {
+            Console.WriteLine(url);
+
             if (url.IsViableUrl() == false)
                 return null;
 
@@ -143,7 +145,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
                     command,
-                    (string input) =>
+                    input =>
                     {
                         if (input != null && input.Contains("Writing thumbnail to:"))
                             imageOutputUrl = input;

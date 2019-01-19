@@ -37,9 +37,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private DownloadItem _selectedItem;
 
         private string _addItemText;
-
-        private string _latestDestination;
-
+        
         private int _itemsToDownload;
         private int _downloadedItems;
 

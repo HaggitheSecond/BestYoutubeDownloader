@@ -22,20 +22,45 @@
         </Grid.RowDefinitions>
         <StackPanel VerticalAlignment="Top"
                     Grid.Column="0">
-            <TextBlock Text="Mp3-Tags"
-                       FontWeight="Bold"
-                       FontSize="16" />
+            <StackPanel Margin="0,0,0,2"
+                        Orientation="Horizontal">
+                <Image Source="pack://application:,,,/Resources/Icons/Tags-48.png"
+                       Width="20"
+                       Height="20"
+                       VerticalAlignment="Center"
+                       Margin="0,0,2,0" />
+                <TextBlock Text="MP3 Meta Data Tags"
+                           FontWeight="Bold"
+                           FontSize="16"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
             <Separator />
-            <TextBlock Text="Artist" />
-            <TextBox Text="{Binding Artist}"/>
+            <StackPanel Margin="0,0,0,2"
+                        Orientation="Horizontal">
+                <Image Source="pack://application:,,,/Resources/Icons/Contacts-48.png"
+                       Width="15"
+                       Height="15"
+                       VerticalAlignment="Center"
+                       Margin="0,0,2,0" />
+                <TextBlock Text="Artist"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBox Text="{Binding Artist, UpdateSourceTrigger=PropertyChanged}"/>
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="Title" 
-                           Grid.Column="0"
-                           Margin="0,10,0,0"/>
+                <StackPanel Margin="0,0,0,2"
+                            Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Resources/Icons/Music-48.png"
+                           Width="15"
+                           Height="15"
+                           VerticalAlignment="Center"
+                           Margin="0,0,2,0" />
+                    <TextBlock Text="Title"
+                               VerticalAlignment="Center" />
+                </StackPanel>
                 <Button HorizontalAlignment="Right"
                         Grid.Column="1"
                         Width="16"
@@ -48,18 +73,34 @@
                     </Button.ContentTemplate>
                 </Button>
             </Grid>
-            <TextBox Text="{Binding Title}"
+            <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
                      Margin="0,0,0,10"/>
-            <TextBlock Text="Cover-Image" />
+            <StackPanel Margin="0,0,0,2"
+                        Orientation="Horizontal">
+                <Image Source="pack://application:,,,/Resources/Icons/Picture-64.png"
+                       Width="15"
+                       Height="15"
+                       VerticalAlignment="Center"
+                       Margin="0,0,2,0" />
+                <TextBlock Text="Thumbnail"
+                           VerticalAlignment="Center" />
+            </StackPanel>
             <Border HorizontalAlignment="Center"
                     BorderBrush="Black"
-                    BorderThickness="1">
+                    BorderThickness="1"
+                    Background="Transparent">
                 <Border.ContextMenu>
                     <ContextMenu>
                         <MenuItem Command="{Binding LoadCoverImageCommand}"
-                                  Header="Load cover">
+                                  Header="Load thumbnail from youtube">
                             <MenuItem.Icon>
                                 <Image Source="pack://application:,,,/Resources/Icons/Download-48.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Command="{Binding LoadCoverImageFromDeviceCommand}"
+                                  Header="Load thumbnail from computer">
+                            <MenuItem.Icon>
+                                <Image Source="pack://application:,,,/Resources/Icons/Monitor-48.png" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator />
@@ -76,7 +117,8 @@
                     <Image Source="{Binding Image}"
                            Visibility="{Binding Image, Converter={StaticResource IsNullOrEmptyToVisibilityConverter}}"
                            HorizontalAlignment="Center"
-                           VerticalAlignment="Center">
+                           VerticalAlignment="Center"
+                           RenderOptions.BitmapScalingMode="Fant">
                     </Image>
                     <Image HorizontalAlignment="Center"
                            VerticalAlignment="Center"
@@ -92,8 +134,40 @@
                                Margin="0,0,0,2" />
                 </Grid>
             </Border>
-            <CheckBox Content="Adjust Filename"
-                      IsChecked="{Binding AdjustFileName}" />
+            <StackPanel Margin="0,10,0,2"
+                        Orientation="Horizontal">
+                <Image Source="pack://application:,,,/Resources/Icons/File-48.png"
+                       Width="15"
+                       Height="15"
+                       VerticalAlignment="Center"
+                       Margin="0,0,2,0" />
+                <TextBlock Text="File"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+            <Grid>
+                <Grid.ToolTip>
+                    <TextBlock Foreground="Gray">
+                        <Run Text="{Binding Artist}" />
+                        <Run Text="-" />
+                        <Run Text="{Binding Title}" />
+                        <Run Text=".mp3" />
+                    </TextBlock>
+                </Grid.ToolTip>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Content="Adjust Filename:"
+                          IsChecked="{Binding AdjustFileName}" />
+                <TextBlock Grid.Column="1"
+                           Foreground="Gray"
+                           HorizontalAlignment="Right">
+                    <Run Text="{Binding Artist}"/>
+                    <Run Text="-"/>
+                    <Run Text="{Binding Title}"/>
+                    <Run Text=".mp3"/>
+                </TextBlock>
+            </Grid>
         </StackPanel>
         <Button x:Name="SaveButton"
                 Grid.Row="1"
