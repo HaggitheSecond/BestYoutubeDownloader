@@ -8,6 +8,7 @@ using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Services;
 using BestYoutubeDownloader.Services.CommandPrompt;
 using BestYoutubeDownloader.Services.Import;
+using BestYoutubeDownloader.Services.Message;
 using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.Storage;
@@ -55,7 +56,8 @@ namespace BestYoutubeDownloader
                 .Singleton<IImportService, ImportService>()
                 .Singleton<IEventAggregator, EventAggregator>()
                 .Singleton<IMetaDataTagService, MetaDataTagService>()
-                .Singleton<ICommandPromptService, CommandPromptService>();
+                .Singleton<ICommandPromptService, CommandPromptService>()
+                .Singleton<IMessageService, MessageService>();
 
             this._container
                 .PerRequest<MainViewModel>()

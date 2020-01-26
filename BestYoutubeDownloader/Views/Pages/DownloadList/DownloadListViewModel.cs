@@ -12,6 +12,7 @@ using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.Import;
+using BestYoutubeDownloader.Services.Message;
 using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.YoutubeDL;
@@ -26,6 +27,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private readonly IYoutubeDownloaderService _youtubeDownloaderService;
         private readonly ISettingsService _settingsService;
         private readonly IMetaDataTagService _metaDataTagService;
+        private readonly IMessageService _messageService;
 
         public string Name => "Download";
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Download-48.png"));
@@ -125,11 +127,13 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService,
             ISettingsService settingsService,
             IMetaDataTagService metaDataTagService,
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator,
+            IMessageService messageService)
         {
             this._youtubeDownloaderService = youtubeDlService;
             this._settingsService = settingsService;
             this._metaDataTagService = metaDataTagService;
+            this._messageService = messageService;
 
             eventAggregator.Subscribe(this);
 
@@ -220,10 +224,23 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         public async Task AddItem(string url)
         {
             if (url.IsViableUrl() == false)
+            {
+                var caption = "Non valid url";
+                var message = $"It appears, that the url in your clipboard is not valid.{Environment.NewLine}" +
+                              $"Your clipboard: '{Clipboard.GetText()}'";
+
+                this._messageService.Show(message, caption, System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 return;
+            }
 
             if (this.Items.Any(f => f.Url == url))
+            {
+                var caption = "Url already added";
+                var message = $"The url you're trying to add is already added.";
+                
+                this._messageService.Show(message, caption, System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 return;
+            }
 
             var item = new DownloadItem(url);
 

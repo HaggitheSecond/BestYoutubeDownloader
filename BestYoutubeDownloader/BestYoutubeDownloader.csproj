@@ -110,6 +110,8 @@
     <Compile Include="Extensions\PropertyChangedExtensions.cs" />
     <Compile Include="Services\CommandPrompt\CommandPromptService.cs" />
     <Compile Include="Services\CommandPrompt\ICommandPromptService.cs" />
+    <Compile Include="Services\Message\IMessageService.cs" />
+    <Compile Include="Services\Message\MessageService.cs" />
     <Compile Include="Views\Pages\DownloadList\DownloadStatus.cs" />
     <Compile Include="Helper\MetaDataHelper.cs" />
     <Compile Include="Helper\TagLibHelper.cs" />
