@@ -61,53 +61,59 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             set
             {
                 this.IsDownloading = value == DownloadItemStatus.Downloading;
-
-                switch (value)
-                {
-                    case DownloadItemStatus.None:
-                        this.StatusTooltip = string.Empty;
-                        break;
-                    case DownloadItemStatus.Loading:
-                        this.StatusTooltip = "Loading";
-                        break;
-                    case DownloadItemStatus.Waiting:
-                        this.StatusTooltip = "Waiting";
-                        break;
-                    case DownloadItemStatus.Downloading:
-                        this.StatusTooltip = "Downloading";
-                        break;
-                    case DownloadItemStatus.Working:
-                        this.StatusTooltip = "Working";
-                        break;
-                    case DownloadItemStatus.NeedsCheck:
-
-                        if (this.Mp3MetaData != null)
-                            this.StatusTooltip = this.Mp3MetaData.CheckReason;
-                        
-                        break;
-                    case DownloadItemStatus.Canceled:
-                        this.StatusTooltip = "Canceled";
-                        break;
-                    case DownloadItemStatus.NonDownloadable:
-                        this.StatusTooltip = "Non downloadable";
-                        break;
-                    case DownloadItemStatus.MetaDataNonTagable:
-                        this.StatusTooltip = "Metadata not tagable";
-                        break;
-                    case DownloadItemStatus.Error:
-                        this.StatusTooltip = "Error";
-                        break;
-                    case DownloadItemStatus.SuccessfulDownload:
-                        this.StatusTooltip = "Success";
-                        break;
-                    case DownloadItemStatus.ExtractingAudio:
-                        this.StatusTooltip = "Caution: for long videos this will take a few minutes!";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(value), value, null);
-                }
+                this.UpdateStatusTooltip(value);
 
                 this.SetProperty(ref this._status, value);
+            }
+        }
+
+        private void UpdateStatusTooltip(DownloadItemStatus value)
+        {
+            switch (value)
+            {
+                case DownloadItemStatus.None:
+                    this.StatusTooltip = string.Empty;
+                    break;
+                case DownloadItemStatus.Loading:
+                    this.StatusTooltip = "Loading";
+                    break;
+                case DownloadItemStatus.Waiting:
+                    this.StatusTooltip = "Waiting";
+                    break;
+                case DownloadItemStatus.Downloading:
+                    this.StatusTooltip = "Downloading";
+                    break;
+                case DownloadItemStatus.Working:
+                    this.StatusTooltip = "Working";
+                    break;
+                case DownloadItemStatus.NeedsCheck:
+
+                    if (this.Mp3MetaData != null)
+                        this.StatusTooltip = this.Mp3MetaData.CheckReason;
+                    else
+                        this.StatusTooltip = "Needs to be checked";
+
+                    break;
+                case DownloadItemStatus.Canceled:
+                    this.StatusTooltip = "Canceled";
+                    break;
+                case DownloadItemStatus.NonDownloadable:
+                    this.StatusTooltip = "Non downloadable";
+                    break;
+                case DownloadItemStatus.MetaDataNonTagable:
+                    this.StatusTooltip = "Metadata not tagable";
+                    break;
+                case DownloadItemStatus.Error:
+                    this.StatusTooltip = "Error";
+                    break;
+                case DownloadItemStatus.SuccessfulDownload:
+                    this.StatusTooltip = "Success";
+                    break;
+                case DownloadItemStatus.ExtractingAudio:
+                    this.StatusTooltip = "Caution: for long videos this will take a few minutes!";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
         }
 
