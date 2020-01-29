@@ -83,7 +83,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
                         if (this.Mp3MetaData != null)
                             this.StatusTooltip = this.Mp3MetaData.CheckReason;
-
+                        
                         break;
                     case DownloadItemStatus.Canceled:
                         this.StatusTooltip = "Canceled";
@@ -262,8 +262,6 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public async Task<bool> Download(Action<string> output)
         {
-            var temp = new List<string>();
-
             if (this.Status != DownloadItemStatus.Waiting)
                 return false;
 
@@ -281,8 +279,6 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             void WrapedOutput(string input)
             {
-                temp.Add(input);
-
                 if (string.IsNullOrEmpty(input))
                     return;
                 
