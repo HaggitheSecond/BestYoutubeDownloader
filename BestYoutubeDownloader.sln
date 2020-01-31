@@ -1,9 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BestYoutubeDownloader", "BestYoutubeDownloader\BestYoutubeDownloader.csproj", "{A495000A-38C8-4596-8A57-65F293A5E514}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BestYoutubeDownloader", "src\BestYoutubeDownloader\BestYoutubeDownloader.csproj", "{A495000A-38C8-4596-8A57-65F293A5E514}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1CB82475-BB5B-4B92-ABC2-9F691C2D3674}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{C5E7EEEE-1E5B-42F7-B422-5CD157F70CEE}"
+	ProjectSection(SolutionItems) = preProject
+		src\BestYoutubeDownloader\.gitattributes = src\BestYoutubeDownloader\.gitattributes
+		src\BestYoutubeDownloader\.gitignore = src\BestYoutubeDownloader\.gitignore
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +26,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A495000A-38C8-4596-8A57-65F293A5E514} = {1CB82475-BB5B-4B92-ABC2-9F691C2D3674}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59FE6D4E-0120-4D5F-9095-5251A4640681}
 	EndGlobalSection
 EndGlobal
