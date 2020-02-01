@@ -1,19 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <ProjectGuid>{A495000A-38C8-4596-8A57-65F293A5E514}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <AssemblyTitle>BestYoutubeDownloader</AssemblyTitle>
+    <Product>BestYoutubeDownloader</Product>
+    <Copyright>Copyright © it's the current year</Copyright>
+
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <AssemblyTitle>BestYoutubeDownloader</AssemblyTitle>
-    <Product>BestYoutubeDownloader</Product>
-    <Copyright>Copyright ©  2017</Copyright>
-    <AssemblyTitle>BestYoutubeDownloader</AssemblyTitle>
-    <Product>BestYoutubeDownloader</Product>
-    <Copyright>Copyright ©  2017</Copyright>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
+    <OutputType>WinExe</OutputType>    
   </PropertyGroup>
   
   <ItemGroup>
@@ -46,6 +45,19 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\*"/>
+    <Resource Include="Resources\Icons\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 </Project>
