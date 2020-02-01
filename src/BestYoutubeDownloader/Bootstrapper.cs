@@ -7,6 +7,7 @@ using System.Windows.Threading;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Services;
 using BestYoutubeDownloader.Services.CommandPrompt;
+using BestYoutubeDownloader.Services.ExceptionHandling;
 using BestYoutubeDownloader.Services.Import;
 using BestYoutubeDownloader.Services.Message;
 using BestYoutubeDownloader.Services.MetaDataTag;
@@ -34,6 +35,8 @@ namespace BestYoutubeDownloader
 
         public Bootstrapper()
         {
+            this.Application.DispatcherUnhandledException += this.Application_DispatcherUnhandledException;
+
             this.Initialize();
         }
 
@@ -57,7 +60,8 @@ namespace BestYoutubeDownloader
                 .Singleton<IEventAggregator, EventAggregator>()
                 .Singleton<IMetaDataTagService, MetaDataTagService>()
                 .Singleton<ICommandPromptService, CommandPromptService>()
-                .Singleton<IMessageService, MessageService>();
+                .Singleton<IMessageService, MessageService>()
+                .Singleton<IExceptionHandler, ExceptionHandler>();
 
             this._container
                 .PerRequest<MainViewModel>()
@@ -100,10 +104,20 @@ namespace BestYoutubeDownloader
 
         #endregion
 
+        #region Exception
+
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
-            MessageBox.Show(e.Exception.Message, "An error as occurred", MessageBoxButton.OK);
+            IoC.Get<IExceptionHandler>().Handle(e.Exception);
         }
+
+        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
+            IoC.Get<IExceptionHandler>().Handle(e.Exception);
+        } 
+
+        #endregion
     }
 }
