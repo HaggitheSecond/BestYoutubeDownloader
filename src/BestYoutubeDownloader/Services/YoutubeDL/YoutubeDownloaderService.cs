@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
+using BestYoutubeDownloader.Exceptions;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.CommandPrompt;
@@ -245,21 +247,21 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, "ffmpeg", s =>
             {
-                hasResult = true;
+                if (string.IsNullOrWhiteSpace(s) == false && Regex.IsMatch(s, "ffmpeg version"))
+                    hasResult = true;
             });
 
             return hasResult;
         }
 
-        public async Task<string> Validate()
+        public async Task Validate()
         {
             if (this.ValidateExeLocation() == false)
-                return "Couldn't find youtube-dl";
+                throw new InvalidConfigurationException($"Could not locate youtubedl.exe. Please ensure it is located in his programs executing directory.{Environment.NewLine}{Environment.NewLine}Visit 'https://youtube-dl.org/' for emore information.");
 
             if (await this.ValidateFfmepg() == false)
-                return "ffmpeg not installed";
+                throw new InvalidConfigurationException($"Could not locate ffmpeg. Please ensure it is properly installed and updated on your system.{Environment.NewLine}{Environment.NewLine}Visit 'https://ffmpeg.org/' for more information.");
 
-            return string.Empty;
         }
 
         #endregion

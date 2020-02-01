@@ -18,6 +18,6 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         Task<string> GetYoutubeDlVersion();
 
-        Task<string> Validate();
+        Task Validate();
     }
 }

@@ -1,9 +1,11 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services;
+using BestYoutubeDownloader.Services.ExceptionHandling;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using BestYoutubeDownloader.Views.Pages;
@@ -92,17 +94,16 @@ namespace BestYoutubeDownloader.Views
         {
             this.ActivateItem(this.DownloadListViewModel);
 
-            var validationResult = await this._youtubeDownloaderService.Validate();
-
-            if (validationResult != string.Empty)
+            try
             {
-                if (MessageBox.Show(validationResult, "Error", MessageBoxButton.OK, MessageBoxImage.Error) == MessageBoxResult.OK)
-                {
-                    Application.Current.Shutdown();
-                }
+                await this._youtubeDownloaderService.Validate();
+                this.IsEnabled = true;
             }
-
-            this.IsEnabled = true;
+            catch (Exception e)
+            {
+                IoC.Get<IExceptionHandler>().Handle(e);
+                Application.Current.Shutdown();
+            }
         }
 
         public void Handle(SettingsChanged message)
