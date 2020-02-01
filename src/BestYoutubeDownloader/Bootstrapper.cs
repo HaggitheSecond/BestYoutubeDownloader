@@ -35,9 +35,9 @@ namespace BestYoutubeDownloader
 
         public Bootstrapper()
         {
-            this.Application.DispatcherUnhandledException += this.Application_DispatcherUnhandledException;
-
             this.Initialize();
+
+            this.Application.DispatcherUnhandledException += this.Application_DispatcherUnhandledException;
         }
 
         protected override void Configure()

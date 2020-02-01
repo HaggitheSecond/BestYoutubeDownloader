@@ -1,270 +1,51 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A495000A-38C8-4596-8A57-65F293A5E514}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>BestYoutubeDownloader</RootNamespace>
-    <AssemblyName>BestYoutubeDownloader</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>net452</TargetFramework>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AssemblyTitle>BestYoutubeDownloader</AssemblyTitle>
+    <Product>BestYoutubeDownloader</Product>
+    <Copyright>Copyright ©  2017</Copyright>
+    <AssemblyTitle>BestYoutubeDownloader</AssemblyTitle>
+    <Product>BestYoutubeDownloader</Product>
+    <Copyright>Copyright ©  2017</Copyright>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+  
   <ItemGroup>
-    <Reference Include="Caliburn.Micro, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.Core.3.2.0\lib\net45\Caliburn.Micro.dll</HintPath>
-    </Reference>
-    <Reference Include="Caliburn.Micro.Platform, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
-    </Reference>
-    <Reference Include="Caliburn.Micro.Platform.Core, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Mvvm, Version=17.1.0.0, Culture=neutral, PublicKeyToken=382ad28f6ae31f30, processorArchitecture=MSIL">
-      <HintPath>..\packages\DevExpressMvvm.17.1.6.0\lib\net40-client\DevExpress.Mvvm.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Mvvm.UI, Version=17.1.0.0, Culture=neutral, PublicKeyToken=382ad28f6ae31f30, processorArchitecture=MSIL">
-      <HintPath>..\packages\DevExpressMvvm.17.1.6.0\lib\net40-client\DevExpress.Mvvm.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="policy.2.0.taglib-sharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
-      <HintPath>..\packages\taglib.2.1.0.0\lib\policy.2.0.taglib-sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
+    <PackageReference Include="Caliburn.Micro" Version="3.2.0" />
+    <PackageReference Include="Caliburn.Micro.Core" Version="3.2.0" />
+    <PackageReference Include="Castle.Core" Version="4.2.1" />
+    <PackageReference Include="DevExpressMvvm" Version="17.1.6.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="taglib" Version="2.1.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.0.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
-      <HintPath>..\packages\taglib.2.1.0.0\lib\taglib-sharp.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
   </ItemGroup>
+  
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Common\BestAsyncCommand.cs" />
-    <Compile Include="Common\BestCommand.cs" />
-    <Compile Include="Common\MetaData.cs" />
-    <Compile Include="Common\Mp3MetaData.cs" />
-    <Compile Include="Common\WindowSettings.cs" />
-    <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Converter\ListBoxConverter\IsISeperatorToVisibiltyConverter.cs" />
-    <Compile Include="Converter\IsNullOrEmptyToVisibilityConverter.cs" />
-    <Compile Include="Converter\NullTextAndTruncateConverter.cs" />
-    <Compile Include="Converter\NullTextConverter.cs" />
-    <Compile Include="Converter\NullTextToForegroundConverter.cs" />
-    <Compile Include="Converter\TimeSpanToFormatedConverter.cs" />
-    <Compile Include="Converter\ZeroToVisibilityConverter.cs" />
-    <Compile Include="Events\SettingsChanged.cs" />
-    <Compile Include="Extensions\DependencyObjectExtensions.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Extensions\PropertyChangedExtensions.cs" />
-    <Compile Include="Services\CommandPrompt\CommandPromptService.cs" />
-    <Compile Include="Services\CommandPrompt\ICommandPromptService.cs" />
-    <Compile Include="Services\Message\IMessageService.cs" />
-    <Compile Include="Services\Message\MessageService.cs" />
-    <Compile Include="Views\Pages\DownloadList\DownloadStatus.cs" />
-    <Compile Include="Helper\MetaDataHelper.cs" />
-    <Compile Include="Helper\TagLibHelper.cs" />
-    <Compile Include="Helper\YoutubeDLOutputHelper.cs" />
-    <Compile Include="Services\Import\IImportService.cs" />
-    <Compile Include="Services\Import\ImportService.cs" />
-    <Compile Include="Common\FileFormats.cs" />
-    <Compile Include="Services\MetaDataTag\IMetaDataTagService.cs" />
-    <Compile Include="Services\MetaDataTag\MetaDataTagService.cs" />
-    <Compile Include="Services\Settings\ISettingsService.cs" />
-    <Compile Include="Common\DownloadSettings.cs" />
-    <Compile Include="Services\Settings\SettingsService.cs" />
-    <Compile Include="Services\Storage\IStorageService.cs" />
-    <Compile Include="Services\Storage\StorageService.cs" />
-    <Compile Include="Services\Test\ITestService.cs" />
-    <Compile Include="Services\Test\TestService.cs" />
-    <Compile Include="Services\YoutubeDL\IYoutubeDownloaderService.cs" />
-    <Compile Include="Services\YoutubeDL\YoutubeDownloaderService.cs" />
-    <Compile Include="Views\EditMetaData\EditMetaDataView.xaml.cs">
-      <DependentUpon>EditMetaDataView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditMetaData\EditMetaDataViewModel.cs" />
-    <Compile Include="Views\MainView.xaml.cs">
-      <DependentUpon>MainView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MainViewModel.cs" />
-    <Compile Include="Views\Pages\DownloadList\DownloadItem.cs" />
-    <Compile Include="Views\Pages\DownloadList\DownloadItemStatus.cs" />
-    <Compile Include="Views\Pages\DownloadList\DownloadListView.xaml.cs">
-      <DependentUpon>DownloadListView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Pages\DownloadList\DownloadListViewModel.cs" />
-    <Compile Include="Views\Pages\Info\InfoView.xaml.cs">
-      <DependentUpon>InfoView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Pages\Info\InfoViewModel.cs" />
-    <Compile Include="Views\Pages\IPage.cs" />
-    <Compile Include="Views\Pages\ISeperator.cs" />
-    <Compile Include="Views\Pages\RawConsole\RawConsoleOutputViewModel.cs" />
-    <Compile Include="Views\Pages\RawConsole\RawConsoleView.xaml.cs">
-      <DependentUpon>RawConsoleView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Pages\RawConsole\RawConsoleViewModel.cs" />
-    <Compile Include="Views\Pages\Seperator\SeperatorViewModel.cs" />
-    <Compile Include="Views\Pages\Settings\SettingsView.xaml.cs">
-      <DependentUpon>SettingsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Pages\Settings\SettingsViewModel.cs" />
-    <Compile Include="Views\SupportedSites\SupportedSitesView.xaml.cs">
-      <DependentUpon>SupportedSitesView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SupportedSites\SupportedSitesViewModel.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include=".gitignore" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="supportedsites.md">
+    <Content Include="supportedsites.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Views\EditMetaData\EditMetaDataView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MainView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Pages\DownloadList\DownloadListView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Pages\Info\InfoView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Pages\RawConsole\RawConsoleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Pages\Settings\SettingsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SupportedSites\SupportedSitesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Download-48.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Checkmark-64.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Cancel-50.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Delete-26.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Open Folder-64.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Link-64.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Settings-64.png" />
-    <Resource Include="Resources\Icons\Support-64.png" />
-    <Resource Include="Resources\Icons\Error-64.png" />
-    <Resource Include="Resources\Icons\Console-64.png" />
-    <Resource Include="Resources\Icons\Info-64.png" />
-    <Resource Include="Resources\Icons\Picture-64.png" />
-    <Resource Include="Resources\Icons\Plus Math-64.png" />
-    <Resource Include="Resources\Icons\Refresh-filled-50.png" />
-    <Resource Include="Resources\Icons\Speaker-48.png" />
-    <Resource Include="Resources\Icons\Music-48.png" />
-    <Resource Include="Resources\Icons\Contacts-48.png" />
-    <Resource Include="Resources\Icons\Tags-48.png" />
-    <Resource Include="Resources\Icons\File-48.png" />
-    <Resource Include="Resources\Icons\Monitor-48.png" />
+    </Content>
     <Content Include="youtube-dl.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Resource Include="Resources\Icons\*"/>
+  </ItemGroup>
 </Project>

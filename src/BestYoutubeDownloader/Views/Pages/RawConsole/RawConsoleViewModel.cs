@@ -54,6 +54,10 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
 
         private void AddOutput(string s, bool isInput)
         {
+            // this can happen when a command is not done executing when the application gets shut down
+            if (Application.Current?.Dispatcher == null)
+                return;
+
             Application.Current.Dispatcher.Invoke(() =>
             {
                 if (string.IsNullOrEmpty(s))
