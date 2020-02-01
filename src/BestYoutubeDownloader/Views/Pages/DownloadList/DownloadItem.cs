@@ -339,7 +339,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             var settings = this._settingsService.GetDownloadSettings();
 
-            if (settings.TagAudio && settings.AudioFormat == FileFormats.Mp3)
+            if (settings.ExtractAudio && settings.TagAudio && settings.AudioFormat == FileFormats.Mp3)
             {
                 this.Status = DownloadItemStatus.Working;
 
