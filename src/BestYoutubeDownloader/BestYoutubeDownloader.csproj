@@ -20,7 +20,7 @@
     <PackageReference Include="Caliburn.Micro.Core" Version="3.2.0" />
     <PackageReference Include="Castle.Core" Version="4.2.1" />
     <PackageReference Include="DevExpressMvvm" Version="17.1.6.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="taglib" Version="2.1.0.0" />
   </ItemGroup>
   
