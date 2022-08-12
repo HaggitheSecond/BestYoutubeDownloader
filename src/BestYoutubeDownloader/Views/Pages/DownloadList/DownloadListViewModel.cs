@@ -11,6 +11,7 @@ using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
+using BestYoutubeDownloader.Services.ExceptionHandling;
 using BestYoutubeDownloader.Services.Import;
 using BestYoutubeDownloader.Services.Message;
 using BestYoutubeDownloader.Services.MetaDataTag;
@@ -28,6 +29,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private readonly ISettingsService _settingsService;
         private readonly IMetaDataTagService _metaDataTagService;
         private readonly IMessageService _messageService;
+        private readonly IExceptionHandler _exceptionHandler;
 
         public string Name => "Download";
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Download-48.png"));
@@ -128,12 +130,14 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             ISettingsService settingsService,
             IMetaDataTagService metaDataTagService,
             IEventAggregator eventAggregator,
-            IMessageService messageService)
+            IMessageService messageService,
+            IExceptionHandler exceptionHandler)
         {
             this._youtubeDownloaderService = youtubeDlService;
             this._settingsService = settingsService;
             this._metaDataTagService = metaDataTagService;
             this._messageService = messageService;
+            this._exceptionHandler = exceptionHandler;
 
             eventAggregator.Subscribe(this);
 
@@ -187,6 +191,16 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private async Task DownloadAllItems()
         {
+            try
+            {
+                await this._youtubeDownloaderService.Validate();
+            }
+            catch (Exception e)
+            {
+                this._exceptionHandler.Handle(e);
+                return;
+            }
+
             try
             {
                 this.IsDownloading = true;

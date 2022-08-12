@@ -27,6 +27,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private readonly IMetaDataTagService _metaDataTagService;
 
         private string _url;
+        private string _rawUrl;
+
         private DownloadItemStatus _status;
         private decimal _currentPercent;
 
@@ -53,6 +55,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         {
             get { return this._url; }
             set { this.SetProperty(ref this._url, value); }
+        }
+
+        public string RawUrl
+        {
+            get { return this._rawUrl; }
+            set { this.SetProperty(ref this._rawUrl, value); }
         }
 
         public DownloadItemStatus Status
@@ -200,7 +208,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             this.ResetStatusCommand = new BestCommand(this.ResetStatus, this.CanResetStatus);
 
-            this.Url = url;
+            this.Url = url.Contains("youtube.com") ? url.Split('&').First() : url;
+            this.RawUrl = url;
 
             this.Status = DownloadItemStatus.None;
         }
@@ -373,6 +382,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             {
                 this.Status = DownloadItemStatus.NeedsCheck;
             }
+
+            this.Mp3MetaData.SourceUrl = this.Url;
 
             this._metaDataTagService.TagMetaData(this.FileName, mp3Data);
         }

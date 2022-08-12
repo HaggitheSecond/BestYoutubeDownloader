@@ -88,6 +88,8 @@ namespace BestYoutubeDownloader.Views
 
             this.InfoViewModel = IoC.Get<InfoViewModel>();
             this.Items.Add(this.InfoViewModel);
+
+            this.IsEnabled = true;
         }
 
         protected override async void OnActivate()
@@ -97,12 +99,10 @@ namespace BestYoutubeDownloader.Views
             try
             {
                 await this._youtubeDownloaderService.Validate();
-                this.IsEnabled = true;
             }
             catch (Exception e)
             {
                 IoC.Get<IExceptionHandler>().Handle(e);
-                Application.Current.Shutdown();
             }
         }
 

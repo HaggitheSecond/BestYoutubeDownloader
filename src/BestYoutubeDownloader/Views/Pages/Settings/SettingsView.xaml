@@ -31,6 +31,15 @@
                         HorizontalAlignment="Right" />
             </Grid>
             <Separator />
+            <TextBlock Text="Downloader"
+                       FontWeight="Bold"
+                       Margin="0,5,0,5" />
+                <ComboBox ItemsSource="{Binding AvailableDownloaders}"
+                          SelectedItem="{Binding SelectedDownloader}"
+                          IsEditable="False"
+                          Margin="0,0,10,0"
+                          VerticalAlignment="Center" />
+            <Separator />
             <TextBlock Text="Audio"
                        FontWeight="Bold"
                        Margin="0,5,0,5" />

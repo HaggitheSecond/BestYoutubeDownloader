@@ -2,6 +2,8 @@
 {
     public class DownloadSettings
     {
+        public string Downloader { get; set; }
+
         public string OutputLocation { get; set; }
 
         // audio options

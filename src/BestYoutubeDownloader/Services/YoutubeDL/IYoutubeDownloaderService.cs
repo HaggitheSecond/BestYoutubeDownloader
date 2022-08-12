@@ -8,6 +8,8 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 {
     public interface IYoutubeDownloaderService
     {
+        Task<bool> IsValid();
+
         Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings);
 
         Task<MetaData> GetMetaData(string url);
