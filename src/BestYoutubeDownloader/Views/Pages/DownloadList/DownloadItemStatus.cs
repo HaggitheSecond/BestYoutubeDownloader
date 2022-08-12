@@ -13,6 +13,7 @@
         MetaDataNonTagable,
         Error,
         SuccessfulDownload,
-        ExtractingAudio
+        ExtractingAudio,
+        AlreadyDownloaded,
     }
 }

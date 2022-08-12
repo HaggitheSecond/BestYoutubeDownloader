@@ -145,7 +145,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); }, this.Items != null && this.Items.Count != 0 && this.IsDownloading == false);
             this.ClearFinishedItemsCommand = new BestCommand(() =>
             {
-                var items = this.Items.Where(f => f.Status != DownloadItemStatus.SuccessfulDownload);
+                var items = this.Items.Where(f => f.Status != DownloadItemStatus.SuccessfulDownload && f.Status != DownloadItemStatus.AlreadyDownloaded);
                 this.Items = new BindableCollection<DownloadItem>(items);
 
             }, this.Items != null && this.Items.Count != 0);

@@ -120,6 +120,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 case DownloadItemStatus.ExtractingAudio:
                     this.StatusTooltip = "Caution: for long videos this will take a few minutes!";
                     break;
+                case DownloadItemStatus.AlreadyDownloaded:
+                    this.StatusTooltip = "This file has already been downloaded";
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
@@ -286,6 +289,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             if (result)
             {
+                if (this.Status == DownloadItemStatus.AlreadyDownloaded)
+                    return true;
+
                 return await this.SetProperties();
             }
 
@@ -296,7 +302,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             {
                 if (string.IsNullOrEmpty(input))
                     return;
-                
+
+                if (YoutubeDlOutputHelper.HasBeenDownloaded(input))
+                    this.Status = DownloadItemStatus.AlreadyDownloaded;
+
                 if (YoutubeDlOutputHelper.TryGetFilePath(input, out string filePath))
                     this.FileName = filePath;
 
@@ -329,49 +338,57 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private async Task<bool> SetProperties()
         {
-            // adjust the filename to the actual existing file
-
-            // this is need because the filename extracted from the console will not contain non-ascii characters
-            // but the actual filename will contain them - this is needed to be able to write metadata
-
-            // could lead to problems when multiple programs/processes are writing to the directory simultaneously
-
-            if (File.Exists(this.FileName) == false && string.IsNullOrEmpty(this.FileName) == false)
+            try
             {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                var directory = new DirectoryInfo(Path.GetDirectoryName(this.FileName));
+                // adjust the filename to the actual existing file
 
-                var latest = directory.GetFiles().ToList().OrderByDescending(f => f.CreationTime).First();
+                // this is need because the filename extracted from the console will not contain non-ascii characters
+                // but the actual filename will contain them - this is needed to be able to write metadata
 
-                this.FileName = latest.FullName;
-            }
+                // could lead to problems when multiple programs/processes are writing to the directory simultaneously
 
-            var settings = this._settingsService.GetDownloadSettings();
-
-            if (settings.ExtractAudio && settings.TagAudio && settings.AudioFormat == FileFormats.Mp3)
-            {
-                this.Status = DownloadItemStatus.Working;
-
-                this.SetMetaData(MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(this.FileName)));
-
-                if (settings.TagCoverImage)
+                if (File.Exists(this.FileName) == false && string.IsNullOrEmpty(this.FileName) == false)
                 {
-                    var imageResult = await this._youtubeDownloaderService.GetThumbNail(this.Url);
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    var directory = new DirectoryInfo(Path.GetDirectoryName(this.FileName));
 
-                    if (imageResult != null)
-                        this.SetImage(imageResult as BitmapImage);
+                    var latest = directory.GetFiles().ToList().OrderByDescending(f => f.CreationTime).First();
+
+                    this.FileName = latest.FullName;
                 }
 
-                if (settings.AdjustFileName && this.Status == DownloadItemStatus.Working)
+                var settings = this._settingsService.GetDownloadSettings();
+
+                if (settings.ExtractAudio && settings.TagAudio && settings.AudioFormat == FileFormats.Mp3)
                 {
-                    this.SetFileName();
+                    this.Status = DownloadItemStatus.Working;
+
+                    this.SetMetaData(MetaDataHelper.GetTitleAndArtist(Path.GetFileNameWithoutExtension(this.FileName)));
+
+                    if (settings.TagCoverImage)
+                    {
+                        var imageResult = await this._youtubeDownloaderService.GetThumbNail(this.Url);
+
+                        if (imageResult != null)
+                            this.SetImage(imageResult as BitmapImage);
+                    }
+
+                    if (settings.AdjustFileName && this.Status == DownloadItemStatus.Working)
+                    {
+                        this.SetFileName();
+                    }
                 }
+
+                if (this.Status != DownloadItemStatus.NeedsCheck)
+                    this.Status = DownloadItemStatus.SuccessfulDownload;
+
+                return true;
             }
-
-            if (this.Status != DownloadItemStatus.NeedsCheck)
-                this.Status = DownloadItemStatus.SuccessfulDownload;
-
-            return true;
+            catch (Exception e)
+            {
+                this.Status = DownloadItemStatus.Error;
+                throw;
+            }
         }
 
         private void SetMetaData(Mp3MetaData mp3Data)

@@ -37,6 +37,8 @@
                             Target="pack://application:,,,/Resources/Icons/Support-64.png" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.Loading}"
                             Target="{x:Null}" />
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.AlreadyDownloaded}"
+                            Target="pack://application:,,,/Resources/Icons/Download-48.png" />
         </dxmvvm:ObjectToObjectConverter>
         <dxmvvm:ObjectToObjectConverter x:Key="StatusToTextConverter"
                                         DefaultTarget="{x:Null}">
@@ -64,6 +66,8 @@
                             Target="Metadata not tagable" />
             <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.ExtractingAudio}"
                             Target="Extracting Audio" />
+            <dxmvvm:MapItem Source="{x:Static local:DownloadItemStatus.AlreadyDownloaded}"
+                            Target="Already downloaded" />
         </dxmvvm:ObjectToObjectConverter>
         <converter:TimeSpanToFormatedConverter x:Key="TimeSpanToFormatedConverter" />
         <converter:NullTextAndTruncateConverter x:Key="NullTextAndTruncateConverter" />

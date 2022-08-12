@@ -35,6 +35,11 @@ namespace BestYoutubeDownloader.Helper
             return true;
         }
 
+        public static bool HasBeenDownloaded(string input)
+        {
+            return input.Contains("has already been downloaded");
+        }
+
         public static bool TryReadDownloadStatus(string input, out DownloadStatus result)
         {
             result = new DownloadStatus();
@@ -59,7 +64,8 @@ namespace BestYoutubeDownloader.Helper
 
         public static bool IsExtractingAudio(string input)
         {
-            return input.Contains(@"[ffmpeg] Destination:") || input.Contains(@"[ExtractAudio]");
+            return (input.Contains(@"[ffmpeg] Destination:") || input.Contains(@"[ExtractAudio]")) 
+                && input.Contains("file is already in target format mp3") == false;
         }
     }
 }

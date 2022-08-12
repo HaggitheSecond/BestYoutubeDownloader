@@ -1,5 +1,6 @@
 ﻿using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Helper;
+using System;
 using System.IO;
 using System.Windows.Media.Imaging;
 
@@ -14,6 +15,8 @@ namespace BestYoutubeDownloader.Services.MetaDataTag
 
         public void TagCoverImage(string filePath, string imageFilePath)
         {
+            var originalFilePath = imageFilePath;
+
             if (imageFilePath.EndsWith(".webp"))
             {
                 var bitmap = new BitmapImage(new System.Uri(imageFilePath));
@@ -33,6 +36,11 @@ namespace BestYoutubeDownloader.Services.MetaDataTag
 
             TagLibHelper.TagMp3Cover(filePath, imageFilePath);
 
+            //if (File.Exists(originalFilePath))
+            //    File.Delete(originalFilePath);
+
+            //if (File.Exists(imageFilePath))
+            //    File.Delete(imageFilePath);
         }
     }
 }
