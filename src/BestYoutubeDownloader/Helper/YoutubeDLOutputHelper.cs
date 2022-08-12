@@ -47,20 +47,19 @@ namespace BestYoutubeDownloader.Helper
 
             var parts = input.Split(char.Parse(" "));
 
-            result.PercentDone = Convert.ToDecimal(parts.FirstOrDefault(f => f.Contains("%"))?.Replace("%", ""));
+            if (decimal.TryParse(parts.FirstOrDefault(f => f.Contains("%"))?.Replace("%", "")?.Replace(".", ","), out var decimalPercent))
+                result.PercentDone = decimalPercent;
 
             result.TotalSize = parts.FirstOrDefault(f => f.Contains("KiB") || f.Contains("MiB") || f.Contains("GiB"));
 
             result.CurrentDownloadSpeed = parts.FirstOrDefault(f => f.Contains("KiB/s") || f.Contains("MiB/s") || f.Contains("GiB/s"));
-
-            //result.Eta = TimeSpan.Parse(parts.FirstOrDefault(f => f.Contains(":")));
 
             return true;
         }
 
         public static bool IsExtractingAudio(string input)
         {
-            return input.Contains(@"[ffmpeg] Destination:");
+            return input.Contains(@"[ffmpeg] Destination:") || input.Contains(@"[ExtractAudio]");
         }
     }
 }
