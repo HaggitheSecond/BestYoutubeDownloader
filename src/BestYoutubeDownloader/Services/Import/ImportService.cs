@@ -34,7 +34,7 @@ namespace BestYoutubeDownloader.Services.Import
         public async Task<IList<string>> GetSupportedSites()
         {
             var sites = new List<string>();
-            var url = @"https://raw.githubusercontent.com/ytdl-org/youtube-dl/master/docs/supportedsites.md";
+            var url = @"https://raw.githubusercontent.com/yt-dlp/yt-dlp/master/supportedsites.md";
 
             using (var client = new HttpClient())
             {
