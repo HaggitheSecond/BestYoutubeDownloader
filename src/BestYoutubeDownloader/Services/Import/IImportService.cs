@@ -9,6 +9,6 @@ namespace BestYoutubeDownloader.Services.Import
     {
         IList<DownloadItem> ImportDownloadItemsFromFile(string filePath);
 
-        Task<IList<string>> GetSupportedSites();
+        Task<IList<(string name, string description)>> GetSupportedSites();
     }
 }

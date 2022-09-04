@@ -31,9 +31,9 @@ namespace BestYoutubeDownloader.Services.Import
             return list;
         }
 
-        public async Task<IList<string>> GetSupportedSites()
+        public async Task<IList<(string name, string description)>> GetSupportedSites()
         {
-            var sites = new List<string>();
+            var sites = new List<(string name, string description)>();
             var url = @"https://raw.githubusercontent.com/yt-dlp/yt-dlp/master/supportedsites.md";
 
             using (var client = new HttpClient())
@@ -42,14 +42,34 @@ namespace BestYoutubeDownloader.Services.Import
                 {
                     var response = await client.GetStringAsync(url);
 
-                    sites.AddRange(response.Split(Environment.NewLine.ToCharArray()).Skip(1).Select(f =>
-                    {
-                        return Regex.Match(f, "[*].*[*]").Value.Replace("*", "");
-                    }).Where(f => string.IsNullOrWhiteSpace(f) == false));
+                    sites.AddRange(response
+                        .Split(Environment.NewLine.ToCharArray())
+                        .Skip(1)
+                        .Where(f => string.IsNullOrWhiteSpace(f) == false)
+                        .Select(f =>
+                        {
+                            var parts = f.Split("**", StringSplitOptions.RemoveEmptyEntries).Skip(1).ToArray();
+
+                            var name = parts[0];
+                            var description = parts.Length == 1
+                                ? string.Empty
+                                : GetDescription(string.Join("", parts[1..]));
+
+                            return (name, description);
+                        }));
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     IoC.Get<IExceptionHandler>().Handle(e);
+                }
+
+                string GetDescription(string parts)
+                {
+                    return parts
+                        .TrimStart(':')
+                        .Replace("[<abbr title=\"netrc machine\"><em>", "")
+                        .Replace("</em></abbr>]", "")
+                        .Trim();
                 }
             }
 

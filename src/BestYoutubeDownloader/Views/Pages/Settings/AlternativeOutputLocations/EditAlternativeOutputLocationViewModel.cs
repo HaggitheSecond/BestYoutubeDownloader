@@ -60,10 +60,10 @@ public class EditAlternativeOutputLocationViewModel : Screen
 
         var result = await IoC.Get<IWindowManager>().ShowDialogAsync(viewModel, null, WindowSettings.GetWindowSettings(400, 600));
 
-        if (result.GetValueOrDefault() is false || string.IsNullOrWhiteSpace(viewModel.SelectedItem))
+        if (result.GetValueOrDefault() is false || string.IsNullOrWhiteSpace(viewModel.SelectedItem?.Name))
             return;
 
-        this.Url = viewModel.SelectedItem;
+        this.Url = viewModel.SelectedItem.Name;
     }
 
     private void SelectFolder()

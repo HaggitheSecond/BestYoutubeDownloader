@@ -12,6 +12,7 @@
         <converter:NullTextConverter x:Key="NullTextConverter" />
         <converter:NullTextToForegroundConverter x:Key="NullTextToForegroundConverter" />
         <converter:IsNullOrEmptyToVisibilityConverter x:Key="IsNullOrEmptyToVisibilityConverter" />
+        <converter:BooleanToVisibilityConverter x:Key="BoolenToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -44,9 +45,45 @@
                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=250}"
                  TextWrapping="NoWrap" />
         <ListBox Grid.Row="2"
+                 HorizontalContentAlignment="Stretch"
                  ItemsSource="{Binding Items}"
-                 SelectedItem="{Binding SelectedItem}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 SelectedItem="{Binding SelectedItem}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ToolTip>
+                            <Grid Width="200">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="5" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0"
+                                           Text="{Binding Name}" />
+                                <Separator Grid.Row="1" />
+                                <TextBlock Grid.Row="2"
+                                           Foreground="{Binding Description, Converter={StaticResource NullTextToForegroundConverter}}"
+                                           Text="{Binding Description, Converter={StaticResource NullTextConverter}, ConverterParameter='No description'}"
+                                           TextWrapping="Wrap" />
+                            </Grid>
+                        </Grid.ToolTip>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0"
+                               Width="20"
+                               Source="pack://application:,,,/Resources/Icons/Error-64.png"
+                               Visibility="{Binding IsBroken, Converter={StaticResource BoolenToVisibilityConverter}}" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Name}" />
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding Description}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Setter Property="FocusVisualStyle" Value="{x:Null}" />

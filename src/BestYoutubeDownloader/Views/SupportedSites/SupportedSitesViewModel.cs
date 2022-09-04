@@ -13,20 +13,20 @@ namespace BestYoutubeDownloader.Views.SupportedSites
 {
     public class SupportedSitesViewModel : Screen
     {
-        private List<string> _allItems;
-        private BindableCollection<string> _items;
-        private string _selectedItem;
+        private List<SupportedSiteViewModel> _allItems;
+        private BindableCollection<SupportedSiteViewModel> _items;
+        private SupportedSiteViewModel _selectedItem;
 
         private string _searchText;
         private readonly IImportService _importService;
 
-        public BindableCollection<string> Items
+        public BindableCollection<SupportedSiteViewModel> Items
         {
             get { return this._items; }
             set { this.SetProperty(ref this._items, value); }
         }
 
-        public string SelectedItem
+        public SupportedSiteViewModel SelectedItem
         {
             get { return this._selectedItem; }
             set { this.Set(ref this._selectedItem, value); }
@@ -39,7 +39,8 @@ namespace BestYoutubeDownloader.Views.SupportedSites
             {
                 this.SetProperty(ref this._searchText, value);
 
-                this.Items = new BindableCollection<string>(this._allItems.Where(f => f.ToUpper().Contains(this.SearchText.ToUpper())));
+                this.Items = new BindableCollection<SupportedSiteViewModel>(this._allItems
+                    .Where(f => f.Name.ToUpper().Contains(this.SearchText.ToUpper()) || f.Description.ToUpper().Contains(this.SearchText.ToUpper())));
             }
         }
 
@@ -64,8 +65,8 @@ namespace BestYoutubeDownloader.Views.SupportedSites
                 return;
             }
 
-            this._allItems = lines.ToList();
-            this.Items = new BindableCollection<string>(this._allItems);
+            this._allItems = lines.Select(f => new SupportedSiteViewModel(f.name, f.description)).ToList();
+            this.Items = new BindableCollection<SupportedSiteViewModel>(this._allItems);
         }
     }
 }
