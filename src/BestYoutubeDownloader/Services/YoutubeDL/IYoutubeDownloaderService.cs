@@ -15,6 +15,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         Task<MetaData?> GetMetaData(string url);
 
         Task<ImageSource?> GetThumbNail(string url);
+        void ClearThumbNailsDirectory();
 
         Task<string> UpdateYoutubeDl();
 

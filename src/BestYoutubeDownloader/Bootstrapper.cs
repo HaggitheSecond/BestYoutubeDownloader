@@ -82,8 +82,13 @@ namespace BestYoutubeDownloader
         {
             await this.DisplayRootViewForAsync<MainViewModel>(WindowSettings.GetMainWindowSettings());
         }
-        
+
         #endregion
+
+        protected override void OnExit(object sender, EventArgs e)
+        {
+            this._container.GetInstance<IYoutubeDownloaderService>().ClearThumbNailsDirectory();
+        }
 
         #region IoC
 

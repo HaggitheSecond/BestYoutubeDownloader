@@ -194,7 +194,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             if (directory is null)
                 return;
 
-            ProcessHelper.OpenDirectory(directory);
+            ProcessHelper.OpenDirectoryOrFile(directory);
         }
 
         private bool CanLoadCover()

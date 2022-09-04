@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace BestYoutubeDownloader.Helper;
 public static class ProcessHelper
 {
-    public static void OpenDirectory(string? directory)
+    public static void OpenDirectoryOrFile(string? directory)
     {
-        if(string.IsNullOrEmpty(directory) || Directory.Exists(directory) is false)
+        if(string.IsNullOrEmpty(directory) || (Directory.Exists(directory) is false && File.Exists(directory) is false))
             return;
 
         var process = new ProcessStartInfo

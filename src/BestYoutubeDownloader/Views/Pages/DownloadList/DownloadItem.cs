@@ -226,7 +226,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private void OpenFile()
         {
-            Process.Start(this.FileName);
+            ProcessHelper.OpenDirectoryOrFile(this.FileName);
         }
 
         private void OpenUrl()

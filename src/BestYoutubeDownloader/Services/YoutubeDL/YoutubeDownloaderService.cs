@@ -147,14 +147,14 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             try
             {
-                var outputUrl = IoC.Get<ISettingsService>().GetDownloadSettings().OutputLocation + @"\ThumbNails";
+                var thumbNailDirectory = this.GetThumbNailDirectory();
 
-                if (Directory.Exists(outputUrl) == false)
-                    Directory.CreateDirectory(outputUrl);
+                if (Directory.Exists(thumbNailDirectory) == false)
+                    Directory.CreateDirectory(thumbNailDirectory);
 
                 var imageOutputUrl = string.Empty;
 
-                var command = this.BuildThumbNailDownloadCommand(url, outputUrl);
+                var command = this.BuildThumbNailDownloadCommand(url, thumbNailDirectory);
 
                 await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
                     command,
@@ -216,6 +216,21 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             };
 
             return string.Join(" ", arguments);
+        }
+
+        public void ClearThumbNailsDirectory()
+        {
+            var directory = this.GetThumbNailDirectory();
+
+            if (Directory.Exists(directory) is false)
+                return;
+
+            Directory.Delete(directory, true);
+        }
+
+        private string GetThumbNailDirectory()
+        {
+            return IoC.Get<ISettingsService>().GetDownloadSettings().OutputLocation + @"\ThumbNails";
         }
 
         #endregion

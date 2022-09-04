@@ -185,7 +185,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private void OpenOutput()
         {
-            ProcessHelper.OpenDirectory(this._settingsService.GetDownloadSettings().OutputLocation);
+            ProcessHelper.OpenDirectoryOrFile(this._settingsService.GetDownloadSettings().OutputLocation);
         }
 
         private bool CanDownloadAllItems()
