@@ -15,6 +15,7 @@ namespace BestYoutubeDownloader.Views.SupportedSites
     {
         private List<string> _allItems;
         private BindableCollection<string> _items;
+        private string _selectedItem;
 
         private string _searchText;
         private readonly IImportService _importService;
@@ -23,6 +24,12 @@ namespace BestYoutubeDownloader.Views.SupportedSites
         {
             get { return this._items; }
             set { this.SetProperty(ref this._items, value); }
+        }
+
+        public string SelectedItem
+        {
+            get { return this._selectedItem; }
+            set { this.Set(ref this._selectedItem, value); }
         }
 
         public string SearchText
@@ -44,7 +51,7 @@ namespace BestYoutubeDownloader.Views.SupportedSites
 
             this.DisplayName = "Supported Sites";
 
-            this.CloseCommand = new BestAsyncCommand(async () => await this.TryCloseAsync());
+            this.CloseCommand = new BestAsyncCommand(async () => await this.TryCloseAsync(true));
         }
 
         protected override async Task OnActivateAsync(CancellationToken cancellationToken)

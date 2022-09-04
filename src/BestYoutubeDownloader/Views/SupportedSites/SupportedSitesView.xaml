@@ -1,54 +1,52 @@
 ﻿<UserControl x:Class="BestYoutubeDownloader.Views.SupportedSites.SupportedSitesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BestYoutubeDownloader.Views.SupportedSites"
              xmlns:converter="clr-namespace:BestYoutubeDownloader.Converter"
-             mc:Ignorable="d" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:BestYoutubeDownloader.Views.SupportedSites"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              Padding="2"
-             
-             d:DataContext="{d:DesignInstance local:SupportedSitesViewModel}">
+             d:DataContext="{d:DesignInstance local:SupportedSitesViewModel}"
+             mc:Ignorable="d">
     <UserControl.Resources>
-        <converter:NullTextConverter x:Key="NullTextConverter"/>
-        <converter:NullTextToForegroundConverter x:Key="NullTextToForegroundConverter"/>
-        <converter:IsNullOrEmptyToVisibilityConverter x:Key="IsNullOrEmptyToVisibilityConverter"/>
+        <converter:NullTextConverter x:Key="NullTextConverter" />
+        <converter:NullTextToForegroundConverter x:Key="NullTextToForegroundConverter" />
+        <converter:IsNullOrEmptyToVisibilityConverter x:Key="IsNullOrEmptyToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0"
               Margin="5,5,5,5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0"
                        FontSize="20"
-                       Text="Supported Sites:"
-                       FontWeight="Bold">
-            </TextBlock>
+                       FontWeight="Bold"
+                       Text="Supported Sites:" />
             <TextBlock Grid.Column="1"
-                        Visibility="{Binding Items, Converter={StaticResource IsNullOrEmptyToVisibilityConverter}}"
-                       FontSize="20">
-                <Run Text="("/>
-                <Run Text="{Binding Items.Count, Mode=OneWay}"/>
-                <Run Text=")"/>
+                       FontSize="20"
+                       Visibility="{Binding Items, Converter={StaticResource IsNullOrEmptyToVisibilityConverter}}">
+                <Run Text="(" />
+                <Run Text="{Binding Items.Count, Mode=OneWay}" />
+                <Run Text=")" />
             </TextBlock>
         </Grid>
         <TextBox Grid.Row="1"
+                 Margin="0,0,0,5"
                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=250}"
-                 TextWrapping="NoWrap"
-                 Margin="0,0,0,5">
-        </TextBox>
-        <ListBox  Grid.Row="2"
-                  ItemsSource="{Binding Items}"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                 TextWrapping="NoWrap" />
+        <ListBox Grid.Row="2"
+                 ItemsSource="{Binding Items}"
+                 SelectedItem="{Binding SelectedItem}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -62,9 +60,7 @@
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="true">
-                                        <Setter TargetName="Border" 
-                                                Property="Background"
-                                                Value="LightGray"/>
+                                        <Setter TargetName="Border" Property="Background" Value="LightGray" />
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -73,10 +69,10 @@
                 </Style>
             </ListBox.ItemContainerStyle>
         </ListBox>
-        <Button  Grid.Row="4"
-                 Margin="0,5,0,5"
-                 Content="OK"
-                 FontWeight="Bold"
-                Command="{Binding CloseCommand}"/>
+        <Button Grid.Row="4"
+                Margin="0,5,0,5"
+                Command="{Binding CloseCommand}"
+                Content="OK"
+                FontWeight="Bold" />
     </Grid>
 </UserControl>

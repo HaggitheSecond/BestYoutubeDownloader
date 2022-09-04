@@ -60,6 +60,9 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
 
             Application.Current.Dispatcher.Invoke(() =>
             {
+                if (this.Outputs.Count > 200)
+                    this.Outputs.RemoveAt(0);
+
                 if (string.IsNullOrEmpty(s))
                     this.Outputs.Add(new RawConsoleOutputViewModel());
                 else

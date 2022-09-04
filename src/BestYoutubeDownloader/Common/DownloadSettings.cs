@@ -1,8 +1,12 @@
-﻿namespace BestYoutubeDownloader.Common
+﻿using System.Collections.Generic;
+
+namespace BestYoutubeDownloader.Common
 {
     public class DownloadSettings
     {
         public string OutputLocation { get; set; }
+
+        public List<AlternativeOutputLocation> AlternativeOutputLocations { get; set; }
 
         // audio options
 
@@ -25,5 +29,10 @@
         // program settings
 
         public bool ShowConsole { get; set; }
+
+        public DownloadSettings()
+        {
+            this.AlternativeOutputLocations = new List<AlternativeOutputLocation>();
+        }
     }
 }

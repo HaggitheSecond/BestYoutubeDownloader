@@ -72,7 +72,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             commandList.AddRange(this.BuildDownloadArguments(settings));
 
-            commandList.Add(this.BuildOutputPath(settings.OutputLocation));
+            commandList.Add(this.BuildOutputPath(url, settings));
             commandList.Add(url);
 
             return string.Join(" ", commandList);
@@ -95,6 +95,19 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
                 arguments.Add("--print-traffic");
 
             return arguments;
+        }
+
+        private string BuildOutputPath(string url, DownloadSettings settings)
+        {
+            var outputPath = settings.OutputLocation;
+            var alternativeLocation = settings.AlternativeOutputLocations.FirstOrDefault(f => url.ToLower().Contains(f.Url.ToLower()));
+
+            if(alternativeLocation is not null)
+            {
+                outputPath = alternativeLocation.Location;
+            }
+
+            return this.BuildOutputPath(outputPath);
         }
 
         private string BuildOutputPath(string outputPath)

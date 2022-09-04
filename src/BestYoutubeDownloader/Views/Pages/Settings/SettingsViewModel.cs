@@ -11,6 +11,7 @@ using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.Storage;
 using BestYoutubeDownloader.Services.YoutubeDL;
+using BestYoutubeDownloader.Views.Pages.Settings.AlternativeOutputLocations;
 using Caliburn.Micro;
 using DevExpress.Mvvm.UI;
 using Screen = Caliburn.Micro.Screen;
@@ -26,6 +27,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         private readonly ISettingsService _settingsService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IYoutubeDownloaderService _downloaderService;
+        private readonly IWindowManager _windowManager;
 
         private bool _hasChanges;
 
@@ -42,6 +44,9 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         private bool _showConsole;
 
         private string _youtubeDlVersion;
+
+        private BindableCollection<AlternativeOutputLocationViewModel> _alternativeOutputLocations;
+        private AlternativeOutputLocationViewModel _selectedAlternativeOutputLocation;
 
         public string OutputDirectoryPath
         {
@@ -97,21 +102,42 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             set { this.Set(ref this._youtubeDlVersion, value); }
         }
 
+        public BindableCollection<AlternativeOutputLocationViewModel> AlternativeOutputLocations
+        {
+            get { return this._alternativeOutputLocations; }
+            set { this.Set(ref this._alternativeOutputLocations, value); }
+        }
+
+        public AlternativeOutputLocationViewModel SelectedAlternativeOutputLocation
+        {
+            get { return this._selectedAlternativeOutputLocation; }
+            set { this.Set(ref this._selectedAlternativeOutputLocation, value); }
+        }
+
         public BestCommand ChangeDirectoryCommand { get; }
 
         public BestAsyncCommand SaveCommand { get; }
 
         public BestAsyncCommand UpdateYoutubeDlVersionCommand { get; }
 
-        public SettingsViewModel(ISettingsService settingsService, IEventAggregator eventAggregator, IYoutubeDownloaderService downloaderService)
+        public BestAsyncCommand NewAlternativeOutputLocationCommand { get; }
+        public BestAsyncCommand EditAlternativeOutputLocationCommand { get; }
+        public BestCommand DeleteAlternativeOutputLocationCommand { get; }
+
+        public SettingsViewModel(ISettingsService settingsService, IEventAggregator eventAggregator, IYoutubeDownloaderService downloaderService, IWindowManager windowManager)
         {
             this._settingsService = settingsService;
             this._eventAggregator = eventAggregator;
             this._downloaderService = downloaderService;
+            this._windowManager = windowManager;
 
             this.ChangeDirectoryCommand = new BestCommand(this.ChangeDirectory);
             this.SaveCommand = new BestAsyncCommand(this.Save, this.CanSave);
             this.UpdateYoutubeDlVersionCommand = new BestAsyncCommand(this.UpdateYoutubeDlVersion);
+
+            this.NewAlternativeOutputLocationCommand = new BestAsyncCommand(this.NewAlternativeOutputLocation);
+            this.EditAlternativeOutputLocationCommand = new BestAsyncCommand(this.EditAlternativeOutputLocation, () => this.SelectedAlternativeOutputLocation is not null);
+            this.DeleteAlternativeOutputLocationCommand = new BestCommand(this.DeleteAlternativeOutputLocation, () => this.SelectedAlternativeOutputLocation is not null);
 
             this.AvailableAudioFormats = new BindableCollection<string>(Enum.GetNames(typeof(FileFormats)));
 
@@ -147,6 +173,8 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             this.AdjustFileName = settings.AdjustFileName;
 
             this.SelectedAudioFormat = this.AvailableAudioFormats.FirstOrDefault(f => f == settings.AudioFormat.ToString()) ?? this.AvailableAudioFormats.First();
+
+            this.AlternativeOutputLocations = new BindableCollection<AlternativeOutputLocationViewModel>(settings.AlternativeOutputLocations.Select(f => new AlternativeOutputLocationViewModel(f)));
         }
 
         private void ChangeDirectory()
@@ -177,7 +205,8 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
                 TagAudio = this.TagAudio,
                 ShowConsole = this.ShowConsole,
                 TagCoverImage = this.TagCoverImage,
-                AdjustFileName = this.AdjustFileName
+                AdjustFileName = this.AdjustFileName,
+                AlternativeOutputLocations = this.AlternativeOutputLocations.Select(f => new AlternativeOutputLocation(f.Url, f.Location)).ToList()
             };
 
             this._settingsService.UpdateDownloadSettings(settings);
@@ -196,6 +225,26 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         private async Task LoadYoutubeDlVersion()
         {
             this.YoutubeDlVersion = await this._downloaderService.GetYoutubeDlVersion();
+        }
+
+        private async Task NewAlternativeOutputLocation()
+        {
+            var viewModel = new AlternativeOutputLocationViewModel();
+
+            this.AlternativeOutputLocations.Add(viewModel);
+            this.SelectedAlternativeOutputLocation = viewModel;
+
+            await this.EditAlternativeOutputLocationCommand.ExecuteAsync(null);
+        }
+
+        private void DeleteAlternativeOutputLocation()
+        {
+            this.AlternativeOutputLocations.Remove(this.SelectedAlternativeOutputLocation);
+        }
+
+        private async Task EditAlternativeOutputLocation()
+        {
+            await this._windowManager.ShowDialogAsync(new EditAlternativeOutputLocationViewModel(this.SelectedAlternativeOutputLocation), null, WindowSettings.GetWindowSettings(400, 150));
         }
     }
 }
