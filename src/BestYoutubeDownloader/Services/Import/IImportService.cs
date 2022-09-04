@@ -8,6 +8,6 @@ namespace BestYoutubeDownloader.Services.Import
     {
         IList<DownloadItem> ImportDownloadItemsFromFile(string filePath);
 
-        IList<string> GetSupportedSitesFromFile();
+        IList<string> GetSupportedSites();
     }
 }

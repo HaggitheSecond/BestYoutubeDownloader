@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mime;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows;
 using BestYoutubeDownloader.Extensions;
+using BestYoutubeDownloader.Services.ExceptionHandling;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
+using Caliburn.Micro;
 
 namespace BestYoutubeDownloader.Services.Import
 {
@@ -24,11 +29,29 @@ namespace BestYoutubeDownloader.Services.Import
             return list;
         }
 
-        public IList<string> GetSupportedSitesFromFile()
+        public IList<string> GetSupportedSites()
         {
-            var path = Directory.GetCurrentDirectory() + @"\supportedsites.md";
+            var sites = new List<string>();
+            var url = @"https://raw.githubusercontent.com/ytdl-org/youtube-dl/master/docs/supportedsites.md";
 
-            return File.ReadAllLines(path).ToList();
+            using (var webClient = new WebClient())
+            {
+                try
+                {
+                    var response = webClient.DownloadString(url);
+
+                    sites.AddRange(response.Split(Environment.NewLine.ToCharArray()).Skip(1).Select(f =>
+                    {
+                        return Regex.Match(f, "[*].*[*]").Value.Replace("*", "");
+                    }).Where(f => string.IsNullOrWhiteSpace(f) == false));
+                }
+                catch(Exception e)
+                {
+                    IoC.Get<IExceptionHandler>().Handle(e);
+                }
+            }
+
+            return sites;
         }
     }
 }

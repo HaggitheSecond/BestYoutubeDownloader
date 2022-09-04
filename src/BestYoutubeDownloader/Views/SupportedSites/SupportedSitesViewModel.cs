@@ -34,7 +34,6 @@ namespace BestYoutubeDownloader.Views.SupportedSites
         }
 
         public BestAsyncCommand CloseCommand { get; }
-        public BestCommand GoToUpdatedListCommand { get; }
 
         public SupportedSitesViewModel(IImportService importService)
         {
@@ -42,23 +41,14 @@ namespace BestYoutubeDownloader.Views.SupportedSites
 
             this.CloseCommand = new BestAsyncCommand(async () => await this.TryCloseAsync());
 
-            this.GoToUpdatedListCommand = new BestCommand(() =>
-            {
-                Process.Start("https://github.com/rg3/youtube-dl/blob/master/docs/supportedsites.md");
-            });
-
-            var lines = importService.GetSupportedSitesFromFile();
+            var lines = importService.GetSupportedSites();
 
             if (lines == null)
             {
                 this.TryCloseAsync();
                 return;
             }
-
-            // remove the first line of the file "# Supported sites"
-            lines.RemoveAt(0);
-
-            this._allItems = lines.Select(line => line.Replace("-", "").Replace("*", "").Trim()).ToList();
+            this._allItems = lines.ToList();
             this.Items = new BindableCollection<string>(this._allItems);
         }
     }
