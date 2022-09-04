@@ -108,7 +108,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             set { this.SetProperty(ref this._adjustFileName, value); }
         }
 
-        public BestCommand SaveCommand { get; }
+        public BestAsyncCommand SaveCommand { get; }
 
         public BestAsyncCommand LoadCoverImageCommand { get; }
 
@@ -125,7 +125,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             this._downloaderService = downloaderService;
             this._metaDataTagService = metaDataTagService;
 
-            this.SaveCommand = new BestCommand(() => this.TryClose(true), this._hasChanges);
+            this.SaveCommand = new BestAsyncCommand(async () => await this.TryCloseAsync(true), this._hasChanges);
             this.LoadCoverImageCommand = new BestAsyncCommand(this.LoadCoverImage, this.CanLoadCover);
             this.LoadCoverImageFromDeviceCommand = new BestCommand(this.LoadCoverImageFromDevice);
 

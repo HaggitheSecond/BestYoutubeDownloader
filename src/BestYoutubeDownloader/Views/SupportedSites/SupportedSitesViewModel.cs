@@ -33,14 +33,14 @@ namespace BestYoutubeDownloader.Views.SupportedSites
             }
         }
 
-        public BestCommand CloseCommand { get; }
+        public BestAsyncCommand CloseCommand { get; }
         public BestCommand GoToUpdatedListCommand { get; }
 
         public SupportedSitesViewModel(IImportService importService)
         {
             this.DisplayName = "Supported Sites";
 
-            this.CloseCommand = new BestCommand(() => this.TryClose());
+            this.CloseCommand = new BestAsyncCommand(async () => await this.TryCloseAsync());
 
             this.GoToUpdatedListCommand = new BestCommand(() =>
             {
@@ -51,7 +51,7 @@ namespace BestYoutubeDownloader.Views.SupportedSites
 
             if (lines == null)
             {
-                this.TryClose();
+                this.TryCloseAsync();
                 return;
             }
 

@@ -78,9 +78,9 @@ namespace BestYoutubeDownloader
 
         #region Startup
 
-        protected override void OnStartup(object sender, StartupEventArgs e)
+        protected override async void OnStartup(object sender, StartupEventArgs e)
         {
-            this.DisplayRootViewFor<MainViewModel>(WindowSettings.GetMainWindowSettings());
+            await this.DisplayRootViewForAsync<MainViewModel>(WindowSettings.GetMainWindowSettings());
         }
         
         #endregion

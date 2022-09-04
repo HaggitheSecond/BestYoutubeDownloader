@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media;
@@ -139,7 +140,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this._messageService = messageService;
             this._exceptionHandler = exceptionHandler;
 
-            eventAggregator.Subscribe(this);
+            eventAggregator.SubscribeOnUIThread(this);
 
             this.ShowAddItemCommand = new BestCommand(() => { this.AddingItem = true; });
             this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); }, this.Items != null && this.Items.Count != 0 && this.IsDownloading == false);
@@ -339,9 +340,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             }
         }
 
-        public void Handle(SettingsChanged message)
+        public Task HandleAsync(SettingsChanged message, CancellationToken cancellationToken)
         {
             this.IsExtractingAudio = message.Settings.ExtractAudio;
+            return Task.CompletedTask;
         }
     }
 }

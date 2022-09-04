@@ -191,7 +191,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public BestCommand OpenFileCommand { get; }
 
-        public BestCommand ChangeMetaDataCommand { get; }
+        public BestAsyncCommand ChangeMetaDataCommand { get; }
 
         public BestCommand ResetStatusCommand { get; }
 
@@ -207,7 +207,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             this.OpenFileCommand = new BestCommand(this.OpenFile, this.CanOpenFile);
 
-            this.ChangeMetaDataCommand = new BestCommand(this.ChangeMetaData, this.CanChangeMetaData);
+            this.ChangeMetaDataCommand = new BestAsyncCommand(this.ChangeMetaData, this.CanChangeMetaData);
 
             this.ResetStatusCommand = new BestCommand(this.ResetStatus, this.CanResetStatus);
 
@@ -240,7 +240,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                    && this.Format == FileFormats.Mp3;
         }
 
-        private void ChangeMetaData()
+        private async Task ChangeMetaData()
         {
             var windowManager = IoC.Get<IWindowManager>();
 
@@ -248,7 +248,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             viewModel.Initialize(this.Mp3MetaData, this._metaData, this.FileName, this.Url, this.Image);
 
-            var result = windowManager.ShowDialog(viewModel, null, WindowSettings.GetWindowSettings(500, 500));
+            var result = await windowManager.ShowDialogAsync(viewModel, null, WindowSettings.GetWindowSettings(500, 500));
 
             if (result.HasValue == false || result.Value == false)
                 return;

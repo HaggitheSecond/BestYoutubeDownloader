@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
@@ -13,16 +14,16 @@ namespace BestYoutubeDownloader.Views.Pages.Info
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Info-64.png"));
         public SolidColorBrush Color => new SolidColorBrush(Colors.Yellow);
 
-        public BestCommand CheckSitesCommand { get; }
+        public BestAsyncCommand CheckSitesCommand { get; }
 
         public InfoViewModel()
         {
-            this.CheckSitesCommand = new BestCommand(this.CheckSites);
+            this.CheckSitesCommand = new BestAsyncCommand(this.CheckSites);
         }
 
-        private void CheckSites()
+        private async Task CheckSites()
         {
-            IoC.Get<IWindowManager>().ShowDialog(IoC.Get<SupportedSitesViewModel>(), null, WindowSettings.GetWindowSettings(400, 600));
+            await IoC.Get<IWindowManager>().ShowDialogAsync(IoC.Get<SupportedSitesViewModel>(), null, WindowSettings.GetWindowSettings(400, 600));
         }
     }
 }

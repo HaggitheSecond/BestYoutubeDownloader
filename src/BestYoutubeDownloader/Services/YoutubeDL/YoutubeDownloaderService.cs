@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
@@ -34,7 +35,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             this._commandPromptService = commandPromptService;
             this._settingsService = settingsService;
 
-            eventAggregator.Subscribe(this);
+            eventAggregator.SubscribeOnUIThread(this);
 
             this._downloader = this._settingsService.GetDownloadSettings().Downloader;
             this._exeLocation = Directory.GetCurrentDirectory() + $@"\{this._downloader}.exe";
@@ -292,7 +293,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             }
         }
 
-        public async void Handle(SettingsChanged message)
+        public async Task HandleAsync(SettingsChanged message, CancellationToken cancellationToken)
         {
             var downloader = this._settingsService.GetDownloadSettings().Downloader;
 

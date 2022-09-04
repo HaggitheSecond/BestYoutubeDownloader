@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using BestYoutubeDownloader.Common;
@@ -71,7 +73,7 @@ namespace BestYoutubeDownloader.Views
 
             this.DisplayName = "Youtube DL";
 
-            this._eventAggregator.Subscribe(this);
+            this._eventAggregator.SubscribeOnUIThread(this);
 
             this.DownloadListViewModel = IoC.Get<DownloadListViewModel>();
             this.Items.Add(this.DownloadListViewModel);
@@ -92,9 +94,9 @@ namespace BestYoutubeDownloader.Views
             this.IsEnabled = true;
         }
 
-        protected override async void OnActivate()
+        protected override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            this.ActivateItem(this.DownloadListViewModel);
+            await this.ActivateItemAsync(this.DownloadListViewModel);
 
             try
             {
@@ -106,18 +108,20 @@ namespace BestYoutubeDownloader.Views
             }
         }
 
-        public void Handle(SettingsChanged message)
+        public Task HandleAsync(SettingsChanged message, CancellationToken cancellationToken)
         {
             if (message.Settings.ShowConsole)
             {
                 if (this.Items.Contains(this.RawConsoleViewModel) == false)
                     this.Items.Insert(1, this.RawConsoleViewModel);
-                
+
             }
             else
             {
                 this.Items.Remove(this.RawConsoleViewModel);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

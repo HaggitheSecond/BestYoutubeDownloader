@@ -115,7 +115,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
         public BestCommand ChangeDirectoryCommand { get; }
 
-        public BestCommand SaveCommand { get; }
+        public BestAsyncCommand SaveCommand { get; }
 
         public BestAsyncCommand UpdateYoutubeDlVersionCommand { get; }
 
@@ -126,7 +126,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             this._downloaderService = downloaderService;
 
             this.ChangeDirectoryCommand = new BestCommand(this.ChangeDirectory);
-            this.SaveCommand = new BestCommand(this.Save, this.CanSave);
+            this.SaveCommand = new BestAsyncCommand(this.Save, this.CanSave);
             this.UpdateYoutubeDlVersionCommand = new BestAsyncCommand(this.UpdateYoutubeDlVersion);
 
             this.AvailableAudioFormats = new BindableCollection<string>(Enum.GetNames(typeof(FileFormats)));
@@ -152,7 +152,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             };
         }
 
-        protected override async void OnActivate()
+        protected override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
             await this.LoadYoutubeDlVersion();
         }
@@ -187,7 +187,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             return this._hasChanges;
         }
 
-        private void Save()
+        private async Task Save()
         {
             if (Enum.TryParse(this.SelectedAudioFormat, out FileFormats format) == false)
                 return;
@@ -206,7 +206,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
             this._settingsService.UpdateDownloadSettings(settings);
 
-            this._eventAggregator.PublishOnUIThread(new SettingsChanged(settings));
+            await this._eventAggregator.PublishOnUIThreadAsync(new SettingsChanged(settings));
 
             this._hasChanges = false;
         }
