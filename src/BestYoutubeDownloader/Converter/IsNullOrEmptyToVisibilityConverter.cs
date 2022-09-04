@@ -12,15 +12,13 @@ namespace BestYoutubeDownloader.Converter
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value == null)
+            if(value is null)
                 return this.Inverse 
                     ? Visibility.Visible 
                     : Visibility.Collapsed;
 
-            if (value is ICollection)
+            if (value is ICollection valueCollection)
             {
-                var valueCollection = value as ICollection;
-
                 if (valueCollection.Count == 0)
                     return this.Inverse
                     ? Visibility.Visible
@@ -34,7 +32,7 @@ namespace BestYoutubeDownloader.Converter
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29709.97
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BestYoutubeDownloader", "src\BestYoutubeDownloader\BestYoutubeDownloader.csproj", "{A495000A-38C8-4596-8A57-65F293A5E514}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BestYoutubeDownloader", "src\BestYoutubeDownloader\BestYoutubeDownloader.csproj", "{A495000A-38C8-4596-8A57-65F293A5E514}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1CB82475-BB5B-4B92-ABC2-9F691C2D3674}"
 EndProject
@@ -12,6 +12,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution 
 		src\BestYoutubeDownloader\.gitattributes = src\BestYoutubeDownloader\.gitattributes
 		src\BestYoutubeDownloader\.gitignore = src\BestYoutubeDownloader\.gitignore
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{5326BE14-5099-483A-900C-FD593EECF9A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder2", "NewFolder2", "{0D690248-4F0A-40F6-8732-60915E001249}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder3", "NewFolder3", "{8475AE3E-16D6-4B5D-8650-4948744C42C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.Import;
@@ -15,6 +17,7 @@ namespace BestYoutubeDownloader.Views.SupportedSites
         private BindableCollection<string> _items;
 
         private string _searchText;
+        private readonly IImportService _importService;
 
         public BindableCollection<string> Items
         {
@@ -37,17 +40,23 @@ namespace BestYoutubeDownloader.Views.SupportedSites
 
         public SupportedSitesViewModel(IImportService importService)
         {
+            this._importService = importService;
+
             this.DisplayName = "Supported Sites";
 
             this.CloseCommand = new BestAsyncCommand(async () => await this.TryCloseAsync());
+        }
 
-            var lines = importService.GetSupportedSites();
+        protected override async Task OnActivateAsync(CancellationToken cancellationToken)
+        {
+            var lines = await this._importService.GetSupportedSites();
 
-            if (lines == null)
+            if (lines is null)
             {
-                this.TryCloseAsync();
+                await this.TryCloseAsync();
                 return;
             }
+
             this._allItems = lines.ToList();
             this.Items = new BindableCollection<string>(this._allItems);
         }

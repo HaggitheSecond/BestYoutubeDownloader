@@ -39,10 +39,6 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         private BindableCollection<string> _availableAudioFormats;
         private string _selectedAudioFormat;
 
-        private BindableCollection<string> _availableDownloaders;
-        private string _selectedDownloader;
-
-
         private bool _showConsole;
 
         private string _youtubeDlVersion;
@@ -69,18 +65,6 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         {
             get { return this._selectedAudioFormat; }
             set { this.SetProperty(ref this._selectedAudioFormat, value); }
-        }
-
-        public BindableCollection<string> AvailableDownloaders
-        {
-            get { return this._availableDownloaders; }
-            set { this.SetProperty(ref this._availableDownloaders, value); }
-        }
-
-        public string SelectedDownloader
-        {
-            get { return this._selectedDownloader; }
-            set { this.SetProperty(ref this._selectedDownloader, value); }
         }
 
         public bool TagAudio
@@ -131,12 +115,6 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
             this.AvailableAudioFormats = new BindableCollection<string>(Enum.GetNames(typeof(FileFormats)));
 
-            this.AvailableDownloaders = new BindableCollection<string>
-            {
-                "youtube-dl",
-                "yt-dlp"
-            };
-
             this.LoadSettings();
 
             this.PropertyChanged += (sender, args) =>
@@ -168,8 +146,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             this.TagCoverImage = settings.TagCoverImage;
             this.AdjustFileName = settings.AdjustFileName;
 
-            this.SelectedAudioFormat = this.AvailableAudioFormats.FirstOrDefault(f => f == settings.AudioFormat.ToString());
-            this.SelectedDownloader = this.AvailableDownloaders.FirstOrDefault(f => f.Equals(settings.Downloader));
+            this.SelectedAudioFormat = this.AvailableAudioFormats.FirstOrDefault(f => f == settings.AudioFormat.ToString()) ?? this.AvailableAudioFormats.First();
         }
 
         private void ChangeDirectory()
@@ -200,8 +177,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
                 TagAudio = this.TagAudio,
                 ShowConsole = this.ShowConsole,
                 TagCoverImage = this.TagCoverImage,
-                AdjustFileName = this.AdjustFileName,
-                Downloader = this.SelectedDownloader
+                AdjustFileName = this.AdjustFileName
             };
 
             this._settingsService.UpdateDownloadSettings(settings);

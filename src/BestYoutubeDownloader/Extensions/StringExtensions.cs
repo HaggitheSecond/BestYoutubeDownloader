@@ -9,10 +9,9 @@ namespace BestYoutubeDownloader.Extensions
     {
         public static bool IsViableUrl(this string self)
         {
-            var result = Uri.TryCreate(self, UriKind.Absolute, out Uri uriResult) &&
-                         (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-
-            return result;
+            return Uri.TryCreate(self, UriKind.Absolute, out Uri? uriResult)
+                && uriResult is not null
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
 
         public static bool IsViableDirectory(this string self)

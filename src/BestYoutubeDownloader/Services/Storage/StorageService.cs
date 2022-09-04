@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BestYoutubeDownloader.Services.ExceptionHandling;
+using Caliburn.Micro;
+using System;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -6,7 +8,7 @@ namespace BestYoutubeDownloader.Services.Storage
 {
     public class StorageService : IStorageService
     {
-        public bool Save<T>(T input, string fileName = null)
+        public bool Save<T>(T input, string? fileName = null)
         {
             try
             {
@@ -19,51 +21,47 @@ namespace BestYoutubeDownloader.Services.Storage
             }
             catch (Exception e)
             {
-                // add exception handling here
+                IoC.Get<IExceptionHandler>().Handle(e);
                 return false;
             }
 
             return true;
         }
 
-        public T Load<T>(string fileName = null)
+        public T? Load<T>(string? fileName = null)
         {
-            var deserializer = new XmlSerializer(typeof(T));
-            var output = default(T);
-            
             try
             {
+                var deserializer = new XmlSerializer(typeof(T));
+
                 var reader = new StreamReader(this.BuildPath(typeof(T).Name, fileName));
 
                 var obj = deserializer.Deserialize(reader);
 
-                output = (T) obj;
+                if (obj is null || obj is not T t)
+                    return default;
+
+                return t;
             }
             catch (Exception e)
             {
-                // add exception handling here
-
-                return default(T);
+                IoC.Get<IExceptionHandler>().Handle(e);
+                return default;
             }
-
-            return output;
         }
         
-        private string BuildPath(string typeName, string fileName = null)
+        private string BuildPath(string typeName, string? fileName = null)
         {
             var path = this.GetDirectoryPath();
 
             if (Directory.Exists(path) == false)
                 Directory.CreateDirectory(path);
 
-            if (fileName != null)
+            path += string.IsNullOrWhiteSpace(fileName) switch
             {
-                path += fileName;
-            }
-            else
-            {
-                path += typeName;
-            }
+                false => fileName,
+                _ => typeName,
+            };
 
             path += ".xml";
 

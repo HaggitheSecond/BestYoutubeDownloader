@@ -22,7 +22,7 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
     /// </summary>
     public partial class RawConsoleView : UserControl
     {
-        public RawConsoleViewModel ViewModel => this.DataContext as RawConsoleViewModel;
+        public RawConsoleViewModel? ViewModel => this.DataContext as RawConsoleViewModel;
 
         public RawConsoleView()
         {
@@ -31,14 +31,17 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
 
             this.DataContextChanged += (sender, args) =>
             {
+                if (this.ViewModel is null)
+                    return;
+
                 if (args.NewValue.GetType() == typeof(RawConsoleViewModel))
-                    this.ViewModel.Outputs.CollectionChanged += OutputsOnCollectionChanged;
+                    this.ViewModel.Outputs.CollectionChanged += this.OutputsOnCollectionChanged;
             };
         }
 
         #region Scrolling
 
-        private void OutputsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        private void OutputsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             this.ScrollToEndOfDataGrid();
         }

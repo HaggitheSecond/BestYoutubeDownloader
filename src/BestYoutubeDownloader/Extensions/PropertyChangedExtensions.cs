@@ -7,9 +7,10 @@ namespace BestYoutubeDownloader.Extensions
 {
     public static class PropertyChangedExtensions
     {
-        public static bool SetProperty<T>(this PropertyChangedBase self,ref T field, T value, [CallerMemberName] string propertyName = null)
+        public static bool SetProperty<T>(this PropertyChangedBase self,ref T field, T value, [CallerMemberName] string propertyName = "")
         {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            if (EqualityComparer<T>.Default.Equals(field, value)) 
+                return false;
 
             field = value;
 

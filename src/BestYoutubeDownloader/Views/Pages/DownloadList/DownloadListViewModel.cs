@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -42,7 +43,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private DownloadItem _selectedItem;
 
         private string _addItemText;
-        
+
         private int _itemsToDownload;
         private int _downloadedItems;
 
@@ -146,7 +147,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.ClearItemsCommand = new BestCommand(() => { this.Items.Clear(); }, this.Items != null && this.Items.Count != 0 && this.IsDownloading == false);
             this.ClearFinishedItemsCommand = new BestCommand(() =>
             {
-                var items = this.Items.Where(f => f.Status != DownloadItemStatus.SuccessfulDownload && f.Status != DownloadItemStatus.AlreadyDownloaded);
+                var items = this.Items?.Where(f => f.Status != DownloadItemStatus.SuccessfulDownload && f.Status != DownloadItemStatus.AlreadyDownloaded)
+                    ?? new List<DownloadItem>();
+
                 this.Items = new BindableCollection<DownloadItem>(items);
 
             }, this.Items != null && this.Items.Count != 0);
@@ -182,12 +185,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private void OpenOutput()
         {
-            Process.Start(this._settingsService.GetDownloadSettings().OutputLocation);
+            ProcessHelper.OpenDirectory(this._settingsService.GetDownloadSettings().OutputLocation);
         }
 
         private bool CanDownloadAllItems()
         {
-            return this.Items.Count(f => f.Status == DownloadItemStatus.None) != 0;
+            return this.Items.Any(f => f.Status == DownloadItemStatus.None);
         }
 
         private async Task DownloadAllItems()
@@ -252,7 +255,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             {
                 var caption = "Url already added";
                 var message = $"The url you're trying to add is already added.";
-                
+
                 this._messageService.Show(message, caption, System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 return;
             }
@@ -304,9 +307,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
                 var metaData = await this._youtubeDownloaderService.GetMetaData(currentItem.Url);
 
-                currentItem.AddMetaData(metaData, this._settingsService.GetDownloadSettings().AudioFormat);
-
                 currentItem.Status = DownloadItemStatus.None;
+
+                if (metaData is null)
+                    continue;
+
+                currentItem.AddMetaData(metaData, this._settingsService.GetDownloadSettings().AudioFormat);
             }
 
             this.AddingItem = false;
@@ -314,14 +320,15 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public void RemoveSelectedItem()
         {
+            if (this.SelectedItem is null)
+                return;
+
             var itemIndex = this.Items.IndexOf(this.SelectedItem);
 
             this.Items.Remove(this.SelectedItem);
 
-            if (this.Items.Count != 0)
-                this.SelectedItem = itemIndex >= this.Items.Count
-                    ? this.Items.LastOrDefault()
-                    : this.Items.ElementAt(itemIndex);
+            if (this.Items.Any())
+                this.SelectedItem = this.Items.ElementAt(itemIndex) ?? this.Items.Last();
         }
 
         private void DownloadOutput(string input)
@@ -333,7 +340,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             {
                 this.CurrentDownloadStatus = status;
 
-                var currentItem = this.Items.FirstOrDefault(f => f.IsDownloading);
+                var currentItem = this.Items.FirstOrDefault(f => f.IsDownloading.GetValueOrDefault());
 
                 if (currentItem != null)
                     currentItem.CurrentPercent = status.PercentDone;

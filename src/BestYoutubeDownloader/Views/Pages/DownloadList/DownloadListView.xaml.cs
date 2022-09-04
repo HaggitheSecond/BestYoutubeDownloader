@@ -21,7 +21,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
     /// </summary>
     public partial class DownloadListView : UserControl
     {
-        DownloadListViewModel ViewModel => this.DataContext as DownloadListViewModel;
+        DownloadListViewModel? ViewModel => this.DataContext as DownloadListViewModel;
 
         public DownloadListView()
         {
@@ -30,6 +30,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private async void DownloadListView_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (this.ViewModel is null)
+                return;
+
             if (e.Key == Key.V && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
                 await this.ViewModel.AddItem(Clipboard.GetText());
@@ -39,6 +42,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private async void DownloadListView_OnPreviewDrop(object sender, DragEventArgs e)
         {
+            if (this.ViewModel is null)
+                return;
+
             if (e.Data.GetDataPresent(DataFormats.Text))
             {
                 var data = (string)e.Data.GetData(DataFormats.Text);
@@ -63,6 +69,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         
         private async void DownloadList_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (this.ViewModel is null)
+                return;
+
             if (e.Key == Key.V && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
                 await this.ViewModel.AddItem(Clipboard.GetText());
@@ -87,13 +96,6 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var grid = (Grid) sender;
-
-            var cp =
-                this.DownloadList.ItemContainerGenerator.ContainerFromItem(0) as
-                    ContentPresenter;
-
-            var tb = cp.FindVisualChild<TextBox>();
 
         }
 

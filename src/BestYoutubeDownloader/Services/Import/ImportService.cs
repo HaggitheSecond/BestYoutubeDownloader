@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Mime;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.ExceptionHandling;
@@ -29,16 +31,16 @@ namespace BestYoutubeDownloader.Services.Import
             return list;
         }
 
-        public IList<string> GetSupportedSites()
+        public async Task<IList<string>> GetSupportedSites()
         {
             var sites = new List<string>();
             var url = @"https://raw.githubusercontent.com/ytdl-org/youtube-dl/master/docs/supportedsites.md";
 
-            using (var webClient = new WebClient())
+            using (var client = new HttpClient())
             {
                 try
                 {
-                    var response = webClient.DownloadString(url);
+                    var response = await client.GetStringAsync(url);
 
                     sites.AddRange(response.Split(Environment.NewLine.ToCharArray()).Skip(1).Select(f =>
                     {

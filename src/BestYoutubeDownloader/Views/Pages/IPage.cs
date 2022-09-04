@@ -8,8 +8,8 @@ namespace BestYoutubeDownloader.Views.Pages
     {
         string Name { get; }
 
-        ImageSource Icon { get; }
+        ImageSource? Icon { get; }
 
-        SolidColorBrush Color { get; }
+        SolidColorBrush? Color { get; }
     }
 }

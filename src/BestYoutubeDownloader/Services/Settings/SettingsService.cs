@@ -7,7 +7,7 @@ namespace BestYoutubeDownloader.Services.Settings
 {
     public class SettingsService : ISettingsService
     {
-        private DownloadSettings _settings;
+        private DownloadSettings? _settings;
 
         private readonly IStorageService _storageService;
 
@@ -18,23 +18,24 @@ namespace BestYoutubeDownloader.Services.Settings
 
         public DownloadSettings GetDownloadSettings()
         {
-            if (this._settings == null)
-                this.LoadSettings();
-
-            return this._settings;
+            return this._settings ?? this.LoadSettings();
         }
 
-        private void LoadSettings()
+        private DownloadSettings LoadSettings()
         {
             var settings = this._storageService.Load<DownloadSettings>();
 
-            if (settings == null)
+            if (settings is null)
             {
                 this._storageService.Save(new DownloadSettings());
                 settings = this._storageService.Load<DownloadSettings>();
             }
 
-            this._settings = settings;
+            // welp, couldnt load settings anyways, just create some temp settings
+            if (settings is null)
+                settings = new();
+
+            return settings;
         }
 
         public void UpdateDownloadSettings(DownloadSettings settings)

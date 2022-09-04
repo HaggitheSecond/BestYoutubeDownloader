@@ -15,15 +15,21 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
 
             return Task.Run(() =>
             {
-                var process = GetProcess(directory, command);
+                var process = this.GetProcess(directory, command);
 
                 process.OutputDataReceived += (sender, args) =>
                 {
+                    if (args?.Data is null)
+                        return;
+
                     actionOnDataOutput.Invoke(args.Data); 
                 };
 
                 process.ErrorDataReceived += (sender, args) =>
                 {
+                    if (args?.Data is null)
+                        return;
+
                     actionOnDataOutput.Invoke(args.Data);
                 };
                 

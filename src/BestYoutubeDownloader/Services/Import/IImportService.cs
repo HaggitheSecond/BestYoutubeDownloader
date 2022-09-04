@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
 
 namespace BestYoutubeDownloader.Services.Import
@@ -8,6 +9,6 @@ namespace BestYoutubeDownloader.Services.Import
     {
         IList<DownloadItem> ImportDownloadItemsFromFile(string filePath);
 
-        IList<string> GetSupportedSites();
+        Task<IList<string>> GetSupportedSites();
     }
 }

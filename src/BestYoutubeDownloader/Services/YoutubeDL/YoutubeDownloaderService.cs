@@ -37,7 +37,8 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             eventAggregator.SubscribeOnUIThread(this);
 
-            this._downloader = this._settingsService.GetDownloadSettings().Downloader;
+            // this is not changeable by the user currently, but if it ever needs to be, simply change it here
+            this._downloader = "yt-dlp";
             this._exeLocation = Directory.GetCurrentDirectory() + $@"\{this._downloader}.exe";
             this._exeDirectoryLocation = Directory.GetCurrentDirectory();
         }
@@ -105,7 +106,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         #region MetaData
 
-        public async Task<MetaData> GetMetaData(string url)
+        public async Task<MetaData?> GetMetaData(string url)
         {
             if (url.IsViableUrl() == false || string.IsNullOrWhiteSpace(this._downloader))
                 return null;
@@ -124,6 +125,9 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 var metaData = JsonConvert.DeserializeObject(result, typeof(MetaData));
 
+                if (metaData is null)
+                    return null;
+
                 return (MetaData)metaData;
             }
             catch (Exception)
@@ -136,7 +140,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         #region ThumbNail
 
-        public async Task<ImageSource> GetThumbNail(string url)
+        public async Task<ImageSource?> GetThumbNail(string url)
         {        
             if (url.IsViableUrl() == false || string.IsNullOrWhiteSpace(this._downloader))
                 return null;
@@ -176,12 +180,16 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 if (File.Exists(imagePath) == false)
                 {
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    var directory = new DirectoryInfo(Path.GetDirectoryName(imagePath));
+                    var directoryName = Path.GetDirectoryName(imagePath);
 
-                    var latest = directory.GetFiles().ToList().OrderByDescending(f => f.CreationTime).First();
+                    if (string.IsNullOrWhiteSpace(directoryName) == false)
+                    {
+                        var directory = new DirectoryInfo(directoryName);
 
-                    imagePath = latest.FullName;
+                        var latest = directory.GetFiles().ToList().OrderByDescending(f => f.CreationTime).First();
+
+                        imagePath = latest.FullName;
+                    }
                 }
 
                 var uri = new Uri(imagePath);
@@ -295,13 +303,6 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         public async Task HandleAsync(SettingsChanged message, CancellationToken cancellationToken)
         {
-            var downloader = this._settingsService.GetDownloadSettings().Downloader;
-
-            if (string.IsNullOrWhiteSpace(downloader))
-                return;
-
-            this._downloader = downloader;
-
             await this.Validate();
         }
 

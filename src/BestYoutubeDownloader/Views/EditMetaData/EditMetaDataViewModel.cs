@@ -32,7 +32,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
         private string _title;
         private string _artist;
 
-        private ImageSource _image;
+        private ImageSource? _image;
         private bool _isDownloadingPicture;
 
         private bool _adjustFileName;
@@ -90,7 +90,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             }
         }
 
-        public ImageSource Image
+        public ImageSource? Image
         {
             get { return this._image; }
             set { this.SetProperty(ref this._image, value); }
@@ -146,25 +146,25 @@ namespace BestYoutubeDownloader.Views.EditMetaData
             this.AdjustFileName = settingsService.GetDownloadSettings().AdjustFileName;
         }
 
-        public void Initialize(Mp3MetaData mp3MetaData, MetaData metaData, string filePath, string url, ImageSource image = null)
+        public void Initialize(Mp3MetaData? mp3MetaData, MetaData? metaData, string filePath, string url, ImageSource? image = null)
         {
-            if (mp3MetaData == null)
+            if (mp3MetaData is null)
                 mp3MetaData = new Mp3MetaData();
 
-            if (metaData == null)
+            if (metaData is null)
                 metaData = new MetaData();
 
             this.Mp3MetaData = mp3MetaData;
 
-            this.Title = mp3MetaData.Title;
-            this.Artist = mp3MetaData.Artist;
+            this.Title = mp3MetaData.Title ?? string.Empty;
+            this.Artist = mp3MetaData.Artist ?? string.Empty;
 
             this.MetaData = metaData;
 
             this.FilePath = filePath;
             this.Url = url;
 
-            if (image != null)
+            if (image is not null)
                 this.Image = image;
         }
 
@@ -175,10 +175,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
         private void SwitchTitleAndArtist()
         {
-            var title = this.Title;
-
-            this.Title = this.Artist;
-            this.Artist = title;
+            (this.Artist, this.Title) = (this.Title, this.Artist);
         }
 
         private bool CanOpenDirectory()
@@ -194,10 +191,10 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
             var directory = Path.GetDirectoryName(path);
 
-            if (directory == null)
+            if (directory is null)
                 return;
 
-            Process.Start(directory);
+            ProcessHelper.OpenDirectory(directory);
         }
 
         private bool CanLoadCover()
@@ -214,7 +211,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
                 this.Image = null;
                 var result = await this._downloaderService.GetThumbNail(this.Url);
 
-                if (result == null)
+                if (result is null)
                     return;
 
                 this.Image = result;

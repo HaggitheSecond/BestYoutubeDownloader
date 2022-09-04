@@ -30,22 +30,22 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private string _rawUrl;
 
         private DownloadItemStatus _status;
-        private decimal _currentPercent;
+        private decimal? _currentPercent;
 
         private string _fileName;
 
         private string _title;
         private TimeSpan? _duration;
 
-        private MetaData _metaData;
-        private Mp3MetaData _mp3MetaData;
+        private MetaData? _metaData;
+        private Mp3MetaData? _mp3MetaData;
 
-        private ImageSource _image;
+        private ImageSource? _image;
 
-        private FileFormats _format;
-        private bool _isDownloading;
+        private FileFormats? _format;
+        private bool? _isDownloading;
 
-        private string _statusTooltip;
+        private string? _statusTooltip;
 
         #endregion
 
@@ -128,13 +128,13 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             }
         }
 
-        public string StatusTooltip
+        public string? StatusTooltip
         {
             get { return this._statusTooltip; }
             set { this.SetProperty(ref this._statusTooltip, value); }
         }
 
-        public decimal CurrentPercent
+        public decimal? CurrentPercent
         {
             get { return this._currentPercent; }
             set { this.SetProperty(ref this._currentPercent, value); }
@@ -158,25 +158,25 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             set { this.SetProperty(ref this._duration, value); }
         }
 
-        public Mp3MetaData Mp3MetaData
+        public Mp3MetaData? Mp3MetaData
         {
             get { return this._mp3MetaData; }
             set { this.SetProperty(ref this._mp3MetaData, value); }
         }
 
-        public FileFormats Format
+        public FileFormats? Format
         {
             get { return this._format; }
             set { this.SetProperty(ref this._format, value); }
         }
 
-        public ImageSource Image
+        public ImageSource? Image
         {
             get { return this._image; }
             set { this.SetProperty(ref this._image, value); }
         }
 
-        public bool IsDownloading
+        public bool? IsDownloading
         {
             get { return this._isDownloading; }
             set { this.SetProperty(ref this._isDownloading, value); }
@@ -231,6 +231,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private void OpenUrl()
         {
+            if (string.IsNullOrWhiteSpace(this.Url))
+                return;
+
             Process.Start(this.Url);
         }
 
@@ -280,7 +283,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public async Task<bool> Download(Action<string> output)
         {
-            if (this.Status != DownloadItemStatus.Waiting)
+            if (this.Status != DownloadItemStatus.Waiting || string.IsNullOrWhiteSpace(this.Url))
                 return false;
 
             this.Status = DownloadItemStatus.Downloading;
@@ -349,8 +352,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
                 if (File.Exists(this.FileName) == false && string.IsNullOrEmpty(this.FileName) == false)
                 {
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    var directory = new DirectoryInfo(Path.GetDirectoryName(this.FileName));
+                    var directoryName = Path.GetDirectoryName(this.FileName);
+
+                    if (string.IsNullOrWhiteSpace(directoryName))
+                        return false;
+
+                    var directory = new DirectoryInfo(directoryName);
 
                     var latest = directory.GetFiles().ToList().OrderByDescending(f => f.CreationTime).First();
 
@@ -384,7 +391,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 this.Status = DownloadItemStatus.Error;
                 throw;
@@ -405,14 +412,14 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this._metaDataTagService.TagMetaData(this.FileName, mp3Data);
         }
 
-        private void SetImage(BitmapImage image)
+        private void SetImage(BitmapImage? image)
         {
-            if (image == null)
+            if (image is null)
                 return;
 
             var path = image.UriSource.LocalPath;
             
-            if (File.Exists(path) == false)
+            if (File.Exists(path) is false)
                 return;
 
             this._metaDataTagService.TagCoverImage(this.FileName, path);
@@ -421,9 +428,15 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private void SetFileName()
         {
+            if (this.Mp3MetaData is null)
+                return;
+
             var desiredName = string.IsNullOrEmpty(this.Mp3MetaData.Artist) == false
                 ? this.Mp3MetaData.Artist + " - " + this.Mp3MetaData.Title
                 : this.Mp3MetaData.Title;
+
+            if (string.IsNullOrWhiteSpace(desiredName))
+                return;
 
             var fileName = Path.GetFileNameWithoutExtension(this.FileName);
 

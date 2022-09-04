@@ -12,9 +12,9 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings);
 
-        Task<MetaData> GetMetaData(string url);
+        Task<MetaData?> GetMetaData(string url);
 
-        Task<ImageSource> GetThumbNail(string url);
+        Task<ImageSource?> GetThumbNail(string url);
 
         Task<string> UpdateYoutubeDl();
 

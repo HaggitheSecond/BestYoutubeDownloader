@@ -7,8 +7,8 @@ namespace BestYoutubeDownloader.Views.Pages.Seperator
     public class SeperatorViewModel : Screen, ISeperator
     {
         public string Name => "Does not matter here";
-        public ImageSource Icon => null;
-        public SolidColorBrush Color => null;
+        public ImageSource? Icon => null;
+        public SolidColorBrush? Color => null;
 
         private bool _isEnabled;
 
