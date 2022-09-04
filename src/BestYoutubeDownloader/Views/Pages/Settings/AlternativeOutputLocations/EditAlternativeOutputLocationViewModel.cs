@@ -68,9 +68,10 @@ public class EditAlternativeOutputLocationViewModel : Screen
 
     private void SelectFolder()
     {
-        var dialog = new FolderBrowserDialog();
-
-        dialog.InitialDirectory = IoC.Get<ISettingsService>().GetDownloadSettings().OutputLocation;
+        var dialog = new FolderBrowserDialog
+        {
+            InitialDirectory = IoC.Get<ISettingsService>().GetDownloadSettings().OutputLocation
+        };
 
         if (dialog.ShowDialog() != DialogResult.OK)
             return;

@@ -10,7 +10,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
     {
         Task<bool> IsValid();
 
-        Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings);
+        Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings, string? outputDirectory = null);
 
         Task<MetaData?> GetMetaData(string url);
 

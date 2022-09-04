@@ -45,14 +45,14 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         #region VideoDownload
 
-        public async Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings)
+        public async Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings, string? outputDirectory = null)
         {
             if (url.IsViableUrl() == false || string.IsNullOrWhiteSpace(this._downloader))
                 return false;
 
             try
             {
-                var command = this.BuildDownloadCommand(url, settings);
+                var command = this.BuildDownloadCommand(url, settings, outputDirectory);
 
                 await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
                     command,
@@ -66,13 +66,13 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return true;
         }
 
-        private string BuildDownloadCommand(string url, DownloadSettings settings)
+        private string BuildDownloadCommand(string url, DownloadSettings settings, string? outputDirectory = null)
         {
             var commandList = new List<string> { this._downloader };
 
             commandList.AddRange(this.BuildDownloadArguments(settings));
 
-            commandList.Add(this.BuildOutputPath(url, settings));
+            commandList.Add(this.BuildOutputPath(url, settings, outputDirectory));
             commandList.Add(url);
 
             return string.Join(" ", commandList);
@@ -97,14 +97,22 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return arguments;
         }
 
-        private string BuildOutputPath(string url, DownloadSettings settings)
+        private string BuildOutputPath(string url, DownloadSettings settings, string? outputDirectory = null)
         {
             var outputPath = settings.OutputLocation;
-            var alternativeLocation = settings.AlternativeOutputLocations.FirstOrDefault(f => url.ToLower().Contains(f.Url.ToLower()));
 
-            if(alternativeLocation is not null)
+            if (string.IsNullOrWhiteSpace(outputDirectory) == false)
             {
-                outputPath = alternativeLocation.Location;
+                outputPath = outputDirectory;
+            }
+            else
+            {
+                var alternativeLocation = settings.AlternativeOutputLocations.FirstOrDefault(f => url.ToLower().Contains(f.Url.ToLower()));
+
+                if (alternativeLocation is not null)
+                {
+                    outputPath = alternativeLocation.Location;
+                }
             }
 
             return this.BuildOutputPath(outputPath);

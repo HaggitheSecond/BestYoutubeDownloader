@@ -14,9 +14,14 @@ public static class ProcessHelper
         if(string.IsNullOrEmpty(directory) || (Directory.Exists(directory) is false && File.Exists(directory) is false))
             return;
 
+        Start(directory);
+    }
+
+    public static void Start(string path)
+    {
         var process = new ProcessStartInfo
         {
-            FileName = directory,
+            FileName = path,
             UseShellExecute = true
         };
         Process.Start(process);

@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="BestYoutubeDownloader.Views.Pages.DownloadList.OutputLocationSelection.OutputLocationSelectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:BestYoutubeDownloader.Views.Pages.DownloadList.OutputLocationSelection"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DataContext="{d:DesignInstance local:OutputLocationSelectionViewModel}"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             mc:Ignorable="d">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="From alternative output locations" />
+            <ListBox Height="100"
+                     Margin="0,0,0,-1"
+                     HorizontalContentAlignment="Stretch"
+                     ItemsSource="{Binding AlternativeOutputLocations}"
+                     SelectedItem="{Binding SelectedAlternativeOutputLocation}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Text="{Binding Url}" />
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Location}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock HorizontalAlignment="Center"
+                       Text="OR" />
+            <Button HorizontalAlignment="Stretch"
+                    Command="{Binding SelectDirectoryCommand}"
+                    Content="Select directory" />
+            <Separator Margin="0,10,0,0" />
+            <TextBlock Text="Output directory" />
+            <TextBox Grid.Column="0"
+                     Margin="0,0,5,0"
+                     HorizontalAlignment="Stretch"
+                     IsReadOnly="True"
+                     Text="{Binding Location, UpdateSourceTrigger=PropertyChanged}"
+                     TextWrapping="NoWrap" />
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"
+                    Command="{Binding OkCommand}"
+                    Content="Ok" />
+            <Button Grid.Column="1"
+                    Command="{Binding CancelCommand}"
+                    Content="Cancel" />
+        </Grid>
+    </Grid>
+</UserControl>

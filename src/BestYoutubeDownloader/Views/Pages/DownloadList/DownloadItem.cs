@@ -13,6 +13,7 @@ using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using BestYoutubeDownloader.Views.EditMetaData;
+using BestYoutubeDownloader.Views.Pages.DownloadList.OutputLocationSelection;
 using Caliburn.Micro;
 using Action = System.Action;
 
@@ -25,6 +26,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private readonly IYoutubeDownloaderService _youtubeDownloaderService;
         private readonly ISettingsService _settingsService;
         private readonly IMetaDataTagService _metaDataTagService;
+        private readonly IWindowManager _windowManager;
 
         private string _url;
         private string _rawUrl;
@@ -46,6 +48,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private bool? _isDownloading;
 
         private string? _statusTooltip;
+        private string? _outputDirectory;
 
         #endregion
 
@@ -182,6 +185,11 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             set { this.SetProperty(ref this._isDownloading, value); }
         }
 
+        public string? OutputDirectory
+        {
+            get { return this._outputDirectory; }
+            set { this.Set(ref this._outputDirectory, value); }
+        }
 
         #endregion
 
@@ -195,6 +203,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public BestCommand ResetStatusCommand { get; }
 
+        public BestAsyncCommand SelectOutputDirectoryCommand { get; }
+
         #endregion
 
         public DownloadItem(string url)
@@ -202,6 +212,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this._youtubeDownloaderService = IoC.Get<IYoutubeDownloaderService>();
             this._settingsService = IoC.Get<ISettingsService>();
             this._metaDataTagService = IoC.Get<IMetaDataTagService>();
+            this._windowManager = IoC.Get<IWindowManager>();
 
             this.OpenUrlCommand = new BestCommand(this.OpenUrl);
 
@@ -210,6 +221,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.ChangeMetaDataCommand = new BestAsyncCommand(this.ChangeMetaData, this.CanChangeMetaData);
 
             this.ResetStatusCommand = new BestCommand(this.ResetStatus, this.CanResetStatus);
+            this.SelectOutputDirectoryCommand = new BestAsyncCommand(this.SelectOutputDirectory, this.CanSelectOutputDirectory);
 
             this.Url = url.Contains("youtube.com") ? url.Split('&').First() : url;
             this.RawUrl = url;
@@ -234,7 +246,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             if (string.IsNullOrWhiteSpace(this.Url))
                 return;
 
-            Process.Start(this.Url);
+            ProcessHelper.Start(this.Url);
         }
 
         private bool CanChangeMetaData()
@@ -277,6 +289,23 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.FileName = string.Empty;
         }
 
+        private bool CanSelectOutputDirectory()
+        {
+            return this.Status == DownloadItemStatus.None;
+        }
+
+        private async Task SelectOutputDirectory()
+        {
+            var viewModel = IoC.Get<OutputLocationSelectionViewModel>();
+
+            var result = await this._windowManager.ShowDialogAsync(viewModel, null, WindowSettings.GetWindowSettings(400, 300));
+
+            if (result.GetValueOrDefault() == false)
+                return;
+
+            this.OutputDirectory = viewModel.Location;
+        }
+
         #endregion
 
         #region Public Methods
@@ -288,7 +317,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             this.Status = DownloadItemStatus.Downloading;
 
-            var result = await this._youtubeDownloaderService.DownloadVideo(WrapedOutput, this.Url, this._settingsService.GetDownloadSettings());
+            var result = await this._youtubeDownloaderService.DownloadVideo(WrapedOutput, this.Url, this._settingsService.GetDownloadSettings(), this.OutputDirectory);
 
             if (result)
             {

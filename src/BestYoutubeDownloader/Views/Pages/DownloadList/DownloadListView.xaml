@@ -206,6 +206,12 @@
                                                 <Image Source="pack://application:,,,/Resources/Icons/Tags-48.png" />
                                             </MenuItem.Icon>
                                         </MenuItem>
+                                        <MenuItem Command="{Binding SelectOutputDirectoryCommand}"
+                                                  Header="Select output directory">
+                                            <MenuItem.Icon>
+                                                <Image Source="pack://application:,,,/Resources/Icons/Download-48.png" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
                                         <MenuItem Command="{Binding ResetStatusCommand}"
                                                   Header="Reset status">
                                             <MenuItem.Icon>
