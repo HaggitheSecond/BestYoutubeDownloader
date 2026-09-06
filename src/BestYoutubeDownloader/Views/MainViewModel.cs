@@ -100,6 +100,7 @@ namespace BestYoutubeDownloader.Views
 
             try
             {
+                await this._youtubeDownloaderService.UpdateYoutubeDl();
                 await this._youtubeDownloaderService.Validate();
             }
             catch (Exception e)

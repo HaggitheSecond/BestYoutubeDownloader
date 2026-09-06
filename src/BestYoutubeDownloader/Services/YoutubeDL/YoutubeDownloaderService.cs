@@ -28,7 +28,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         private readonly string _exeLocation;
         private readonly string _exeDirectoryLocation;
-        private string _downloader;
+        private string _downloaderName;
 
         public YoutubeDownloaderService(ICommandPromptService commandPromptService, ISettingsService settingsService, IEventAggregator eventAggregator)
         {
@@ -38,8 +38,8 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             eventAggregator.SubscribeOnUIThread(this);
 
             // this is not changeable by the user currently, but if it ever needs to be, simply change it here
-            this._downloader = "yt-dlp";
-            this._exeLocation = Directory.GetCurrentDirectory() + $@"\{this._downloader}.exe";
+            this._downloaderName = "yt-dlp";
+            this._exeLocation = Directory.GetCurrentDirectory() + $@"\{this._downloaderName}.exe";
             this._exeDirectoryLocation = Directory.GetCurrentDirectory();
         }
 
@@ -47,7 +47,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         public async Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings, string? outputDirectory = null)
         {
-            if (url.IsViableUrl() == false || string.IsNullOrWhiteSpace(this._downloader))
+            if (url.IsViableUrl() == false || string.IsNullOrWhiteSpace(this._downloaderName))
                 return false;
 
             try
@@ -68,7 +68,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         private string BuildDownloadCommand(string url, DownloadSettings settings, string? outputDirectory = null)
         {
-            var commandList = new List<string> { this._downloader };
+            var commandList = new List<string> { this._downloaderName };
 
             commandList.AddRange(this.BuildDownloadArguments(settings));
 
@@ -129,7 +129,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         public async Task<MetaData?> GetMetaData(string url)
         {
-            if (url.IsViableUrl() == false || string.IsNullOrWhiteSpace(this._downloader))
+            if (url.IsViableUrl() == false || string.IsNullOrWhiteSpace(this._downloaderName))
                 return null;
 
             try
@@ -137,7 +137,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
                 var result = string.Empty;
 
                 await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
-                    $"{this._downloader} -j " + url,
+                    $"{this._downloaderName} -j " + url,
                     s =>
                     {
                         if (string.IsNullOrWhiteSpace(s) == false)
@@ -163,7 +163,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         public async Task<ImageSource?> GetThumbNail(string url)
         {        
-            if (url.IsViableUrl() == false || string.IsNullOrWhiteSpace(this._downloader))
+            if (url.IsViableUrl() == false || string.IsNullOrWhiteSpace(this._downloaderName))
                 return null;
 
             try
@@ -229,7 +229,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         {
             var arguments = new List<string>
             {
-                this._downloader,
+                this._downloaderName,
                 "--write-thumbnail",
                 "--skip-download",
                 this.BuildOutputPath(outputPath),
@@ -260,12 +260,21 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         public async Task<string> UpdateYoutubeDl()
         {
-            if (string.IsNullOrWhiteSpace(this._downloader))
+            if (string.IsNullOrWhiteSpace(this._downloaderName))
                 return "No downloader!";
+
+            if (File.Exists(this._exeLocation) == false)
+            {
+                var downloadCommand = "curl -L -o " + this._downloaderName + ".exe https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
+
+                await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
+                    downloadCommand,
+                    _ => { });
+            }
 
             var result = string.Empty;
 
-            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, this._downloader + " --update", s =>
+            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, this._downloaderName + " --update", s =>
             {
                 if (string.IsNullOrWhiteSpace(s) == false)
                     result = s;
@@ -276,12 +285,12 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         public async Task<string> GetYoutubeDlVersion()
         {
-            if (string.IsNullOrWhiteSpace(this._downloader))
+            if (string.IsNullOrWhiteSpace(this._downloaderName))
                 return "No downloader!";
 
             var result = string.Empty;
 
-            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, this._downloader + " --version", s =>
+            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, this._downloaderName + " --version", s =>
             {
                 if (string.IsNullOrWhiteSpace(s) == false) result = s;
             });
@@ -313,11 +322,11 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         public async Task Validate()
         {
-            if (string.IsNullOrWhiteSpace(this._downloader))
+            if (string.IsNullOrWhiteSpace(this._downloaderName))
                 throw new InvalidConfigurationException("No downloader set");
 
             if (this.ValidateExeLocation() == false)
-                throw new InvalidConfigurationException($"Could not locate {this._downloader}.exe. Please ensure it is located in his programs executing directory.{Environment.NewLine}{Environment.NewLine}Visit 'https://youtube-dl.org/' for emore information.");
+                throw new InvalidConfigurationException($"Could not locate {this._downloaderName}.exe. Please ensure it is located in his programs executing directory.{Environment.NewLine}{Environment.NewLine}Visit 'https://youtube-dl.org/' for emore information.");
 
             if (await this.ValidateFfmepg() == false)
                 throw new InvalidConfigurationException($"Could not locate ffmpeg. Please ensure it is properly installed and updated on your system.{Environment.NewLine}{Environment.NewLine}Visit 'https://ffmpeg.org/' for more information.");

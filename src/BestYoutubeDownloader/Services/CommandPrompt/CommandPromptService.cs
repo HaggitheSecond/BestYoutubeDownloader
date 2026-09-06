@@ -10,7 +10,7 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
 
         public Task ExecuteCommandPromptCommand(string directory, string command, Action<string> actionOnDataOutput)
         {
-            this._rawConsoleAction.Invoke(command, true);
+            this._rawConsoleAction?.Invoke(command, true);
             actionOnDataOutput = this.WrapOutput(actionOnDataOutput);
 
             return Task.Run(() =>

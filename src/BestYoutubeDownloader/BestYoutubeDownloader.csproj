@@ -19,17 +19,8 @@
       <NoWarn>NU1701</NoWarn>
     </PackageReference>
   </ItemGroup>
-    
-  <ItemGroup>
-    <Content Include="yt-dlp.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Icons\*" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="yt-dlp.exe" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\.editorconfig" Link=".editorconfig" />
