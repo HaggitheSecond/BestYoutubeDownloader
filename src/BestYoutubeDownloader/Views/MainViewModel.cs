@@ -94,6 +94,7 @@ namespace BestYoutubeDownloader.Views
             this.IsEnabled = true;
         }
 
+        [Obsolete]
         protected override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
             await this.ActivateItemAsync(this.DownloadListViewModel);

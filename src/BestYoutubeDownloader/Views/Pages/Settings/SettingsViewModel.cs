@@ -156,6 +156,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             };
         }
 
+        [Obsolete]
         protected override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
             await this.LoadYoutubeDlVersion();

@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using BestYoutubeDownloader.Common;
+﻿using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.Import;
 using Caliburn.Micro;
 using DevExpress.Mvvm.Native;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BestYoutubeDownloader.Views.SupportedSites
 {
@@ -55,6 +56,7 @@ namespace BestYoutubeDownloader.Views.SupportedSites
             this.CloseCommand = new BestAsyncCommand(async () => await this.TryCloseAsync(true));
         }
 
+        [Obsolete]
         protected override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
             var lines = await this._importService.GetSupportedSites();
