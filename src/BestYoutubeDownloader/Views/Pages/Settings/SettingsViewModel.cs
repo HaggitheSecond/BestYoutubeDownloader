@@ -221,7 +221,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             await this._downloaderService.UpdateYoutubeDl();
             await this.LoadYoutubeDlVersion();
         }
-
+        
         private async Task LoadYoutubeDlVersion()
         {
             this.YoutubeDlVersion = await this._downloaderService.GetYoutubeDlVersion();

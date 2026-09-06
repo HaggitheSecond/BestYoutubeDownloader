@@ -48,15 +48,26 @@ namespace BestYoutubeDownloader.Services.Import
                         .Where(f => string.IsNullOrWhiteSpace(f) == false)
                         .Select(f =>
                         {
-                            var parts = f.Split("**", StringSplitOptions.RemoveEmptyEntries).Skip(1).ToArray();
+                            try
+                            {
+                                if (f.Trim().StartsWith("-") == false)
+                                    return ("", "");
 
-                            var name = parts[0];
-                            var description = parts.Length == 1
-                                ? string.Empty
-                                : GetDescription(string.Join("", parts[1..]));
+                                var parts = f.Split("**", StringSplitOptions.RemoveEmptyEntries).Skip(1).ToArray();
 
-                            return (name, description);
-                        }));
+                                var name = parts[0];
+                                var description = parts.Length == 1
+                                    ? string.Empty
+                                    : GetDescription(string.Join("", parts[1..]));
+
+                                return (name, description);
+                            }
+                            catch (Exception)
+                            {
+                                return ("", "");
+                            }
+                        })
+                        .Where(f => !string.IsNullOrEmpty(f.Item1)));
                 }
                 catch (Exception e)
                 {
