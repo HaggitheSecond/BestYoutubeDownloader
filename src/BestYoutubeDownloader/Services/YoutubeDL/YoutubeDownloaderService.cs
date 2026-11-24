@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -239,12 +240,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
                 return "No downloader!";
 
             if (File.Exists(this._exeLocation) == false)
-            {
-                await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation,
-                    "curl",
-                    new[] { "-L", "-o", this._exeLocation, "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" },
-                    _ => { });
-            }
+                await this.DownloadYoutubeDl();
 
             var result = string.Empty;
 
@@ -255,6 +251,40 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             });
 
             return result;
+        }
+
+        private async Task DownloadYoutubeDl()
+        {
+            var url = $"https://github.com/yt-dlp/yt-dlp/releases/latest/download/{this._downloaderName}.exe";
+            var temporaryLocation = this._exeLocation + ".download";
+
+            try
+            {
+                using (var client = new HttpClient())
+                using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+                {
+                    response.EnsureSuccessStatusCode();
+
+                    using (var fileStream = new FileStream(temporaryLocation, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        await response.Content.CopyToAsync(fileStream);
+                    }
+                }
+
+                File.Move(temporaryLocation, this._exeLocation, true);
+            }
+            catch (Exception e) when (e is HttpRequestException or IOException or UnauthorizedAccessException or TaskCanceledException)
+            {
+                try
+                {
+                    File.Delete(temporaryLocation);
+                }
+                catch (Exception)
+                {
+                }
+
+                throw new InvalidConfigurationException($"Could not download {this._downloaderName}.exe: {e.Message}{Environment.NewLine}{Environment.NewLine}Please check your internet connection and restart the program, or download it manually from '{url}' and place it in '{this._exeDirectoryLocation}'.", e);
+            }
         }
 
         public async Task<string> GetYoutubeDlVersion()
