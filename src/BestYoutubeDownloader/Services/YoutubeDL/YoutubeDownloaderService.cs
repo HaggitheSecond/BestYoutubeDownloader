@@ -176,46 +176,19 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
                 if (Directory.Exists(thumbNailDirectory) == false)
                     Directory.CreateDirectory(thumbNailDirectory);
 
-                var imageOutputUrl = string.Empty;
+                var thumbNailName = Guid.NewGuid().ToString("N");
 
-                var arguments = this.BuildThumbNailDownloadArguments(url, thumbNailDirectory);
+                var arguments = this.BuildThumbNailDownloadArguments(url, thumbNailDirectory, thumbNailName);
 
                 await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation,
                     this._exeLocation,
                     arguments,
-                    input =>
-                    {
-                        if (input != null && input.Contains("Writing video thumbnail"))
-                            imageOutputUrl = input;
-                    });
+                    _ => { });
 
-                if (string.IsNullOrWhiteSpace(imageOutputUrl))
+                var imagePath = Directory.EnumerateFiles(thumbNailDirectory, thumbNailName + ".*").FirstOrDefault();
+
+                if (imagePath is null)
                     return null;
-
-                var stringParts = imageOutputUrl.Split(':');
-
-                var imagePath = stringParts[stringParts.Length - 2] + ":" + stringParts[stringParts.Length - 1].Trim();
-
-                // adjust the filename to the actual existing file
-
-                // this is need because the filename extracted from the console will not contain non-ascii characters
-                // but the actual filename will contain them - this is needed to be able to write metadata
-
-                // could lead to problems when multiple programs/processes are writing to the directory simultaneously
-
-                if (File.Exists(imagePath) == false)
-                {
-                    var directoryName = Path.GetDirectoryName(imagePath);
-
-                    if (string.IsNullOrWhiteSpace(directoryName) == false)
-                    {
-                        var directory = new DirectoryInfo(directoryName);
-
-                        var latest = directory.GetFiles().ToList().OrderByDescending(f => f.CreationTime).First();
-
-                        imagePath = latest.FullName;
-                    }
-                }
 
                 var uri = new Uri(imagePath);
 
@@ -229,18 +202,16 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             }
         }
 
-        private IList<string> BuildThumbNailDownloadArguments(string url, string outputPath)
+        private IList<string> BuildThumbNailDownloadArguments(string url, string outputPath, string fileName)
         {
-            var arguments = new List<string>
+            return new List<string>
             {
                 "--write-thumbnail",
-                "--skip-download"
+                "--skip-download",
+                "-o",
+                Path.Combine(outputPath, fileName + ".%(ext)s"),
+                url
             };
-
-            arguments.AddRange(this.BuildOutputPath(outputPath));
-            arguments.Add(url);
-
-            return arguments;
         }
 
         public void ClearThumbNailsDirectory()
