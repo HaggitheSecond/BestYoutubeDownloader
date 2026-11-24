@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug BestYoutubeDownloader",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/BestYoutubeDownloader/bin/Debug/net10.0-windows7.0/BestYoutubeDownloader.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/BestYoutubeDownloader/bin/Debug/net10.0-windows7.0",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Attach to process",
+            "type": "coreclr",
+            "request": "attach",
+            "processName": "BestYoutubeDownloader.exe"
+        }
+    ]
+}

@@ -1,0 +1,122 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}/BestYoutubeDownloader.sln",
+                "-nologo",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build (Release)",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}/BestYoutubeDownloader.sln",
+                "-c",
+                "Release",
+                "-nologo",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "rebuild",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}/BestYoutubeDownloader.sln",
+                "--no-incremental",
+                "-nologo",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "clean",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "clean",
+                "${workspaceFolder}/BestYoutubeDownloader.sln",
+                "-nologo"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "restore",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "restore",
+                "${workspaceFolder}/BestYoutubeDownloader.sln"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "run",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/src/BestYoutubeDownloader/BestYoutubeDownloader.csproj"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/src/BestYoutubeDownloader/bin/Debug/net10.0-windows7.0"
+            },
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "watch",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/src/BestYoutubeDownloader/BestYoutubeDownloader.csproj"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/src/BestYoutubeDownloader/bin/Debug/net10.0-windows7.0"
+            },
+            "isBackground": true,
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "publish",
+                "${workspaceFolder}/src/BestYoutubeDownloader/BestYoutubeDownloader.csproj",
+                "-c",
+                "Release",
+                "-nologo",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
