@@ -39,8 +39,8 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             // this is not changeable by the user currently, but if it ever needs to be, simply change it here
             this._downloaderName = "yt-dlp";
-            this._exeLocation = Directory.GetCurrentDirectory() + $@"\{this._downloaderName}.exe";
-            this._exeDirectoryLocation = Directory.GetCurrentDirectory();
+            this._exeDirectoryLocation = AppContext.BaseDirectory;
+            this._exeLocation = Path.Combine(this._exeDirectoryLocation, $"{this._downloaderName}.exe");
         }
 
         #region VideoDownload
@@ -326,7 +326,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
                 throw new InvalidConfigurationException("No downloader set");
 
             if (this.ValidateExeLocation() == false)
-                throw new InvalidConfigurationException($"Could not locate {this._downloaderName}.exe. Please ensure it is located in his programs executing directory.{Environment.NewLine}{Environment.NewLine}Visit 'https://youtube-dl.org/' for emore information.");
+                throw new InvalidConfigurationException($"Could not locate {this._downloaderName}.exe. Please ensure it is located in this program's directory.{Environment.NewLine}{Environment.NewLine}Visit 'https://github.com/yt-dlp/yt-dlp' for more information.");
 
             if (await this.ValidateFfmepg() == false)
                 throw new InvalidConfigurationException($"Could not locate ffmpeg. Please ensure it is properly installed and updated on your system.{Environment.NewLine}{Environment.NewLine}Visit 'https://ffmpeg.org/' for more information.");

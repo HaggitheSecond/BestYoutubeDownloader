@@ -57,7 +57,6 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
                 UseShellExecute = false,
                 WorkingDirectory = directory,
                 FileName = @"C:\Windows\System32\cmd.exe",
-                Verb = "runas",
                 Arguments = "/c " + command,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,

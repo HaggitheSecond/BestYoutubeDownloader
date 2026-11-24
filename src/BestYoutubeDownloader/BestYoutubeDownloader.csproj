@@ -11,14 +11,10 @@
   
   <ItemGroup>
     <PackageReference Include="Caliburn.Micro" Version="5.0.258" />
-    <PackageReference Include="Caliburn.Micro.Core" Version="5.0.258" />
-    <PackageReference Include="Castle.Core" Version="5.2.1" />
     <PackageReference Include="DevExpressMvvm" Version="24.1.6" />
-    <PackageReference Include="log4net" Version="3.4.0" />
+    <PackageReference Include="log4net" Version="3.6.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="taglib" Version="2.1.0.0">
-      <NoWarn>NU1701</NoWarn>
-    </PackageReference>
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Icons\*" />

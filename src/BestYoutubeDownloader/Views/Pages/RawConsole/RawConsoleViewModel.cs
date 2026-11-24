@@ -49,7 +49,7 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
 
         private void OpenConsole()
         {
-            this._commandPromptService.OpenCommandPrompt(Directory.GetCurrentDirectory());
+            this._commandPromptService.OpenCommandPrompt(AppContext.BaseDirectory);
         }
 
         private void AddOutput(string s, bool isInput)
