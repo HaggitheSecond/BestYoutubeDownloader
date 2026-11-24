@@ -12,5 +12,7 @@ namespace BestYoutubeDownloader.Services.Logging
         void Warn(string message, Exception? exception = null, [CallerFilePath] string callerFilePath = "");
 
         void Error(string message, Exception? exception = null, [CallerFilePath] string callerFilePath = "");
+
+        void SetFileLogLevel(LogLevel level);
     }
 }

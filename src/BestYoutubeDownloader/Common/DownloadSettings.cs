@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BestYoutubeDownloader.Services.Logging;
 
 namespace BestYoutubeDownloader.Common
 {
@@ -29,6 +30,8 @@ namespace BestYoutubeDownloader.Common
         // program settings
 
         public bool ShowConsole { get; set; }
+
+        public LogLevel LogLevel { get; set; } = LogLevel.Info;
 
         public DownloadSettings()
         {

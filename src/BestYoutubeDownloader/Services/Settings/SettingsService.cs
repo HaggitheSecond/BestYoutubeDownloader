@@ -52,7 +52,7 @@ namespace BestYoutubeDownloader.Services.Settings
             this._storageService.Save(settings);
             this._settings = settings;
 
-            this._logService.Info($"Settings were saved (output location '{settings.OutputLocation}', extract audio {settings.ExtractAudio}, audio format {settings.AudioFormat})");
+            this._logService.Info($"Settings were saved (output location '{settings.OutputLocation}', extract audio {settings.ExtractAudio}, audio format {settings.AudioFormat}, log file level {settings.LogLevel})");
         }
     }
 }

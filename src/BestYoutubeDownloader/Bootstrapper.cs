@@ -84,6 +84,9 @@ namespace BestYoutubeDownloader
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
+            var settings = this._container.GetInstance<ISettingsService>().GetDownloadSettings();
+            this._container.GetInstance<ILogService>().SetFileLogLevel(settings.LogLevel);
+
             this._container.GetInstance<ILogService>().Info($"Application started (version {typeof(Bootstrapper).Assembly.GetName().Version}, directory '{AppContext.BaseDirectory}')");
 
             await this.DisplayRootViewForAsync<MainViewModel>(WindowSettings.GetMainWindowSettings());

@@ -5,6 +5,17 @@ namespace BestYoutubeDownloader.Extensions
 {
     public static class LogLevelExtensions
     {
+        public static Level ToLog4NetLevel(this LogLevel self)
+        {
+            return self switch
+            {
+                LogLevel.Debug => Level.Debug,
+                LogLevel.Warn => Level.Warn,
+                LogLevel.Error => Level.Error,
+                _ => Level.Info
+            };
+        }
+
         public static LogLevel ToLogLevel(this Level? self)
         {
             if (self is null)

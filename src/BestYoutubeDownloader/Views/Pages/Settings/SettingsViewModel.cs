@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
+using BestYoutubeDownloader.Services.Logging;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.Storage;
 using BestYoutubeDownloader.Services.Download;
@@ -42,6 +43,9 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         private string _selectedAudioFormat;
 
         private bool _showConsole;
+
+        private BindableCollection<string> _availableLogLevels;
+        private string _selectedLogLevel;
 
         private string _youtubeDlVersion;
 
@@ -96,6 +100,18 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             set { this.SetProperty(ref this._showConsole, value); }
         }
 
+        public BindableCollection<string> AvailableLogLevels
+        {
+            get { return this._availableLogLevels; }
+            set { this.SetProperty(ref this._availableLogLevels, value); }
+        }
+
+        public string SelectedLogLevel
+        {
+            get { return this._selectedLogLevel; }
+            set { this.SetProperty(ref this._selectedLogLevel, value); }
+        }
+
         public string YoutubeDlVersion
         {
             get { return this._youtubeDlVersion; }
@@ -140,6 +156,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             this.DeleteAlternativeOutputLocationCommand = new BestCommand(this.DeleteAlternativeOutputLocation, () => this.SelectedAlternativeOutputLocation is not null);
 
             this.AvailableAudioFormats = new BindableCollection<string>(Enum.GetNames(typeof(FileFormats)));
+            this.AvailableLogLevels = new BindableCollection<string>(Enum.GetNames(typeof(LogLevel)));
 
             this.LoadSettings();
 
@@ -174,6 +191,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             this.AdjustFileName = settings.AdjustFileName;
 
             this.SelectedAudioFormat = this.AvailableAudioFormats.FirstOrDefault(f => f == settings.AudioFormat.ToString()) ?? this.AvailableAudioFormats.First();
+            this.SelectedLogLevel = this.AvailableLogLevels.FirstOrDefault(f => f == settings.LogLevel.ToString()) ?? LogLevel.Info.ToString();
 
             this.AlternativeOutputLocations = new BindableCollection<AlternativeOutputLocationViewModel>(settings.AlternativeOutputLocations.Select(f => new AlternativeOutputLocationViewModel(f)));
         }
@@ -198,6 +216,9 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
             if (Enum.TryParse(this.SelectedAudioFormat, out FileFormats format) == false)
                 return;
 
+            if (Enum.TryParse(this.SelectedLogLevel, out LogLevel logLevel) == false)
+                return;
+
             var settings = new DownloadSettings
             {
                 OutputLocation = this.OutputDirectoryPath,
@@ -205,6 +226,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
                 AudioFormat = format,
                 TagAudio = this.TagAudio,
                 ShowConsole = this.ShowConsole,
+                LogLevel = logLevel,
                 TagCoverImage = this.TagCoverImage,
                 AdjustFileName = this.AdjustFileName,
                 AlternativeOutputLocations = this.AlternativeOutputLocations.Select(f => new AlternativeOutputLocation(f.Url, f.Location)).ToList()
