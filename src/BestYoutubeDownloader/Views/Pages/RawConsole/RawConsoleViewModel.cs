@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using BestYoutubeDownloader.Common;
+using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.CommandPrompt;
+using BestYoutubeDownloader.Services.Logging;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.YoutubeDL;
 using Caliburn.Micro;
@@ -16,7 +19,7 @@ using DevExpress.Mvvm;
 
 namespace BestYoutubeDownloader.Views.Pages.RawConsole
 {
-    public class RawConsoleViewModel : Screen, IPage
+    public class RawConsoleViewModel : Screen, IPage, IHandle<LogEntryAdded>
     {
         public string Name => "Console";
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Console-64.png"));
@@ -35,11 +38,11 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
 
         public BestCommand OpenConsoleCommand { get; }
 
-        public RawConsoleViewModel(ICommandPromptService commandPromptService)
+        public RawConsoleViewModel(ICommandPromptService commandPromptService, IEventAggregator eventAggregator)
         {
             this._commandPromptService = commandPromptService;
 
-            this._commandPromptService.RegisterOutputAction(this.AddOutput);
+            eventAggregator.SubscribeOnPublishedThread(this);
 
             this.ClearConsoleCommand = new BestCommand(() => { this.Outputs.Clear(); }, () => this.Outputs.Count != 0);
             this.OpenConsoleCommand = new BestCommand(this.OpenConsole);
@@ -52,8 +55,18 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
             this._commandPromptService.OpenCommandPrompt(AppContext.BaseDirectory);
         }
 
-        private void AddOutput(string s, bool isInput)
+        public Task HandleAsync(LogEntryAdded message, CancellationToken cancellationToken)
         {
+            this.AddOutput(message);
+
+            return Task.CompletedTask;
+        }
+
+        private void AddOutput(LogEntryAdded entry)
+        {
+            var s = this.GetOutputText(entry);
+            var isInput = entry.Level != LogLevel.Debug;
+
             // this can happen when a command is not done executing when the application gets shut down
             if (Application.Current?.Dispatcher == null)
                 return;
@@ -69,10 +82,26 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
                     this.Outputs.Add(new RawConsoleOutputViewModel
                     {
                         Value = s,
-                        Time = DateTime.Now,
+                        Time = entry.Time,
                         IsInput = isInput
                     });
             });
+        }
+
+        private string GetOutputText(LogEntryAdded entry)
+        {
+            var text = entry.Message;
+
+            if (entry.Level == LogLevel.Warn && text.StartsWith("WARNING") == false)
+                text = "WARNING: " + text;
+
+            if (entry.Level == LogLevel.Error && text.StartsWith("ERROR") == false)
+                text = "ERROR: " + text;
+
+            if (entry.Exception is not null)
+                text += " (" + entry.Exception.Message + ")";
+
+            return text;
         }
     }
 }

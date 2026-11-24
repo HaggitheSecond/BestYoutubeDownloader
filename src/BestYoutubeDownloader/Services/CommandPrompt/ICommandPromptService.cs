@@ -8,8 +8,6 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
     {
         Task ExecuteCommand(string directory, string fileName, IEnumerable<string> arguments, Action<string> actionOnDataOutput);
         
-        void RegisterOutputAction(Action<string, bool> output);
-
         void OpenCommandPrompt(string directory);
     }
 }

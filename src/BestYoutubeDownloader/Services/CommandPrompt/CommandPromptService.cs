@@ -4,18 +4,24 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using BestYoutubeDownloader.Services.Logging;
 
 namespace BestYoutubeDownloader.Services.CommandPrompt
 {
     public class CommandPromptService : ICommandPromptService
     {
-        private Action<string, bool> _rawConsoleAction;
+        private readonly ILogService _logService;
+
+        public CommandPromptService(ILogService logService)
+        {
+            this._logService = logService;
+        }
 
         public Task ExecuteCommand(string directory, string fileName, IEnumerable<string> arguments, Action<string> actionOnDataOutput)
         {
             var argumentList = arguments.ToList();
 
-            this._rawConsoleAction?.Invoke(this.GetDisplayText(fileName, argumentList), true);
+            this._logService.Info(this.GetDisplayText(fileName, argumentList));
             actionOnDataOutput = this.WrapOutput(actionOnDataOutput);
 
             return Task.Run(() =>
@@ -58,7 +64,12 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
         {
             return s =>
             {
-                this._rawConsoleAction?.Invoke(s, false);
+                if (s.StartsWith("ERROR"))
+                    this._logService.Error(s);
+                else if (s.StartsWith("WARNING"))
+                    this._logService.Warn(s);
+                else
+                    this._logService.Debug(s);
 
                 output(s);
             };
@@ -91,11 +102,6 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
                 .Concat(arguments.Select(f => f.Contains(' ') ? $"\"{f}\"" : f));
 
             return string.Join(" ", parts);
-        }
-
-        public void RegisterOutputAction(Action<string, bool> output)
-        {
-            this._rawConsoleAction = output;
         }
 
         public void OpenCommandPrompt(string directory)

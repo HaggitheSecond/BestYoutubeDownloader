@@ -44,8 +44,7 @@
                                 </StackPanel.ContextMenu>
                                 <Image Source="../../../Resources/Icons/Console-64.png"
                                        Width="20"
-                                       Visibility="{Binding IsInput, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                       ToolTip="This is the input that produced the output below" />
+                                       Visibility="{Binding IsInput, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 <TextBlock Text="{Binding Value}"
                                            VerticalAlignment="Center" 
                                            FontWeight="{Binding IsInput, Converter={StaticResource IsInputToFontWeightConverter}}"/>
