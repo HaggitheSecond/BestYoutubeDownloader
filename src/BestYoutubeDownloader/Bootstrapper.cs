@@ -84,6 +84,8 @@ namespace BestYoutubeDownloader
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
+            this._container.GetInstance<ILogService>().Info($"Application started (version {typeof(Bootstrapper).Assembly.GetName().Version}, directory '{AppContext.BaseDirectory}')");
+
             await this.DisplayRootViewForAsync<MainViewModel>(WindowSettings.GetMainWindowSettings());
         }
 
@@ -92,6 +94,8 @@ namespace BestYoutubeDownloader
         protected override void OnExit(object sender, EventArgs e)
         {
             this._container.GetInstance<IDownloadService>().ClearThumbNailsDirectory();
+
+            this._container.GetInstance<ILogService>().Info("Application exited");
         }
 
         #region IoC

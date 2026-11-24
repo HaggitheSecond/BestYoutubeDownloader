@@ -1,4 +1,5 @@
 ﻿using BestYoutubeDownloader.Services.ExceptionHandling;
+using BestYoutubeDownloader.Services.Logging;
 using Caliburn.Micro;
 using System;
 using System.IO;
@@ -13,11 +14,14 @@ namespace BestYoutubeDownloader.Services.Storage
             try
             {
                 var serializer = new XmlSerializer(typeof(T));
+                var path = this.BuildPath(typeof(T).Name, fileName);
 
-                using (var writer = new StreamWriter(this.BuildPath(typeof(T).Name, fileName)))
+                using (var writer = new StreamWriter(path))
                 {
                     serializer.Serialize(writer, input);
                 }
+
+                IoC.Get<ILogService>().Debug($"Saved {typeof(T).Name} to '{path}'");
             }
             catch (Exception e)
             {

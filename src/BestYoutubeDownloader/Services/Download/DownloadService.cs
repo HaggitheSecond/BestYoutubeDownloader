@@ -15,6 +15,7 @@ using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Exceptions;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
+using BestYoutubeDownloader.Services.Logging;
 using BestYoutubeDownloader.Services.Processes;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
@@ -27,15 +28,17 @@ namespace BestYoutubeDownloader.Services.Download
     {
         private readonly IProcessService _processService;
         private readonly ISettingsService _settingsService;
+        private readonly ILogService _logService;
 
         private readonly string _exeLocation;
         private readonly string _exeDirectoryLocation;
         private string _downloaderName;
 
-        public DownloadService(IProcessService processService, ISettingsService settingsService, IEventAggregator eventAggregator)
+        public DownloadService(IProcessService processService, ISettingsService settingsService, IEventAggregator eventAggregator, ILogService logService)
         {
             this._processService = processService;
             this._settingsService = settingsService;
+            this._logService = logService;
 
             eventAggregator.SubscribeOnUIThread(this);
 
@@ -72,10 +75,17 @@ namespace BestYoutubeDownloader.Services.Download
                 if (exitCode == 0 && string.IsNullOrWhiteSpace(result.FilePath) == false)
                     result.Status = isAlreadyDownloaded ? DownloadResultStatus.AlreadyDownloaded : DownloadResultStatus.Success;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                this._logService.Error($"Download of '{url}' threw an exception", e);
+
                 result.Status = DownloadResultStatus.Failure;
             }
+
+            if (result.Status == DownloadResultStatus.Failure)
+                this._logService.Warn($"Download of '{url}' failed");
+            else
+                this._logService.Info($"Download of '{url}' finished with {result.Status}: '{result.FilePath}'");
 
             return result;
         }
@@ -170,12 +180,18 @@ namespace BestYoutubeDownloader.Services.Download
                 var metaData = JsonConvert.DeserializeObject(result, typeof(MetaData));
 
                 if (metaData is null)
+                {
+                    this._logService.Warn($"No metadata was returned for '{url}'");
+
                     return null;
+                }
 
                 return (MetaData)metaData;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                this._logService.Error($"Could not load metadata for '{url}'", e);
+
                 return null;
             }
         }
@@ -205,7 +221,11 @@ namespace BestYoutubeDownloader.Services.Download
                 var imagePath = Directory.EnumerateFiles(thumbNailDirectory, thumbNailName + ".*").FirstOrDefault();
 
                 if (imagePath is null)
+                {
+                    this._logService.Warn($"No thumbnail was written for '{url}'");
+
                     return null;
+                }
 
                 var uri = new Uri(imagePath);
 
@@ -213,8 +233,10 @@ namespace BestYoutubeDownloader.Services.Download
 
                 return image;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                this._logService.Error($"Could not load thumbnail for '{url}'", e);
+
                 return null;
             }
         }
@@ -237,6 +259,8 @@ namespace BestYoutubeDownloader.Services.Download
 
             if (Directory.Exists(directory) is false)
                 return;
+
+            this._logService.Debug($"Deleting the thumbnail directory '{directory}'");
 
             Directory.Delete(directory, true);
         }
@@ -266,6 +290,8 @@ namespace BestYoutubeDownloader.Services.Download
                     result = s;
             });
 
+            this._logService.Info($"Update check for {this._downloaderName} finished: {result}");
+
             return result;
         }
 
@@ -273,6 +299,8 @@ namespace BestYoutubeDownloader.Services.Download
         {
             var url = $"https://github.com/yt-dlp/yt-dlp/releases/latest/download/{this._downloaderName}.exe";
             var temporaryLocation = this._exeLocation + ".download";
+
+            this._logService.Info($"{this._downloaderName}.exe was not found, downloading it from '{url}'");
 
             try
             {
@@ -288,9 +316,13 @@ namespace BestYoutubeDownloader.Services.Download
                 }
 
                 File.Move(temporaryLocation, this._exeLocation, true);
+
+                this._logService.Info($"{this._downloaderName}.exe was downloaded to '{this._exeLocation}'");
             }
             catch (Exception e) when (e is HttpRequestException or IOException or UnauthorizedAccessException or TaskCanceledException)
             {
+                this._logService.Error($"Could not download {this._downloaderName}.exe", e);
+
                 try
                 {
                     File.Delete(temporaryLocation);
@@ -354,8 +386,10 @@ namespace BestYoutubeDownloader.Services.Download
                 await this.Validate();
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                this._logService.Warn("Validation failed", e);
+
                 return false;
             }
         }

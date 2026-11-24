@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
+using BestYoutubeDownloader.Services.Logging;
 using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.Download;
@@ -19,7 +20,7 @@ using Action = System.Action;
 
 namespace BestYoutubeDownloader.Views.Pages.DownloadList
 {
-    public class DownloadItem : PropertyChangedBase
+    public class DownloadItemViewModel : PropertyChangedBase
     {
         #region Fields
 
@@ -27,6 +28,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private readonly ISettingsService _settingsService;
         private readonly IMetaDataTagService _metaDataTagService;
         private readonly IWindowManager _windowManager;
+        private readonly ILogService _logService;
 
         private string _url;
         private string _rawUrl;
@@ -207,12 +209,13 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         #endregion
 
-        public DownloadItem(string url)
+        public DownloadItemViewModel(string url)
         {
             this._downloadService = IoC.Get<IDownloadService>();
             this._settingsService = IoC.Get<ISettingsService>();
             this._metaDataTagService = IoC.Get<IMetaDataTagService>();
             this._windowManager = IoC.Get<IWindowManager>();
+            this._logService = IoC.Get<ILogService>();
 
             this.OpenUrlCommand = new BestCommand(this.OpenUrl);
 
@@ -267,6 +270,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             if (result.HasValue == false || result.Value == false)
                 return;
+
+            this._logService.Info($"Metadata of '{this.FileName}' was edited manually");
 
             this.SetMetaData(viewModel.Mp3MetaData);
             this.SetImage(viewModel.Image as BitmapImage);
@@ -369,6 +374,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             {
                 if (File.Exists(this.FileName) == false)
                 {
+                    this._logService.Warn($"The downloaded file '{this.FileName}' does not exist");
+
                     this.Status = DownloadItemStatus.Error;
                     return false;
                 }
@@ -400,8 +407,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                this._logService.Error($"Processing the downloaded file '{this.FileName}' failed", e);
+
                 this.Status = DownloadItemStatus.Error;
                 throw;
             }
@@ -413,6 +422,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             if (mp3Data.NeedCheck)
             {
+                this._logService.Info($"Metadata of '{this.FileName}' needs to be checked: {mp3Data.CheckReason}");
+
                 this.Status = DownloadItemStatus.NeedsCheck;
             }
 
@@ -455,7 +466,13 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             var desiredPath = Path.GetDirectoryName(this.FileName) + @"\" + desiredName + ".mp3";
 
             if(File.Exists(desiredPath))
+            {
+                this._logService.Warn($"Overwriting the existing file '{desiredPath}'");
+
                 File.Delete(desiredPath);
+            }
+
+            this._logService.Info($"Renaming '{this.FileName}' to '{desiredPath}'");
 
             File.Move(this.FileName, desiredPath);
             this.FileName = desiredPath;

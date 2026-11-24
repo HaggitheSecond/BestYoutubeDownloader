@@ -176,7 +176,7 @@
                     </Style>
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type local:DownloadItem}">
+                    <DataTemplate DataType="{x:Type local:DownloadItemViewModel}">
                         <Grid x:Name="ItemGrid"
                               HorizontalAlignment="Stretch"
                               Height="50"

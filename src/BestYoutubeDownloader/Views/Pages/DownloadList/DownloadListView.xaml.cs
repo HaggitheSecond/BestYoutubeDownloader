@@ -109,7 +109,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             if(grid == null)
                 return;
 
-            var item = (DownloadItem)grid.DataContext;
+            var item = (DownloadItemViewModel)grid.DataContext;
 
             item.ChangeMetaDataCommand.Execute(null);
         }

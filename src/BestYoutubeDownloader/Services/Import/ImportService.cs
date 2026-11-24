@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.ExceptionHandling;
+using BestYoutubeDownloader.Services.Logging;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
 using Caliburn.Micro;
 
@@ -18,15 +19,24 @@ namespace BestYoutubeDownloader.Services.Import
 {
     public class ImportService : IImportService
     {
-        public IList<DownloadItem> ImportDownloadItemsFromFile(string filePath)
+        private readonly ILogService _logService;
+
+        public ImportService(ILogService logService)
+        {
+            this._logService = logService;
+        }
+
+        public IList<DownloadItemViewModel> ImportDownloadItemsFromFile(string filePath)
         {
             var rawItems = File.ReadAllLines(filePath);
 
             var items = rawItems.Where(currentItem => currentItem.IsViableUrl() == true).ToList();
 
-            var list = new List<DownloadItem>();
+            this._logService.Info($"Read {rawItems.Length} line(s) from '{filePath}', {items.Count} of them are valid urls");
 
-            list.AddRange(items.Select(f => new DownloadItem(f)));
+            var list = new List<DownloadItemViewModel>();
+
+            list.AddRange(items.Select(f => new DownloadItemViewModel(f)));
 
             return list;
         }
@@ -68,6 +78,8 @@ namespace BestYoutubeDownloader.Services.Import
                             }
                         })
                         .Where(f => !string.IsNullOrEmpty(f.Item1)));
+
+                    this._logService.Info($"Loaded {sites.Count} supported site(s) from '{url}'");
                 }
                 catch (Exception e)
                 {

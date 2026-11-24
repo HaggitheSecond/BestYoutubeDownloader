@@ -15,6 +15,7 @@ using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.ExceptionHandling;
 using BestYoutubeDownloader.Services.Import;
+using BestYoutubeDownloader.Services.Logging;
 using BestYoutubeDownloader.Services.Message;
 using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
@@ -32,6 +33,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private readonly IMetaDataTagService _metaDataTagService;
         private readonly IMessageService _messageService;
         private readonly IExceptionHandler _exceptionHandler;
+        private readonly ILogService _logService;
 
         public string Name => "Download";
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Download-48.png"));
@@ -39,8 +41,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         private Action<DownloadStatus> _output;
 
-        private BindableCollection<DownloadItem> _items;
-        private DownloadItem _selectedItem;
+        private BindableCollection<DownloadItemViewModel> _items;
+        private DownloadItemViewModel _selectedItem;
 
         private string _addItemText;
 
@@ -54,13 +56,13 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         private DownloadStatus _currentDownloadStatus;
         private bool _isExtractingAudio;
 
-        public BindableCollection<DownloadItem> Items
+        public BindableCollection<DownloadItemViewModel> Items
         {
             get { return this._items; }
             set { this.SetProperty(ref this._items, value); }
         }
 
-        public DownloadItem SelectedItem
+        public DownloadItemViewModel SelectedItem
         {
             get { return this._selectedItem; }
             set { this.SetProperty(ref this._selectedItem, value); }
@@ -133,8 +135,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             IMetaDataTagService metaDataTagService,
             IEventAggregator eventAggregator,
             IMessageService messageService,
-            IExceptionHandler exceptionHandler)
+            IExceptionHandler exceptionHandler,
+            ILogService logService)
         {
+            this._logService = logService;
             this._downloadService = downloadService;
             this._settingsService = settingsService;
             this._metaDataTagService = metaDataTagService;
@@ -148,9 +152,9 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             this.ClearFinishedItemsCommand = new BestCommand(() =>
             {
                 var items = this.Items?.Where(f => f.Status != DownloadItemStatus.SuccessfulDownload && f.Status != DownloadItemStatus.AlreadyDownloaded)
-                    ?? new List<DownloadItem>();
+                    ?? new List<DownloadItemViewModel>();
 
-                this.Items = new BindableCollection<DownloadItem>(items);
+                this.Items = new BindableCollection<DownloadItemViewModel>(items);
 
             }, this.Items != null && this.Items.Count != 0);
 
@@ -161,7 +165,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             this.DownloadAllItemsCommand = new BestAsyncCommand(this.DownloadAllItems, this.CanDownloadAllItems);
 
-            this.Items = new BindableCollection<DownloadItem>();
+            this.Items = new BindableCollection<DownloadItemViewModel>();
             this.Items.CollectionChanged += (sender, args) =>
             {
                 if (this.Items == null || this.Items.Count == 0)
@@ -214,6 +218,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
                 this.Items.Where(f => f.Status == DownloadItemStatus.None).ForEach(f => f.Status = DownloadItemStatus.Waiting);
 
+                this._logService.Info($"Starting the download of {this.ItemsToDownload} item(s)");
+
                 foreach (var currentItem in this.Items)
                 {
                     var result = await currentItem.Download(this._output);
@@ -224,6 +230,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             }
             finally
             {
+                this._logService.Info($"Finished downloading, {this.DownloadedItems} of {this.ItemsToDownload} item(s) were successful");
+
                 this.IsDownloading = false;
             }
         }
@@ -243,6 +251,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         {
             if (url.IsViableUrl() == false)
             {
+                this._logService.Info($"Rejected '{url}' because it is not a valid url");
+
                 var caption = "Non valid url";
                 var message = $"It appears, that the url in your clipboard is not valid.{Environment.NewLine}" +
                               $"Your clipboard: '{Clipboard.GetText()}'";
@@ -253,6 +263,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             if (this.Items.Any(f => f.Url == url))
             {
+                this._logService.Info($"Rejected '{url}' because it was already added");
+
                 var caption = "Url already added";
                 var message = $"The url you're trying to add is already added.";
 
@@ -260,7 +272,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 return;
             }
 
-            var item = new DownloadItem(url);
+            var item = new DownloadItemViewModel(url);
 
             this.Items.Add(item);
 
@@ -270,12 +282,16 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             if (metaData == null)
             {
+                this._logService.Warn($"Added '{item.Url}', but it is not downloadable");
+
                 item.Status = DownloadItemStatus.NonDownloadable;
             }
             else
             {
                 item.AddMetaData(metaData, this._settingsService.GetDownloadSettings().AudioFormat);
                 item.Status = DownloadItemStatus.None;
+
+                this._logService.Info($"Added '{item.Url}' ({metaData.Title})");
             }
 
             this.AddingItem = false;
@@ -298,6 +314,8 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             var items = importService.ImportDownloadItemsFromFile(fileDialog.FileName);
 
+            this._logService.Info($"Imported {items.Count} url(s) from '{fileDialog.FileName}', replacing {this.Items.Count} existing item(s)");
+
             this.Items.Clear();
             this.Items.AddRange(items);
 
@@ -310,7 +328,11 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 currentItem.Status = DownloadItemStatus.None;
 
                 if (metaData is null)
+                {
+                    this._logService.Warn($"No metadata could be loaded for the imported url '{currentItem.Url}'");
+
                     continue;
+                }
 
                 currentItem.AddMetaData(metaData, this._settingsService.GetDownloadSettings().AudioFormat);
             }
