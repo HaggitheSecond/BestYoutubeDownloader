@@ -1,4 +1,4 @@
-﻿namespace BestYoutubeDownloader.Services.YoutubeDL
+﻿namespace BestYoutubeDownloader.Services.Download
 {
     public class DownloadResult
     {

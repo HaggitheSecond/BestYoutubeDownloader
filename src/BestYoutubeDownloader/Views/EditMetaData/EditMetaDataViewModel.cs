@@ -10,7 +10,7 @@ using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
-using BestYoutubeDownloader.Services.YoutubeDL;
+using BestYoutubeDownloader.Services.Download;
 using Caliburn.Micro;
 using Microsoft.Win32;
 
@@ -18,7 +18,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 {
     public class EditMetaDataViewModel : Screen
     {
-        private readonly IYoutubeDownloaderService _downloaderService;
+        private readonly IDownloadService _downloadService;
         private readonly IMetaDataTagService _metaDataTagService;
 
         private bool _hasChanges;
@@ -118,11 +118,11 @@ namespace BestYoutubeDownloader.Views.EditMetaData
 
         public BestCommand SwitchTitleAndArtistCommand { get; }
         
-        public EditMetaDataViewModel(IYoutubeDownloaderService downloaderService, IMetaDataTagService metaDataTagService, ISettingsService settingsService)
+        public EditMetaDataViewModel(IDownloadService downloadService, IMetaDataTagService metaDataTagService, ISettingsService settingsService)
         {
             this.DisplayName = "Edit metadata";
 
-            this._downloaderService = downloaderService;
+            this._downloadService = downloadService;
             this._metaDataTagService = metaDataTagService;
 
             this.SaveCommand = new BestAsyncCommand(async () => await this.TryCloseAsync(true), this._hasChanges);
@@ -209,7 +209,7 @@ namespace BestYoutubeDownloader.Views.EditMetaData
                 this.IsDownloadingPicture = true;
 
                 this.Image = null;
-                var result = await this._downloaderService.GetThumbNail(this.Url);
+                var result = await this._downloadService.GetThumbNail(this.Url);
 
                 if (result is null)
                     return;

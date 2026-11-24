@@ -11,7 +11,7 @@ using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
-using BestYoutubeDownloader.Services.YoutubeDL;
+using BestYoutubeDownloader.Services.Download;
 using BestYoutubeDownloader.Views.EditMetaData;
 using BestYoutubeDownloader.Views.Pages.DownloadList.OutputLocationSelection;
 using Caliburn.Micro;
@@ -23,7 +23,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
     {
         #region Fields
 
-        private readonly IYoutubeDownloaderService _youtubeDownloaderService;
+        private readonly IDownloadService _downloadService;
         private readonly ISettingsService _settingsService;
         private readonly IMetaDataTagService _metaDataTagService;
         private readonly IWindowManager _windowManager;
@@ -209,7 +209,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public DownloadItem(string url)
         {
-            this._youtubeDownloaderService = IoC.Get<IYoutubeDownloaderService>();
+            this._downloadService = IoC.Get<IDownloadService>();
             this._settingsService = IoC.Get<ISettingsService>();
             this._metaDataTagService = IoC.Get<IMetaDataTagService>();
             this._windowManager = IoC.Get<IWindowManager>();
@@ -317,7 +317,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             this.Status = DownloadItemStatus.Downloading;
 
-            var result = await this._youtubeDownloaderService.DownloadVideo(WrapedOutput, this.Url, this._settingsService.GetDownloadSettings(), this.OutputDirectory);
+            var result = await this._downloadService.DownloadVideo(WrapedOutput, this.Url, this._settingsService.GetDownloadSettings(), this.OutputDirectory);
 
             if (result.Status == DownloadResultStatus.Failure || result.FilePath is null)
             {
@@ -383,7 +383,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
                     if (settings.TagCoverImage)
                     {
-                        var imageResult = await this._youtubeDownloaderService.GetThumbNail(this.Url);
+                        var imageResult = await this._downloadService.GetThumbNail(this.Url);
 
                         if (imageResult != null)
                             this.SetImage(imageResult as BitmapImage);

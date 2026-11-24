@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Services;
-using BestYoutubeDownloader.Services.CommandPrompt;
+using BestYoutubeDownloader.Services.Processes;
 using BestYoutubeDownloader.Services.ExceptionHandling;
 using BestYoutubeDownloader.Services.Import;
 using BestYoutubeDownloader.Services.Logging;
@@ -15,7 +15,7 @@ using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.Storage;
 using BestYoutubeDownloader.Services.Test;
-using BestYoutubeDownloader.Services.YoutubeDL;
+using BestYoutubeDownloader.Services.Download;
 using BestYoutubeDownloader.Views;
 using BestYoutubeDownloader.Views.EditMetaData;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
@@ -55,13 +55,13 @@ namespace BestYoutubeDownloader
             this._container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<ITestService, TestService>()
-                .Singleton<IYoutubeDownloaderService, YoutubeDownloaderService>()
+                .Singleton<IDownloadService, DownloadService>()
                 .Singleton<IStorageService, StorageService>()
                 .Singleton<ISettingsService, SettingsService>()
                 .Singleton<IImportService, ImportService>()
                 .Singleton<IEventAggregator, EventAggregator>()
                 .Singleton<IMetaDataTagService, MetaDataTagService>()
-                .Singleton<ICommandPromptService, CommandPromptService>()
+                .Singleton<IProcessService, ProcessService>()
                 .Singleton<IMessageService, MessageService>()
                 .Singleton<ILogService, LogService>()
                 .Singleton<IExceptionHandler, ExceptionHandler>();
@@ -91,7 +91,7 @@ namespace BestYoutubeDownloader
 
         protected override void OnExit(object sender, EventArgs e)
         {
-            this._container.GetInstance<IYoutubeDownloaderService>().ClearThumbNailsDirectory();
+            this._container.GetInstance<IDownloadService>().ClearThumbNailsDirectory();
         }
 
         #region IoC

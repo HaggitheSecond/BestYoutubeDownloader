@@ -10,7 +10,7 @@ using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Services.Storage;
-using BestYoutubeDownloader.Services.YoutubeDL;
+using BestYoutubeDownloader.Services.Download;
 using BestYoutubeDownloader.Views.Pages.Settings.AlternativeOutputLocations;
 using Caliburn.Micro;
 using DevExpress.Mvvm.UI;
@@ -26,7 +26,7 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
         private readonly ISettingsService _settingsService;
         private readonly IEventAggregator _eventAggregator;
-        private readonly IYoutubeDownloaderService _downloaderService;
+        private readonly IDownloadService _downloadService;
         private readonly IWindowManager _windowManager;
 
         private bool _hasChanges;
@@ -124,11 +124,11 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
         public BestAsyncCommand EditAlternativeOutputLocationCommand { get; }
         public BestCommand DeleteAlternativeOutputLocationCommand { get; }
 
-        public SettingsViewModel(ISettingsService settingsService, IEventAggregator eventAggregator, IYoutubeDownloaderService downloaderService, IWindowManager windowManager)
+        public SettingsViewModel(ISettingsService settingsService, IEventAggregator eventAggregator, IDownloadService downloadService, IWindowManager windowManager)
         {
             this._settingsService = settingsService;
             this._eventAggregator = eventAggregator;
-            this._downloaderService = downloaderService;
+            this._downloadService = downloadService;
             this._windowManager = windowManager;
 
             this.ChangeDirectoryCommand = new BestCommand(this.ChangeDirectory);
@@ -219,13 +219,13 @@ namespace BestYoutubeDownloader.Views.Pages.Settings
 
         private async Task UpdateYoutubeDlVersion()
         {
-            await this._downloaderService.UpdateYoutubeDl();
+            await this._downloadService.UpdateYoutubeDl();
             await this.LoadYoutubeDlVersion();
         }
         
         private async Task LoadYoutubeDlVersion()
         {
-            this.YoutubeDlVersion = await this._downloaderService.GetYoutubeDlVersion();
+            this.YoutubeDlVersion = await this._downloadService.GetYoutubeDlVersion();
         }
 
         private async Task NewAlternativeOutputLocation()

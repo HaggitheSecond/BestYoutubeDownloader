@@ -9,7 +9,7 @@ using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Services;
 using BestYoutubeDownloader.Services.ExceptionHandling;
 using BestYoutubeDownloader.Services.Settings;
-using BestYoutubeDownloader.Services.YoutubeDL;
+using BestYoutubeDownloader.Services.Download;
 using BestYoutubeDownloader.Views.Pages;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
 using BestYoutubeDownloader.Views.Pages.Info;
@@ -25,7 +25,7 @@ namespace BestYoutubeDownloader.Views
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly ISettingsService _settingsService;
-        private readonly IYoutubeDownloaderService _youtubeDownloaderService;
+        private readonly IDownloadService _downloadService;
 
         private DownloadListViewModel _downloadListViewModel;
         private RawConsoleViewModel _rawConsoleViewModel;
@@ -65,11 +65,11 @@ namespace BestYoutubeDownloader.Views
             set { this.SetProperty(ref this._isEnabled, value); }
         }
 
-        public MainViewModel(IEventAggregator eventAggregator, ISettingsService settingsService, IYoutubeDownloaderService youtubeDownloaderService)
+        public MainViewModel(IEventAggregator eventAggregator, ISettingsService settingsService, IDownloadService downloadService)
         {
             this._eventAggregator = eventAggregator;
             this._settingsService = settingsService;
-            this._youtubeDownloaderService = youtubeDownloaderService;
+            this._downloadService = downloadService;
 
             this.DisplayName = "Youtube DL";
 
@@ -101,8 +101,8 @@ namespace BestYoutubeDownloader.Views
 
             try
             {
-                await this._youtubeDownloaderService.UpdateYoutubeDl();
-                await this._youtubeDownloaderService.Validate();
+                await this._downloadService.UpdateYoutubeDl();
+                await this._downloadService.Validate();
             }
             catch (Exception e)
             {

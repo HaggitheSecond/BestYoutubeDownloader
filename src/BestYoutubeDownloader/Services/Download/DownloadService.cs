@@ -15,26 +15,26 @@ using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Exceptions;
 using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
-using BestYoutubeDownloader.Services.CommandPrompt;
+using BestYoutubeDownloader.Services.Processes;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 
-namespace BestYoutubeDownloader.Services.YoutubeDL
+namespace BestYoutubeDownloader.Services.Download
 {
-    public class YoutubeDownloaderService : IYoutubeDownloaderService, IHandle<SettingsChanged>
+    public class DownloadService : IDownloadService, IHandle<SettingsChanged>
     {
-        private readonly ICommandPromptService _commandPromptService;
+        private readonly IProcessService _processService;
         private readonly ISettingsService _settingsService;
 
         private readonly string _exeLocation;
         private readonly string _exeDirectoryLocation;
         private string _downloaderName;
 
-        public YoutubeDownloaderService(ICommandPromptService commandPromptService, ISettingsService settingsService, IEventAggregator eventAggregator)
+        public DownloadService(IProcessService processService, ISettingsService settingsService, IEventAggregator eventAggregator)
         {
-            this._commandPromptService = commandPromptService;
+            this._processService = processService;
             this._settingsService = settingsService;
 
             eventAggregator.SubscribeOnUIThread(this);
@@ -86,7 +86,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             allArguments.AddRange(arguments);
 
-            return this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation, this._exeLocation, allArguments, actionOnStandardOutput);
+            return this._processService.Execute(this._exeDirectoryLocation, this._exeLocation, allArguments, actionOnStandardOutput);
         }
 
         private IList<string> BuildDownloadCommandArguments(string url, DownloadSettings settings, string? outputDirectory = null)
@@ -329,7 +329,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         private async Task<bool> ValidateFfmepg()
         {
-            var exitCode = await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation, "ffmpeg", new[] { "-version" }, _ => { });
+            var exitCode = await this._processService.Execute(this._exeDirectoryLocation, "ffmpeg", new[] { "-version" }, _ => { });
 
             return exitCode == 0;
         }

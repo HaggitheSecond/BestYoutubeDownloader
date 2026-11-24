@@ -18,7 +18,7 @@ using BestYoutubeDownloader.Services.Import;
 using BestYoutubeDownloader.Services.Message;
 using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
-using BestYoutubeDownloader.Services.YoutubeDL;
+using BestYoutubeDownloader.Services.Download;
 using Caliburn.Micro;
 using DevExpress.Mvvm.Native;
 using Screen = Caliburn.Micro.Screen;
@@ -27,7 +27,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 {
     public class DownloadListViewModel : Screen, IPage, IHandle<SettingsChanged>
     {
-        private readonly IYoutubeDownloaderService _youtubeDownloaderService;
+        private readonly IDownloadService _downloadService;
         private readonly ISettingsService _settingsService;
         private readonly IMetaDataTagService _metaDataTagService;
         private readonly IMessageService _messageService;
@@ -128,14 +128,14 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         public BestAsyncCommand DownloadAllItemsCommand { get; }
 
-        public DownloadListViewModel(IYoutubeDownloaderService youtubeDlService,
+        public DownloadListViewModel(IDownloadService downloadService,
             ISettingsService settingsService,
             IMetaDataTagService metaDataTagService,
             IEventAggregator eventAggregator,
             IMessageService messageService,
             IExceptionHandler exceptionHandler)
         {
-            this._youtubeDownloaderService = youtubeDlService;
+            this._downloadService = downloadService;
             this._settingsService = settingsService;
             this._metaDataTagService = metaDataTagService;
             this._messageService = messageService;
@@ -197,7 +197,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         {
             try
             {
-                await this._youtubeDownloaderService.Validate();
+                await this._downloadService.Validate();
             }
             catch (Exception e)
             {
@@ -266,7 +266,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             item.Status = DownloadItemStatus.Loading;
 
-            var metaData = await this._youtubeDownloaderService.GetMetaData(item.Url);
+            var metaData = await this._downloadService.GetMetaData(item.Url);
 
             if (metaData == null)
             {
@@ -305,7 +305,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
             {
                 currentItem.Status = DownloadItemStatus.Loading;
 
-                var metaData = await this._youtubeDownloaderService.GetMetaData(currentItem.Url);
+                var metaData = await this._downloadService.GetMetaData(currentItem.Url);
 
                 currentItem.Status = DownloadItemStatus.None;
 

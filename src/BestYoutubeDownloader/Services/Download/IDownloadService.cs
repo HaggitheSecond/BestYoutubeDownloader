@@ -5,9 +5,9 @@ using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Services.Settings;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
 
-namespace BestYoutubeDownloader.Services.YoutubeDL
+namespace BestYoutubeDownloader.Services.Download
 {
-    public interface IYoutubeDownloaderService
+    public interface IDownloadService
     {
         Task<bool> IsValid();
 

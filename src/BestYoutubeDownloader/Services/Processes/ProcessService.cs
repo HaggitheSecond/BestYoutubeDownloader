@@ -8,20 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using BestYoutubeDownloader.Services.Logging;
 
-namespace BestYoutubeDownloader.Services.CommandPrompt
+namespace BestYoutubeDownloader.Services.Processes
 {
-    public class CommandPromptService : ICommandPromptService
+    public class ProcessService : IProcessService
     {
         private const int CouldNotStartExitCode = -1;
 
         private readonly ILogService _logService;
 
-        public CommandPromptService(ILogService logService)
+        public ProcessService(ILogService logService)
         {
             this._logService = logService;
         }
 
-        public Task<int> ExecuteCommand(string directory, string fileName, IEnumerable<string> arguments, Action<string> actionOnStandardOutput)
+        public Task<int> Execute(string directory, string fileName, IEnumerable<string> arguments, Action<string> actionOnStandardOutput)
         {
             var argumentList = arguments.ToList();
             var displayText = this.GetDisplayText(fileName, argumentList);
@@ -105,18 +105,6 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
                 .Concat(arguments.Select(f => f.Contains(' ') ? $"\"{f}\"" : f));
 
             return string.Join(" ", parts);
-        }
-
-        public void OpenCommandPrompt(string directory)
-        {
-            new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    WorkingDirectory = directory,
-                    FileName = @"C:\Windows\System32\cmd.exe",
-                }
-            }.Start();
         }
     }
 }

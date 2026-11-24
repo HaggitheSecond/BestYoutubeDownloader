@@ -10,10 +10,10 @@ using System.Windows.Threading;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Events;
 using BestYoutubeDownloader.Extensions;
-using BestYoutubeDownloader.Services.CommandPrompt;
+using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.Logging;
 using BestYoutubeDownloader.Services.Settings;
-using BestYoutubeDownloader.Services.YoutubeDL;
+using BestYoutubeDownloader.Services.Download;
 using Caliburn.Micro;
 using DevExpress.Mvvm;
 
@@ -25,7 +25,6 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Console-64.png"));
         public SolidColorBrush Color => new SolidColorBrush(Colors.Gray);
 
-        private readonly ICommandPromptService _commandPromptService;
         private ObservableCollection<RawConsoleOutputViewModel> _outputs;
 
         public ObservableCollection<RawConsoleOutputViewModel> Outputs
@@ -38,10 +37,8 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
 
         public BestCommand OpenConsoleCommand { get; }
 
-        public RawConsoleViewModel(ICommandPromptService commandPromptService, IEventAggregator eventAggregator)
+        public RawConsoleViewModel(IEventAggregator eventAggregator)
         {
-            this._commandPromptService = commandPromptService;
-
             eventAggregator.SubscribeOnPublishedThread(this);
 
             this.ClearConsoleCommand = new BestCommand(() => { this.Outputs.Clear(); }, () => this.Outputs.Count != 0);
@@ -52,7 +49,7 @@ namespace BestYoutubeDownloader.Views.Pages.RawConsole
 
         private void OpenConsole()
         {
-            this._commandPromptService.OpenCommandPrompt(AppContext.BaseDirectory);
+            ProcessHelper.OpenCommandPrompt(AppContext.BaseDirectory);
         }
 
         public Task HandleAsync(LogEntryAdded message, CancellationToken cancellationToken)

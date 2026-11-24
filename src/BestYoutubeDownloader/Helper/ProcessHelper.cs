@@ -26,4 +26,14 @@ public static class ProcessHelper
         };
         Process.Start(process);
     }
+
+    public static void OpenCommandPrompt(string directory)
+    {
+        var process = new ProcessStartInfo
+        {
+            WorkingDirectory = directory,
+            FileName = @"C:\Windows\System32\cmd.exe"
+        };
+        Process.Start(process);
+    }
 }
