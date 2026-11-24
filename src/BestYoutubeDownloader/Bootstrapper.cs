@@ -9,6 +9,7 @@ using BestYoutubeDownloader.Services;
 using BestYoutubeDownloader.Services.CommandPrompt;
 using BestYoutubeDownloader.Services.ExceptionHandling;
 using BestYoutubeDownloader.Services.Import;
+using BestYoutubeDownloader.Services.Logging;
 using BestYoutubeDownloader.Services.Message;
 using BestYoutubeDownloader.Services.MetaDataTag;
 using BestYoutubeDownloader.Services.Settings;
@@ -62,6 +63,7 @@ namespace BestYoutubeDownloader
                 .Singleton<IMetaDataTagService, MetaDataTagService>()
                 .Singleton<ICommandPromptService, CommandPromptService>()
                 .Singleton<IMessageService, MessageService>()
+                .Singleton<ILogService, LogService>()
                 .Singleton<IExceptionHandler, ExceptionHandler>();
 
             this._container

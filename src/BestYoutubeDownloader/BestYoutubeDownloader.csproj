@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\.editorconfig" Link=".editorconfig" />
+    <None Update="log4net.config" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   
 </Project>
