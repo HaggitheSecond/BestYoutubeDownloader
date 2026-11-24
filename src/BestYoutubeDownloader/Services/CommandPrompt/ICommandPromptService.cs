@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BestYoutubeDownloader.Services.CommandPrompt
 {
     public interface ICommandPromptService
     {
-        Task ExecuteCommandPromptCommand(string directory, string command, Action<string> actionOnDataOutput);
+        Task ExecuteCommand(string directory, string fileName, IEnumerable<string> arguments, Action<string> actionOnDataOutput);
         
         void RegisterOutputAction(Action<string, bool> output);
 

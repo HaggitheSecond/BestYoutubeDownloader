@@ -52,10 +52,11 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             try
             {
-                var command = this.BuildDownloadCommand(url, settings, outputDirectory);
+                var arguments = this.BuildDownloadCommandArguments(url, settings, outputDirectory);
 
-                await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
-                    command,
+                await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation,
+                    this._exeLocation,
+                    arguments,
                     output);
             }
             catch (Exception)
@@ -66,16 +67,16 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return true;
         }
 
-        private string BuildDownloadCommand(string url, DownloadSettings settings, string? outputDirectory = null)
+        private IList<string> BuildDownloadCommandArguments(string url, DownloadSettings settings, string? outputDirectory = null)
         {
-            var commandList = new List<string> { this._downloaderName };
+            var arguments = new List<string>();
 
-            commandList.AddRange(this.BuildDownloadArguments(settings));
+            arguments.AddRange(this.BuildDownloadArguments(settings));
 
-            commandList.Add(this.BuildOutputPath(url, settings, outputDirectory));
-            commandList.Add(url);
+            arguments.AddRange(this.BuildOutputPath(url, settings, outputDirectory));
+            arguments.Add(url);
 
-            return string.Join(" ", commandList);
+            return arguments;
         }
 
         private IList<string> BuildDownloadArguments(DownloadSettings settings)
@@ -85,7 +86,8 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             if (settings.ExtractAudio)
             {
                 arguments.Add("--extract-audio");
-                arguments.Add("--audio-format " + settings.AudioFormat.ToString().ToLower());
+                arguments.Add("--audio-format");
+                arguments.Add(settings.AudioFormat.ToString().ToLower());
             }
 
             if (settings.PrintDebugInfo)
@@ -97,7 +99,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return arguments;
         }
 
-        private string BuildOutputPath(string url, DownloadSettings settings, string? outputDirectory = null)
+        private IList<string> BuildOutputPath(string url, DownloadSettings settings, string? outputDirectory = null)
         {
             var outputPath = settings.OutputLocation;
 
@@ -118,9 +120,9 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             return this.BuildOutputPath(outputPath);
         }
 
-        private string BuildOutputPath(string outputPath)
+        private IList<string> BuildOutputPath(string outputPath)
         {
-            return "-o " + outputPath + @"\%(title)s.%(ext)s";
+            return new List<string> { "-o", Path.Combine(outputPath, "%(title)s.%(ext)s") };
         }
 
         #endregion
@@ -136,8 +138,9 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             {
                 var result = string.Empty;
 
-                await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
-                    $"{this._downloaderName} -j " + url,
+                await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation,
+                    this._exeLocation,
+                    new[] { "-j", url },
                     s =>
                     {
                         if (string.IsNullOrWhiteSpace(s) == false)
@@ -175,10 +178,11 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 var imageOutputUrl = string.Empty;
 
-                var command = this.BuildThumbNailDownloadCommand(url, thumbNailDirectory);
+                var arguments = this.BuildThumbNailDownloadArguments(url, thumbNailDirectory);
 
-                await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
-                    command,
+                await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation,
+                    this._exeLocation,
+                    arguments,
                     input =>
                     {
                         if (input != null && input.Contains("Writing video thumbnail"))
@@ -225,18 +229,18 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             }
         }
 
-        private string BuildThumbNailDownloadCommand(string url, string outputPath)
+        private IList<string> BuildThumbNailDownloadArguments(string url, string outputPath)
         {
             var arguments = new List<string>
             {
-                this._downloaderName,
                 "--write-thumbnail",
-                "--skip-download",
-                this.BuildOutputPath(outputPath),
-                url
+                "--skip-download"
             };
 
-            return string.Join(" ", arguments);
+            arguments.AddRange(this.BuildOutputPath(outputPath));
+            arguments.Add(url);
+
+            return arguments;
         }
 
         public void ClearThumbNailsDirectory()
@@ -265,16 +269,15 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             if (File.Exists(this._exeLocation) == false)
             {
-                var downloadCommand = "curl -L -o " + this._downloaderName + ".exe https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
-
-                await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation,
-                    downloadCommand,
+                await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation,
+                    "curl",
+                    new[] { "-L", "-o", this._exeLocation, "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" },
                     _ => { });
             }
 
             var result = string.Empty;
 
-            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, this._downloaderName + " --update", s =>
+            await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation, this._exeLocation, new[] { "--update" }, s =>
             {
                 if (string.IsNullOrWhiteSpace(s) == false)
                     result = s;
@@ -290,7 +293,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             var result = string.Empty;
 
-            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, this._downloaderName + " --version", s =>
+            await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation, this._exeLocation, new[] { "--version" }, s =>
             {
                 if (string.IsNullOrWhiteSpace(s) == false) result = s;
             });
@@ -311,7 +314,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
         {
             var hasResult = false;
 
-            await this._commandPromptService.ExecuteCommandPromptCommand(this._exeDirectoryLocation, "ffmpeg", s =>
+            await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation, "ffmpeg", new[] { "-version" }, s =>
             {
                 if (string.IsNullOrWhiteSpace(s) == false && Regex.IsMatch(s, "ffmpeg version"))
                     hasResult = true;

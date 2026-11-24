@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BestYoutubeDownloader.Services.CommandPrompt
@@ -8,21 +11,23 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
     {
         private Action<string, bool> _rawConsoleAction;
 
-        public Task ExecuteCommandPromptCommand(string directory, string command, Action<string> actionOnDataOutput)
+        public Task ExecuteCommand(string directory, string fileName, IEnumerable<string> arguments, Action<string> actionOnDataOutput)
         {
-            this._rawConsoleAction?.Invoke(command, true);
+            var argumentList = arguments.ToList();
+
+            this._rawConsoleAction?.Invoke(this.GetDisplayText(fileName, argumentList), true);
             actionOnDataOutput = this.WrapOutput(actionOnDataOutput);
 
             return Task.Run(() =>
             {
-                var process = this.GetProcess(directory, command);
+                using var process = this.GetProcess(directory, fileName, argumentList);
 
                 process.OutputDataReceived += (sender, args) =>
                 {
                     if (args?.Data is null)
                         return;
 
-                    actionOnDataOutput.Invoke(args.Data); 
+                    actionOnDataOutput.Invoke(args.Data);
                 };
 
                 process.ErrorDataReceived += (sender, args) =>
@@ -32,14 +37,23 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
 
                     actionOnDataOutput.Invoke(args.Data);
                 };
-                
-                process.Start();
+
+                try
+                {
+                    process.Start();
+                }
+                catch (Win32Exception e)
+                {
+                    actionOnDataOutput.Invoke($"Could not start '{fileName}': {e.Message}");
+                    return;
+                }
+
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
                 process.WaitForExit();
             });
         }
-        
+
         private Action<string> WrapOutput(Action<string> output)
         {
             return s =>
@@ -50,23 +64,35 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
             };
         }
 
-        private Process GetProcess(string directory, string command)
+        private Process GetProcess(string directory, string fileName, IEnumerable<string> arguments)
         {
             var processInfo = new ProcessStartInfo
             {
                 UseShellExecute = false,
                 WorkingDirectory = directory,
-                FileName = @"C:\Windows\System32\cmd.exe",
-                Arguments = "/c " + command,
+                FileName = fileName,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
                 CreateNoWindow = true
             };
 
+            foreach (var argument in arguments)
+            {
+                processInfo.ArgumentList.Add(argument);
+            }
+
             return new Process { StartInfo = processInfo };
         }
-        
+
+        private string GetDisplayText(string fileName, IEnumerable<string> arguments)
+        {
+            var parts = new[] { System.IO.Path.GetFileNameWithoutExtension(fileName) }
+                .Concat(arguments.Select(f => f.Contains(' ') ? $"\"{f}\"" : f));
+
+            return string.Join(" ", parts);
+        }
+
         public void RegisterOutputAction(Action<string, bool> output)
         {
             this._rawConsoleAction = output;
