@@ -11,5 +11,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         public string? CurrentDownloadSpeed { get; set; }
 
         public TimeSpan? Eta { get; set; }
+
+        public bool IsExtractingAudio { get; set; }
     }
 }

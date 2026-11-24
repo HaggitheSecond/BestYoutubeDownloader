@@ -17,6 +17,7 @@ using BestYoutubeDownloader.Extensions;
 using BestYoutubeDownloader.Helper;
 using BestYoutubeDownloader.Services.CommandPrompt;
 using BestYoutubeDownloader.Services.Settings;
+using BestYoutubeDownloader.Views.Pages.DownloadList;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 
@@ -46,32 +47,53 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         #region VideoDownload
 
-        public async Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings, string? outputDirectory = null)
+        public async Task<DownloadResult> DownloadVideo(Action<DownloadStatus> output, string url, DownloadSettings settings, string? outputDirectory = null)
         {
+            var result = new DownloadResult { Status = DownloadResultStatus.Failure };
+
             if (url.IsViableUrl() == false || string.IsNullOrWhiteSpace(this._downloaderName))
-                return false;
+                return result;
 
             try
             {
                 var arguments = this.BuildDownloadCommandArguments(url, settings, outputDirectory);
+                var isAlreadyDownloaded = false;
 
-                await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation,
-                    this._exeLocation,
-                    arguments,
-                    output);
+                var exitCode = await this.ExecuteYoutubeDl(arguments, s =>
+                {
+                    if (YoutubeDlOutputHelper.TryReadFilePath(s, out string filePath))
+                        result.FilePath = filePath;
+                    else if (YoutubeDlOutputHelper.TryReadAlreadyDownloaded(s, out bool alreadyDownloaded))
+                        isAlreadyDownloaded = alreadyDownloaded;
+                    else if (YoutubeDlOutputHelper.TryReadDownloadStatus(s, out DownloadStatus status))
+                        output.Invoke(status);
+                });
+
+                if (exitCode == 0 && string.IsNullOrWhiteSpace(result.FilePath) == false)
+                    result.Status = isAlreadyDownloaded ? DownloadResultStatus.AlreadyDownloaded : DownloadResultStatus.Success;
             }
             catch (Exception)
             {
-                return false;
+                result.Status = DownloadResultStatus.Failure;
             }
 
-            return true;
+            return result;
+        }
+
+        private Task<int> ExecuteYoutubeDl(IEnumerable<string> arguments, Action<string> actionOnStandardOutput)
+        {
+            var allArguments = new List<string> { "--encoding", "utf-8" };
+
+            allArguments.AddRange(arguments);
+
+            return this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation, this._exeLocation, allArguments, actionOnStandardOutput);
         }
 
         private IList<string> BuildDownloadCommandArguments(string url, DownloadSettings settings, string? outputDirectory = null)
         {
             var arguments = new List<string>();
 
+            arguments.AddRange(YoutubeDlOutputHelper.GetOutputArguments());
             arguments.AddRange(this.BuildDownloadArguments(settings));
 
             arguments.AddRange(this.BuildOutputPath(url, settings, outputDirectory));
@@ -139,14 +161,11 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
             {
                 var result = string.Empty;
 
-                await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation,
-                    this._exeLocation,
-                    new[] { "-j", url },
-                    s =>
-                    {
-                        if (string.IsNullOrWhiteSpace(s) == false)
-                            result = s;
-                    });
+                await this.ExecuteYoutubeDl(new[] { "-j", url }, s =>
+                {
+                    if (string.IsNullOrWhiteSpace(s) == false)
+                        result = s;
+                });
 
                 var metaData = JsonConvert.DeserializeObject(result, typeof(MetaData));
 
@@ -181,10 +200,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
                 var arguments = this.BuildThumbNailDownloadArguments(url, thumbNailDirectory, thumbNailName);
 
-                await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation,
-                    this._exeLocation,
-                    arguments,
-                    _ => { });
+                await this.ExecuteYoutubeDl(arguments, _ => { });
 
                 var imagePath = Directory.EnumerateFiles(thumbNailDirectory, thumbNailName + ".*").FirstOrDefault();
 
@@ -244,7 +260,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             var result = string.Empty;
 
-            await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation, this._exeLocation, new[] { "--update" }, s =>
+            await this.ExecuteYoutubeDl(new[] { "--update" }, s =>
             {
                 if (string.IsNullOrWhiteSpace(s) == false)
                     result = s;
@@ -294,7 +310,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
             var result = string.Empty;
 
-            await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation, this._exeLocation, new[] { "--version" }, s =>
+            await this.ExecuteYoutubeDl(new[] { "--version" }, s =>
             {
                 if (string.IsNullOrWhiteSpace(s) == false) result = s;
             });
@@ -313,15 +329,9 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
 
         private async Task<bool> ValidateFfmepg()
         {
-            var hasResult = false;
+            var exitCode = await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation, "ffmpeg", new[] { "-version" }, _ => { });
 
-            await this._commandPromptService.ExecuteCommand(this._exeDirectoryLocation, "ffmpeg", new[] { "-version" }, s =>
-            {
-                if (string.IsNullOrWhiteSpace(s) == false && Regex.IsMatch(s, "ffmpeg version"))
-                    hasResult = true;
-            });
-
-            return hasResult;
+            return exitCode == 0;
         }
 
         public async Task Validate()

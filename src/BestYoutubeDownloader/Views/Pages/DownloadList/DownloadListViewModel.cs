@@ -37,7 +37,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         public ImageSource Icon => new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/Download-48.png"));
         public SolidColorBrush Color => new SolidColorBrush(Colors.Red);
 
-        private Action<string> _output;
+        private Action<DownloadStatus> _output;
 
         private BindableCollection<DownloadItem> _items;
         private DownloadItem _selectedItem;
@@ -331,20 +331,12 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
                 this.SelectedItem = this.Items.ElementAt(itemIndex) ?? this.Items.Last();
         }
 
-        private void DownloadOutput(string input)
+        private void DownloadOutput(DownloadStatus status)
         {
-            if (string.IsNullOrEmpty(input))
+            if (status.IsExtractingAudio)
                 return;
 
-            if (YoutubeDlOutputHelper.TryReadDownloadStatus(input, out DownloadStatus status))
-            {
-                this.CurrentDownloadStatus = status;
-
-                var currentItem = this.Items.FirstOrDefault(f => f.IsDownloading.GetValueOrDefault());
-
-                if (currentItem != null)
-                    currentItem.CurrentPercent = status.PercentDone;
-            }
+            this.CurrentDownloadStatus = status;
         }
 
         public Task HandleAsync(SettingsChanged message, CancellationToken cancellationToken)

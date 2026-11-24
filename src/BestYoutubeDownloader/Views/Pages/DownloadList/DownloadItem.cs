@@ -310,7 +310,7 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
         #region Public Methods
 
-        public async Task<bool> Download(Action<string> output)
+        public async Task<bool> Download(Action<DownloadStatus> output)
         {
             if (this.Status != DownloadItemStatus.Waiting || string.IsNullOrWhiteSpace(this.Url))
                 return false;
@@ -319,35 +319,30 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
 
             var result = await this._youtubeDownloaderService.DownloadVideo(WrapedOutput, this.Url, this._settingsService.GetDownloadSettings(), this.OutputDirectory);
 
-            if (result)
+            if (result.Status == DownloadResultStatus.Failure || result.FilePath is null)
             {
-                if (this.Status == DownloadItemStatus.AlreadyDownloaded)
-                    return true;
-
-                return await this.SetProperties();
+                this.Status = DownloadItemStatus.Error;
+                return false;
             }
 
-            this.Status = DownloadItemStatus.Error;
-            return false;
+            this.FileName = result.FilePath;
 
-            void WrapedOutput(string input)
+            if (result.Status == DownloadResultStatus.AlreadyDownloaded)
             {
-                if (string.IsNullOrEmpty(input))
-                    return;
+                this.Status = DownloadItemStatus.AlreadyDownloaded;
+                return true;
+            }
 
-                if (YoutubeDlOutputHelper.HasBeenDownloaded(input))
-                    this.Status = DownloadItemStatus.AlreadyDownloaded;
+            return await this.SetProperties();
 
-                if (YoutubeDlOutputHelper.TryGetFilePath(input, out string filePath))
-                    this.FileName = filePath;
-
-                if (YoutubeDlOutputHelper.TryReadDownloadStatus(input, out DownloadStatus status))
+            void WrapedOutput(DownloadStatus status)
+            {
+                if (status.IsExtractingAudio)
+                    this.Status = DownloadItemStatus.ExtractingAudio;
+                else
                     this.CurrentPercent = status.PercentDone;
 
-                if (YoutubeDlOutputHelper.IsExtractingAudio(input))
-                    this.Status = DownloadItemStatus.ExtractingAudio;
-
-                output.Invoke(input);
+                output.Invoke(status);
             }
         }
 
@@ -372,25 +367,10 @@ namespace BestYoutubeDownloader.Views.Pages.DownloadList
         {
             try
             {
-                // adjust the filename to the actual existing file
-
-                // this is need because the filename extracted from the console will not contain non-ascii characters
-                // but the actual filename will contain them - this is needed to be able to write metadata
-
-                // could lead to problems when multiple programs/processes are writing to the directory simultaneously
-
-                if (File.Exists(this.FileName) == false && string.IsNullOrEmpty(this.FileName) == false)
+                if (File.Exists(this.FileName) == false)
                 {
-                    var directoryName = Path.GetDirectoryName(this.FileName);
-
-                    if (string.IsNullOrWhiteSpace(directoryName))
-                        return false;
-
-                    var directory = new DirectoryInfo(directoryName);
-
-                    var latest = directory.GetFiles().ToList().OrderByDescending(f => f.CreationTime).First();
-
-                    this.FileName = latest.FullName;
+                    this.Status = DownloadItemStatus.Error;
+                    return false;
                 }
 
                 var settings = this._settingsService.GetDownloadSettings();

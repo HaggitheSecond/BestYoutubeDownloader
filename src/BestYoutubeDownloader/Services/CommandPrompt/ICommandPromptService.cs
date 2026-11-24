@@ -6,7 +6,7 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
 {
     public interface ICommandPromptService
     {
-        Task ExecuteCommand(string directory, string fileName, IEnumerable<string> arguments, Action<string> actionOnDataOutput);
+        Task<int> ExecuteCommand(string directory, string fileName, IEnumerable<string> arguments, Action<string> actionOnStandardOutput);
         
         void OpenCommandPrompt(string directory);
     }

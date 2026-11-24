@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using BestYoutubeDownloader.Common;
 using BestYoutubeDownloader.Services.Settings;
+using BestYoutubeDownloader.Views.Pages.DownloadList;
 
 namespace BestYoutubeDownloader.Services.YoutubeDL
 {
@@ -10,7 +11,7 @@ namespace BestYoutubeDownloader.Services.YoutubeDL
     {
         Task<bool> IsValid();
 
-        Task<bool> DownloadVideo(Action<string> output, string url, DownloadSettings settings, string? outputDirectory = null);
+        Task<DownloadResult> DownloadVideo(Action<DownloadStatus> output, string url, DownloadSettings settings, string? outputDirectory = null);
 
         Task<MetaData?> GetMetaData(string url);
 

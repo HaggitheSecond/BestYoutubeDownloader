@@ -1,71 +1,124 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Globalization;
 using BestYoutubeDownloader.Views.Pages.DownloadList;
 
 namespace BestYoutubeDownloader.Helper
 {
     public static class YoutubeDlOutputHelper
     {
-        public static bool TryGetFilePath(string input, out string result)
-        {
-            var splitter = "SPLITHERE";
+        private const string ProgressPrefix = "[byd-progress] ";
+        private const string PostProcessPrefix = "[byd-postprocess] ";
+        private const string FilePathPrefix = "[byd-file] ";
+        private const string DownloadedPrefix = "[byd-downloaded] ";
 
+        private const char Separator = '|';
+
+        private const string ExtractAudioPostProcessor = "ExtractAudio";
+        private const string PostProcessorStarted = "started";
+        private const string DownloadedValue = "True";
+
+        public static IList<string> GetOutputArguments()
+        {
+            return new List<string>
+            {
+                "--no-quiet",
+                "--newline",
+                "--progress-template",
+                "download:" + ProgressPrefix + "%(progress.downloaded_bytes)s|%(progress.total_bytes)s|%(progress.total_bytes_estimate)s|%(progress.speed)s",
+                "--progress-template",
+                "postprocess:" + PostProcessPrefix + "%(progress.postprocessor)s|%(progress.status)s",
+                "--print",
+                "after_move:" + FilePathPrefix + "%(filepath)s",
+                "--print",
+                "after_move:" + DownloadedPrefix + "%(__real_download)s"
+            };
+        }
+
+        public static bool TryReadFilePath(string input, out string result)
+        {
             result = string.Empty;
 
-            input = input.Replace("Merging formats into", splitter);
-            input = input.Replace("Destination", splitter);
-
-
-            if (input.Contains(splitter) == false)
+            if (input.StartsWith(FilePathPrefix) == false)
                 return false;
 
-            var inputParts = input.Split(' ').ToList();
-
-            if (inputParts.Count < 3)
-                return false;
-
-            // remove "[download]"/"[ffmepg]" and "Destination"
-            inputParts.RemoveAt(0);
-            inputParts.RemoveAt(0);
-
-            var tempResult = string.Join(" ", inputParts);
-
-            result = tempResult.Replace('"', ' ');
+            result = input.Substring(FilePathPrefix.Length);
 
             return true;
         }
 
-        public static bool HasBeenDownloaded(string input)
+        public static bool TryReadAlreadyDownloaded(string input, out bool result)
         {
-            return input.Contains("has already been downloaded");
+            result = false;
+
+            if (input.StartsWith(DownloadedPrefix) == false)
+                return false;
+
+            result = input.Substring(DownloadedPrefix.Length) != DownloadedValue;
+
+            return true;
         }
 
         public static bool TryReadDownloadStatus(string input, out DownloadStatus result)
         {
             result = new DownloadStatus();
 
-            if (input.Contains("[download]") == false)
+            if (input.StartsWith(PostProcessPrefix))
+            {
+                var postProcessParts = input.Substring(PostProcessPrefix.Length).Split(Separator);
+
+                if (postProcessParts.Length != 2 || postProcessParts[0] != ExtractAudioPostProcessor || postProcessParts[1] != PostProcessorStarted)
+                    return false;
+
+                result.IsExtractingAudio = true;
+
+                return true;
+            }
+
+            if (input.StartsWith(ProgressPrefix) == false)
                 return false;
 
-            if (input.Contains("Destination:") || input.Contains("merged."))
+            var parts = input.Substring(ProgressPrefix.Length).Split(Separator);
+
+            if (parts.Length != 4)
                 return false;
 
-            var parts = input.Split(char.Parse(" "));
+            var downloadedBytes = ReadNumber(parts[0]);
+            var totalBytes = ReadNumber(parts[1]) ?? ReadNumber(parts[2]);
+            var bytesPerSecond = ReadNumber(parts[3]);
 
-            if (decimal.TryParse(parts.FirstOrDefault(f => f.Contains("%"))?.Replace("%", "")?.Replace(".", ","), out var decimalPercent))
-                result.PercentDone = decimalPercent;
+            if (downloadedBytes.HasValue && totalBytes.HasValue && totalBytes.Value > 0)
+                result.PercentDone = Math.Round((decimal)(downloadedBytes.Value / totalBytes.Value * 100), 1);
 
-            result.TotalSize = parts.FirstOrDefault(f => f.Contains("KiB") || f.Contains("MiB") || f.Contains("GiB"));
+            if (totalBytes.HasValue)
+                result.TotalSize = FormatBytes(totalBytes.Value);
 
-            result.CurrentDownloadSpeed = parts.FirstOrDefault(f => f.Contains("KiB/s") || f.Contains("MiB/s") || f.Contains("GiB/s"));
+            if (bytesPerSecond.HasValue)
+                result.CurrentDownloadSpeed = FormatBytes(bytesPerSecond.Value) + "/s";
 
             return true;
         }
 
-        public static bool IsExtractingAudio(string input)
+        private static double? ReadNumber(string input)
         {
-            return (input.Contains(@"[ffmpeg] Destination:") || input.Contains(@"[ExtractAudio]")) 
-                && input.Contains("file is already in target format mp3") == false;
+            if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out var result))
+                return result;
+
+            return null;
+        }
+
+        private static string FormatBytes(double bytes)
+        {
+            var units = new[] { "B", "KiB", "MiB", "GiB" };
+            var unitIndex = 0;
+
+            while (bytes >= 1024 && unitIndex < units.Length - 1)
+            {
+                bytes /= 1024;
+                unitIndex++;
+            }
+
+            return bytes.ToString("0.00", CultureInfo.InvariantCulture) + units[unitIndex];
         }
     }
 }

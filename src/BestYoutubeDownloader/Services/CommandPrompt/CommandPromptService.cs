@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using BestYoutubeDownloader.Services.Logging;
 
@@ -10,6 +12,8 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
 {
     public class CommandPromptService : ICommandPromptService
     {
+        private const int CouldNotStartExitCode = -1;
+
         private readonly ILogService _logService;
 
         public CommandPromptService(ILogService logService)
@@ -17,15 +21,17 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
             this._logService = logService;
         }
 
-        public Task ExecuteCommand(string directory, string fileName, IEnumerable<string> arguments, Action<string> actionOnDataOutput)
+        public Task<int> ExecuteCommand(string directory, string fileName, IEnumerable<string> arguments, Action<string> actionOnStandardOutput)
         {
             var argumentList = arguments.ToList();
+            var displayText = this.GetDisplayText(fileName, argumentList);
 
-            this._logService.Info(this.GetDisplayText(fileName, argumentList));
-            actionOnDataOutput = this.WrapOutput(actionOnDataOutput);
+            this._logService.Info(displayText);
 
             return Task.Run(() =>
             {
+                var errorOutput = new ConcurrentQueue<string>();
+
                 using var process = this.GetProcess(directory, fileName, argumentList);
 
                 process.OutputDataReceived += (sender, args) =>
@@ -33,7 +39,9 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
                     if (args?.Data is null)
                         return;
 
-                    actionOnDataOutput.Invoke(args.Data);
+                    this._logService.Debug(args.Data);
+
+                    actionOnStandardOutput.Invoke(args.Data);
                 };
 
                 process.ErrorDataReceived += (sender, args) =>
@@ -41,7 +49,9 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
                     if (args?.Data is null)
                         return;
 
-                    actionOnDataOutput.Invoke(args.Data);
+                    this._logService.Debug(args.Data);
+
+                    errorOutput.Enqueue(args.Data);
                 };
 
                 try
@@ -50,29 +60,20 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
                 }
                 catch (Win32Exception e)
                 {
-                    actionOnDataOutput.Invoke($"Could not start '{fileName}': {e.Message}");
-                    return;
+                    this._logService.Error($"Could not start '{fileName}'", e);
+
+                    return CouldNotStartExitCode;
                 }
 
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
                 process.WaitForExit();
+
+                if (process.ExitCode != 0)
+                    this._logService.Warn($"'{displayText}' exited with code {process.ExitCode}: {string.Join(Environment.NewLine, errorOutput)}");
+
+                return process.ExitCode;
             });
-        }
-
-        private Action<string> WrapOutput(Action<string> output)
-        {
-            return s =>
-            {
-                if (s.StartsWith("ERROR"))
-                    this._logService.Error(s);
-                else if (s.StartsWith("WARNING"))
-                    this._logService.Warn(s);
-                else
-                    this._logService.Debug(s);
-
-                output(s);
-            };
         }
 
         private Process GetProcess(string directory, string fileName, IEnumerable<string> arguments)
@@ -85,6 +86,8 @@ namespace BestYoutubeDownloader.Services.CommandPrompt
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8,
                 CreateNoWindow = true
             };
 
